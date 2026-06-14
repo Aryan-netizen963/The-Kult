@@ -150,12 +150,12 @@ counters.forEach(el => counterObserver.observe(el));
      bars          — array of 7 heights (0–100) for the mini chart
    ---------------------------------------------------------------- */
 const caseStudies = [
-  { name: 'Nova',        duration: '6-Week Campaign',  spotifyBefore: '45K streams',  spotifyAfter: '1.2M streams', tiktokBefore: '300K views', tiktokAfter: '12M views',   growth: '+2,567%', bars: [10,18,22,35,52,78,100] },
-  { name: 'Kairo Blue',  duration: '8-Week Campaign',  spotifyBefore: '82K streams',  spotifyAfter: '940K streams', tiktokBefore: '410K views', tiktokAfter: '6.1M views',  growth: '+1,046%', bars: [14,20,28,40,55,72,95]  },
-  { name: 'Mira Solace', duration: '10-Week Campaign', spotifyBefore: '120K streams', spotifyAfter: '2.3M streams', tiktokBefore: '600K views', tiktokAfter: '18.7M views', growth: '+1,817%', bars: [12,16,24,38,60,82,100] },
-  { name: 'Reyes & Co.', duration: '4-Week Campaign',  spotifyBefore: '30K streams',  spotifyAfter: '410K streams', tiktokBefore: '180K views', tiktokAfter: '4.8M views',  growth: '+1,267%', bars: [8,15,26,40,58,76,98]   },
-  { name: 'Velvet Echo', duration: '6-Week Campaign',  spotifyBefore: '95K streams',  spotifyAfter: '1.6M streams', tiktokBefore: '520K views', tiktokAfter: '9.3M views',  growth: '+1,584%', bars: [16,22,30,48,64,80,100] },
-  { name: 'Juno Park',   duration: '8-Week Campaign',  spotifyBefore: '60K streams',  spotifyAfter: '880K streams', tiktokBefore: '250K views', tiktokAfter: '7.4M views',  growth: '+1,367%', bars: [10,18,28,42,60,78,96]  },
+  { name: 'Jaquarois indie', duration: '2-Week Campaign',  spotifyBefore: '1.2k streams',  spotifyAfter: '400k streams', tiktokBefore: '1K views', tiktokAfter: '2.2M views',   growth: '+2,567%', bars: [10,18,22,35,52,78,100] },
+  { name: 'Wer$e',  duration: '3-Week Campaign',  spotifyBefore: '82K streams',  spotifyAfter: '940K streams', tiktokBefore: '410K views', tiktokAfter: '6.1M views',  growth: '+1,046%', bars: [14,20,28,40,55,72,95]  },
+  { name: 'ifwmyglokk', duration: '4-Week Campaign', spotifyBefore: '120K streams', spotifyAfter: '2.3M streams', tiktokBefore: '600K views', tiktokAfter: '18.7M views', growth: '+1,817%', bars: [12,16,24,38,60,82,100] },
+  { name: 'predayed', duration: '3-Week Campaign',  spotifyBefore: '30K streams',  spotifyAfter: '410K streams', tiktokBefore: '180K views', tiktokAfter: '4.8M views',  growth: '+1,267%', bars: [8,15,26,40,58,76,98]   },
+  { name: 'scrappydoll', duration: '3-Week Campaign',  spotifyBefore: '95K streams',  spotifyAfter: '1.6M streams', tiktokBefore: '520K views', tiktokAfter: '9.3M views',  growth: '+1,584%', bars: [16,22,30,48,64,80,100] },
+  { name: 'The Kavities',   duration: '3-Week Campaign',  spotifyBefore: '60K streams',  spotifyAfter: '880K streams', tiktokBefore: '250K views', tiktokAfter: '7.4M views',  growth: '+1,367%', bars: [10,18,28,42,60,78,96]  },
 ];
 
 const caseGrid     = document.getElementById('caseStudyGrid');
@@ -220,18 +220,18 @@ document.querySelectorAll('#caseStudyGrid [data-chart]').forEach(el => chartBarO
      duration — campaign length shown as "Campaign · X weeks"
    ---------------------------------------------------------------- */
 const artists = [
-  { name: 'Nova',        genre: 'Indie Pop',          tiktok: '12.4M', spotify: '1.8M',  duration: '6 weeks'  },
-  { name: 'Kairo Blue',  genre: 'Alt R&B',            tiktok: '6.1M',  spotify: '940K',  duration: '8 weeks'  },
-  { name: 'Mira Solace', genre: 'Bedroom Pop',        tiktok: '18.7M', spotify: '2.3M',  duration: '10 weeks' },
-  { name: 'Reyes & Co.', genre: 'Latin Trap',         tiktok: '4.8M',  spotify: '410K',  duration: '4 weeks'  },
-  { name: 'Velvet Echo', genre: 'Dream Pop',          tiktok: '9.3M',  spotify: '1.6M',  duration: '6 weeks'  },
-  { name: 'Juno Park',   genre: 'K-Pop Solo',         tiktok: '7.4M',  spotify: '880K',  duration: '8 weeks'  },
-  { name: 'Dexter Lane', genre: 'Hip-Hop',            tiktok: '15.2M', spotify: '2.1M',  duration: '8 weeks'  },
-  { name: 'Salt & Sage', genre: 'Folk',               tiktok: '3.2M',  spotify: '310K',  duration: '4 weeks'  },
-  { name: 'Lola Vance',  genre: 'Pop',                tiktok: '21.6M', spotify: '3.4M',  duration: '10 weeks' },
-  { name: 'Theo Marsh',  genre: 'Lo-fi',              tiktok: '2.6M',  spotify: '260K',  duration: '4 weeks'  },
-  { name: 'Cypher Row',  genre: 'Electronic',         tiktok: '11.8M', spotify: '1.4M',  duration: '6 weeks'  },
-  { name: 'Aria North',  genre: 'Singer-Songwriter',  tiktok: '5.9M',  spotify: '720K',  duration: '6 weeks'  },
+  { name: 'Jaquarious indie',genre: 'Indie Pop',          tiktok: '2.2M',  spotify: '400k',  duration: '6 weeks'  },
+  { name: 'wer$e',           genre: 'Indie',              tiktok: '1.5M',  spotify: '300K',  duration: '1 week'   },
+  { name: 'exhibit',         genre: 'Ambient music',      tiktok: '18.7M', spotify: '2.3M',  duration: '10 weeks' },
+  { name: 'scrappydoll',     genre: 'Latin Trap',         tiktok: '4.8M',  spotify: '410K',  duration: '4 weeks'  },
+  { name: 'The Kavities',    genre: 'Dream Pop',          tiktok: '9.3M',  spotify: '1.6M',  duration: '6 weeks'  },
+  { name: 'Predayed',        genre: 'K-Pop Solo',         tiktok: '7.4M',  spotify: '880K',  duration: '8 weeks'  },
+  { name: 'ifwmyglokk',      genre: 'Hip-Hop',            tiktok: '15.2M', spotify: '2.1M',  duration: '8 weeks'  },
+  { name: 'razors',          genre: 'indie',              tiktok: '1.5M',  spotify: '30K',   duration:  '1 week'  },
+  { name: 'Lola Vance',      genre: 'Pop',                tiktok: '21.6M', spotify: '3.4M',  duration: '10 weeks' },
+  { name: 'Theo Marsh',      genre: 'Lo-fi',              tiktok: '2.6M',  spotify: '260K',  duration: '4 weeks'  },
+  { name: 'Cypher Row',      genre: 'Electronic',         tiktok: '11.8M', spotify: '1.4M',  duration: '6 weeks'  },
+  { name: 'Aria North',      genre: 'Singer-Songwriter',  tiktok: '5.9M',  spotify: '720K',  duration: '6 weeks'  },
 ];
 
 const artistGrid     = document.getElementById('artistGrid');
