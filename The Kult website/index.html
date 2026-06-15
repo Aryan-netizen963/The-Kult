@@ -1,3 +1,4 @@
+@ -1,1053 +0,0 @@
 <!DOCTYPE html>
 <html lang="en" class="scroll-smooth">
 <head>
@@ -10,6 +11,9 @@
      Loaded first so our custom CSS can override it below.
      ============================================================ -->
 <script src="https://cdn.tailwindcss.com"></script>
+
+<!-- EmailJS -->
+<script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
 
 <!-- ============================================================
      TAILWIND THEME TOKENS
@@ -159,7 +163,7 @@
       <div class="mt-14 flex items-center gap-6 text-white/40 text-sm font-mono">
         <span>Trusted in 14 markets</span>
         <span class="w-px h-4 bg-white/10"></span>
-        <span>100+ verified creators</span>
+        <span>850+ verified creators</span>
       </div>
     </div>
 
@@ -179,7 +183,7 @@
           </div>
           <!-- Edit artist name + track title here -->
           <div class="absolute bottom-4 left-4 right-4">
-            <p class="font-display font-semibold text-lg">Jaquarois indie — "Glass Skies"</p>
+            <p class="font-display font-semibold text-lg">Nova — "Glass Skies"</p>
             <p class="text-white/50 text-xs font-mono mt-1">Campaign · 6 Weeks</p>
           </div>
         </div>
@@ -233,12 +237,12 @@
       </div>
 
       <div class="reveal glass rounded-2xl p-8 text-center hover-lift" style="transition-delay:.2s">
-        <p class="font-display text-4xl sm:text-5xl font-semibold gradient-text counter" data-target="100" data-suffix="+">0</p>
+        <p class="font-display text-4xl sm:text-5xl font-semibold gradient-text counter" data-target="850" data-suffix="+">0</p>
         <p class="mt-3 text-white/50 text-sm">Verified Creators</p>
       </div>
 
       <div class="reveal glass rounded-2xl p-8 text-center hover-lift" style="transition-delay:.3s">
-        <p class="font-display text-4xl sm:text-5xl font-semibold gradient-text counter" data-target="15" data-suffix="+">0</p>
+        <p class="font-display text-4xl sm:text-5xl font-semibold gradient-text counter" data-target="300" data-suffix="+">0</p>
         <p class="mt-3 text-white/50 text-sm">Artists Promoted</p>
       </div>
 
@@ -570,7 +574,7 @@
             <!-- Initial avatar: change the letter and font-semibold text below -->
             <div class="w-10 h-10 rounded-full bg-ice/15 border border-ice/30 flex items-center justify-center font-display font-semibold text-ice">N</div>
             <div>
-              <p class="font-semibold text-sm">Jaquarois indie</p>
+              <p class="font-semibold text-sm">Nova</p>
               <p class="text-white/40 text-xs">Indie Pop</p>
             </div>
           </div>
@@ -780,9 +784,9 @@
      The form's submit handler shows an alert — replace with a
      real backend endpoint (e.g. fetch('/api/contact', ...)) as needed.
      ============================================================ -->
+<!-- SECTION 12 — CONTACT FORM (upgraded) -->
 <section id="contact" class="relative py-28 border-t border-white/5 overflow-hidden">
 
-  <!-- Ambient glow orb behind the form -->
   <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[40rem] h-[40rem] rounded-full bg-ice/8 blur-[140px] pulse-orb pointer-events-none"></div>
 
   <div class="relative max-w-4xl mx-auto px-6 lg:px-10">
@@ -793,56 +797,186 @@
       <p class="mt-4 text-white/55 text-lg max-w-xl mx-auto">Tell us about your release and goals — our team will respond with a tailored campaign plan within 24 hours.</p>
     </div>
 
-    <!-- Contact form — replace the onsubmit handler with a real API call -->
-    <form
-      class="reveal glass-strong rounded-3xl p-6 sm:p-10 glow-ring grid sm:grid-cols-2 gap-5"
-      onsubmit="event.preventDefault(); alert('Thanks! Your campaign request has been received.');"
-    >
-      <div class="flex flex-col gap-2">
-        <label class="text-sm text-white/50">Name</label>
-        <input type="text" required placeholder="Your full name" class="bg-black/40 border border-white/10 focus:border-ice/50 rounded-xl px-4 py-3 outline-none transition-colors placeholder:text-white/25"/>
+    <!-- SUCCESS STATE -->
+    <div id="formSuccess" class="hidden glass-strong rounded-3xl p-10 glow-ring text-center">
+      <div class="w-16 h-16 rounded-full bg-ice/15 border border-ice/30 flex items-center justify-center mx-auto mb-6">
+        <svg width="32" height="32" viewBox="0 0 32 32" fill="none"><path d="M6 16l7 7 13-13" stroke="#7DDCFF" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </div>
+      <h3 class="font-display text-3xl font-semibold mb-3">Request Received!</h3>
+      <p class="text-white/55 text-lg max-w-md mx-auto">Our team will review your submission and get back to you within 24 hours with a tailored campaign plan.</p>
+      <p class="mt-4 font-mono text-ice/70 text-sm" id="confirmEmail"></p>
+    </div>
+
+    <!-- FORM -->
+    <form id="campaignForm" class="reveal glass-strong rounded-3xl p-6 sm:p-10 glow-ring grid sm:grid-cols-2 gap-5">
+
+      <!-- Honeypot -->
+      <div style="position:absolute;left:-9999px;opacity:0;pointer-events:none" aria-hidden="true">
+        <input type="text" name="website" id="honeypot" tabindex="-1" autocomplete="off">
       </div>
 
+      <!-- Name -->
       <div class="flex flex-col gap-2">
-        <label class="text-sm text-white/50">Artist Name</label>
-        <input type="text" required placeholder="Your artist / project name" class="bg-black/40 border border-white/10 focus:border-ice/50 rounded-xl px-4 py-3 outline-none transition-colors placeholder:text-white/25"/>
+        <label for="field_name" class="text-sm text-white/50">Name <span class="text-ice">*</span></label>
+        <input id="field_name" type="text" required placeholder="Your full name"
+          class="bg-black/40 border border-white/10 focus:border-ice/50 rounded-xl px-4 py-3 outline-none transition-colors placeholder:text-white/25"/>
+        <p id="err_name" class="text-xs text-red-400 hidden">Please enter your name.</p>
       </div>
 
+      <!-- Artist Name -->
       <div class="flex flex-col gap-2">
-        <label class="text-sm text-white/50">Email</label>
-        <input type="email" required placeholder="you@email.com" class="bg-black/40 border border-white/10 focus:border-ice/50 rounded-xl px-4 py-3 outline-none transition-colors placeholder:text-white/25"/>
+        <label for="field_artist" class="text-sm text-white/50">Artist Name <span class="text-ice">*</span></label>
+        <input id="field_artist" type="text" required placeholder="Your artist / project name"
+          class="bg-black/40 border border-white/10 focus:border-ice/50 rounded-xl px-4 py-3 outline-none transition-colors placeholder:text-white/25"/>
+        <p id="err_artist" class="text-xs text-red-400 hidden">Please enter your artist name.</p>
       </div>
 
+      <!-- Email -->
       <div class="flex flex-col gap-2">
-        <label class="text-sm text-white/50">Spotify Link</label>
-        <input type="url" placeholder="https://open.spotify.com/..." class="bg-black/40 border border-white/10 focus:border-ice/50 rounded-xl px-4 py-3 outline-none transition-colors placeholder:text-white/25"/>
+        <label for="field_email" class="text-sm text-white/50">Email <span class="text-ice">*</span></label>
+        <input id="field_email" type="email" required placeholder="you@email.com"
+          class="bg-black/40 border border-white/10 focus:border-ice/50 rounded-xl px-4 py-3 outline-none transition-colors placeholder:text-white/25"/>
+        <p id="err_email" class="text-xs text-red-400 hidden">Please enter a valid email.</p>
       </div>
 
-      <div class="flex flex-col gap-2 sm:col-span-2">
-        <label class="text-sm text-white/50">Budget</label>
-        <!-- Edit the option values to match your pricing tiers -->
-        <select class="bg-black/40 border border-white/10 focus:border-ice/50 rounded-xl px-4 py-3 outline-none transition-colors text-white/80">
+      <!-- Spotify -->
+      <div class="flex flex-col gap-2">
+        <label for="field_spotify" class="text-sm text-white/50">Spotify Link</label>
+        <input id="field_spotify" type="url" placeholder="https://open.spotify.com/..."
+          class="bg-black/40 border border-white/10 focus:border-ice/50 rounded-xl px-4 py-3 outline-none transition-colors placeholder:text-white/25"/>
+      </div>
+
+      <!-- Genre -->
+      <div class="flex flex-col gap-2">
+        <label for="field_genre" class="text-sm text-white/50">Genre</label>
+        <select id="field_genre" class="bg-black/40 border border-white/10 focus:border-ice/50 rounded-xl px-4 py-3 outline-none transition-colors text-white/80">
+          <option class="bg-[#0B0B0B]" value="">Select a genre...</option>
+          <option class="bg-[#0B0B0B]">Pop</option>
+          <option class="bg-[#0B0B0B]">Hip-Hop / Rap</option>
+          <option class="bg-[#0B0B0B]">R&B / Soul</option>
+          <option class="bg-[#0B0B0B]">Electronic / Dance</option>
+          <option class="bg-[#0B0B0B]">Indie / Alternative</option>
+          <option class="bg-[#0B0B0B]">Country</option>
+          <option class="bg-[#0B0B0B]">Latin</option>
+          <option class="bg-[#0B0B0B]">Other</option>
+        </select>
+      </div>
+
+      <!-- Budget -->
+      <div class="flex flex-col gap-2">
+        <label for="field_budget" class="text-sm text-white/50">Budget <span class="text-ice">*</span></label>
+        <select id="field_budget" class="bg-black/40 border border-white/10 focus:border-ice/50 rounded-xl px-4 py-3 outline-none transition-colors text-white/80">
+          <option class="bg-[#0B0B0B]" value="">Select a budget...</option>
           <option class="bg-[#0B0B0B]">Under $500</option>
-          <option class="bg-[#0B0B0B]">$1,000 – $5,000</option>
-          <option class="bg-[#0B0B0B]">$5,000 – $10,000</option>
+          <option class="bg-[#0B0B0B]">$1,500 – Starter Plan</option>
+          <option class="bg-[#0B0B0B]">$4,200 – Growth Plan</option>
+          <option class="bg-[#0B0B0B]">$9,800 – Viral Plan</option>
           <option class="bg-[#0B0B0B]">$10,000+</option>
         </select>
       </div>
 
+      <!-- Release Date -->
       <div class="flex flex-col gap-2 sm:col-span-2">
-        <label class="text-sm text-white/50">Message</label>
-        <textarea rows="4" placeholder="Tell us about your release and goals..." class="bg-black/40 border border-white/10 focus:border-ice/50 rounded-xl px-4 py-3 outline-none transition-colors placeholder:text-white/25 resize-none"></textarea>
+        <label for="field_release" class="text-sm text-white/50">Planned Release Date <span class="text-white/30 text-xs">(if applicable)</span></label>
+        <input id="field_release" type="date"
+          class="bg-black/40 border border-white/10 focus:border-ice/50 rounded-xl px-4 py-3 outline-none transition-colors text-white/80"/>
       </div>
 
+      <!-- Message -->
+      <div class="flex flex-col gap-2 sm:col-span-2">
+        <label for="field_message" class="text-sm text-white/50">Message <span class="text-white/30 text-xs">(optional)</span></label>
+        <textarea id="field_message" rows="4" maxlength="1000"
+          placeholder="Tell us about your release, goals, or anything else we should know..."
+          class="bg-black/40 border border-white/10 focus:border-ice/50 rounded-xl px-4 py-3 outline-none transition-colors placeholder:text-white/25 resize-none"></textarea>
+        <p class="text-xs text-white/30 text-right"><span id="charCount">0</span>/1000</p>
+      </div>
+
+      <!-- Error banner -->
+      <div id="formError" class="sm:col-span-2 hidden bg-red-500/10 border border-red-500/30 rounded-xl px-5 py-3 text-red-400 text-sm">
+        Something went wrong. Please try again or email us directly at hello@thekult.agency
+      </div>
+
+      <!-- Submit -->
       <div class="sm:col-span-2 mt-2">
-        <button type="submit" class="w-full px-8 py-4 rounded-full bg-ice text-black font-semibold text-lg glow-btn">
-          Launch My Campaign
+        <button id="submitBtn" type="submit" class="w-full px-8 py-4 rounded-full bg-ice text-black font-semibold text-lg glow-btn flex items-center justify-center gap-2">
+          <span id="btnText">Launch My Campaign</span>
+          <svg id="btnSpinner" class="hidden" width="20" height="20" viewBox="0 0 24 24" fill="none" style="animation: spin 1s linear infinite;">
+            <circle cx="12" cy="12" r="10" stroke="black" stroke-width="2" stroke-dasharray="32" stroke-dashoffset="12"/>
+          </svg>
         </button>
       </div>
-    </form>
 
+    </form>
   </div>
 </section>
+
+<style>
+  @keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+</style>
+
+<script>
+  emailjs.init({ publicKey: 'q807FWLNiIYmlFvBT' });
+
+  const msgField   = document.getElementById('field_message');
+  const charCount  = document.getElementById('charCount');
+  msgField.addEventListener('input', () => { charCount.textContent = msgField.value.length; });
+
+  document.getElementById('campaignForm').addEventListener('submit', async function(e) {
+    e.preventDefault();
+
+    if (document.getElementById('honeypot').value) return;
+
+    const name    = document.getElementById('field_name').value.trim();
+    const artist  = document.getElementById('field_artist').value.trim();
+    const email   = document.getElementById('field_email').value.trim();
+    const spotify = document.getElementById('field_spotify').value.trim();
+    const genre   = document.getElementById('field_genre').value;
+    const budget  = document.getElementById('field_budget').value;
+    const release = document.getElementById('field_release').value;
+    const message = msgField.value.trim();
+
+    // Validation
+    let valid = true;
+    if (!name)   { document.getElementById('err_name').classList.remove('hidden');   valid = false; }
+    else           document.getElementById('err_name').classList.add('hidden');
+    if (!artist) { document.getElementById('err_artist').classList.remove('hidden'); valid = false; }
+    else           document.getElementById('err_artist').classList.add('hidden');
+    if (!email)  { document.getElementById('err_email').classList.remove('hidden');  valid = false; }
+    else           document.getElementById('err_email').classList.add('hidden');
+    if (!valid) return;
+
+    // Loading state
+    document.getElementById('btnText').textContent = 'Sending…';
+    document.getElementById('btnSpinner').classList.remove('hidden');
+    document.getElementById('submitBtn').disabled = true;
+    document.getElementById('formError').classList.add('hidden');
+
+    try {
+      await emailjs.send('service_c77fw8p', 'template_4fhj8oj', {
+        from_name:    name,
+        artist_name:  artist,
+        from_email:   email,
+        spotify_link: spotify  || 'Not provided',
+        genre:        genre    || 'Not specified',
+        budget:       budget   || 'Not specified',
+        release_date: release  || 'Not specified',
+        message:      message  || '(no message)',
+        submitted_at: new Date().toLocaleString('en-GB', { dateStyle: 'full', timeStyle: 'short' }),
+      });
+
+      document.getElementById('campaignForm').classList.add('hidden');
+      document.getElementById('formSuccess').classList.remove('hidden');
+      document.getElementById('confirmEmail').textContent = 'Confirmation sent to ' + email;
+
+    } catch (err) {
+      console.error(err);
+      document.getElementById('formError').classList.remove('hidden');
+      document.getElementById('btnText').textContent = 'Launch My Campaign';
+      document.getElementById('btnSpinner').classList.add('hidden');
+      document.getElementById('submitBtn').disabled = false;
+    }
+  });
+</script>
 
 <!-- ============================================================
      FOOTER
@@ -876,8 +1010,10 @@
       <div>
         <p class="font-display font-semibold mb-4">Connect</p>
         <ul class="space-y-3 text-sm text-white/50">
-          <li><a href="https://www.instagram.com/theonlykult?igsh=a3Q1bnA0NHZ3bTU1" target="_blank" class="hover:text-ice transition-colors">Instagram</a></li>
-          <li><a href="https://mail.google.com/mail/?view=cm&fs=1&to=theonlykult@gmail.com" target="_blank" class="hover:text-ice transition-colors">Gmail</a></li>
+          <li><a href="#" class="hover:text-ice transition-colors">Instagram</a></li>
+          <li><a href="#" class="hover:text-ice transition-colors">TikTok</a></li>
+          <li><a href="#" class="hover:text-ice transition-colors">X (Twitter)</a></li>
+          <li><a href="#" class="hover:text-ice transition-colors">LinkedIn</a></li>
         </ul>
       </div>
 
@@ -885,9 +1021,9 @@
       <div>
         <p class="font-display font-semibold mb-4">Contact</p>
         <ul class="space-y-3 text-sm text-white/50">
-          <li>theonlykult@gmail.com</li>
+          <li>hello@The Kult.agency</li>
           <li>+1 (212) 555-0148</li>
-          <li>Cairo · Johannesburg · Pretoria</li>
+          <li>New York · Los Angeles · London</li>
         </ul>
       </div>
 
