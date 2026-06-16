@@ -267,54 +267,6 @@ document.querySelectorAll('#artistGrid .reveal').forEach(el => revealObserver.ob
 
 
 /* ----------------------------------------------------------------
-   8. DASHBOARD LINE CHARTS — animated SVG draw-in
-   Each <svg class="dashboard-line"> in Section 6 has a
-   data-points attribute with polyline coordinates.
-   This function builds the line + area fill and animates
-   the stroke-dashoffset from full-length → 0 on scroll.
-   ---------------------------------------------------------------- */
-document.querySelectorAll('.dashboard-line').forEach(svg => {
-  const points = svg.dataset.points;
-
-  // --- Main line ---
-  const path = document.createElementNS('http://www.w3.org/2000/svg', 'polyline');
-  path.setAttribute('points', points);
-  path.setAttribute('fill', 'none');
-  path.setAttribute('stroke', '#7DDCFF');
-  path.setAttribute('stroke-width', '2');
-  path.setAttribute('stroke-linecap', 'round');
-  path.setAttribute('stroke-linejoin', 'round');
-  path.style.filter = 'drop-shadow(0 0 6px rgba(125,220,255,0.5))';
-
-  // --- Area fill under the line ---
-  const areaPoints = `6,90 ${points} 286,90`;
-  const area = document.createElementNS('http://www.w3.org/2000/svg', 'polygon');
-  area.setAttribute('points', areaPoints);
-  area.setAttribute('fill', 'rgba(125,220,255,0.08)');
-
-  svg.appendChild(area);
-  svg.appendChild(path);
-
-  // Draw-in animation: stroke-dashoffset starts at full length, animates to 0
-  const length = 600; // approximate path length — sufficient for these charts
-  path.style.strokeDasharray  = length;
-  path.style.strokeDashoffset = length;
-  path.style.transition       = 'stroke-dashoffset 1.6s cubic-bezier(.16,1,.3,1)';
-
-  const lineObserver = new IntersectionObserver((entries) => {
-    entries.forEach(entry => {
-      if (entry.isIntersecting) {
-        entry.target.style.strokeDashoffset = '0';
-        lineObserver.unobserve(entry.target);
-      }
-    });
-  }, { threshold: 0.4 });
-
-  lineObserver.observe(path);
-});
-
-
-/* ----------------------------------------------------------------
    9. CREATOR NETWORK VISUALIZATION — SVG graph
    Draws a hub-and-spoke diagram inside #networkSvg.
    The hub is centred at (400, 110); 14 creator nodes are
