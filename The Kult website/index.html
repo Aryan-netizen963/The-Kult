@@ -488,7 +488,11 @@
           <li class="flex gap-3"><span class="text-ice">✓</span> Performance dashboard</li>
           <li class="flex gap-3"><span class="text-ice">✓</span> Weekly reporting</li>
         </ul>
-        <a href="#contact" class="block text-center px-6 py-3 rounded-full border border-white/15 hover:border-ice/50 font-semibold transition-colors">Get Started</a>
+        <a href="#contact"
+   class="package-btn inline-flex items-center justify-center w-full px-6 py-3 rounded-full bg-ice text-black font-semibold glow-btn"
+   data-package="Starter - $200">
+   Get Started
+</a>
       </div>
 
       <!-- Plan 2: Gold Elite (featured / most popular) -->
@@ -506,7 +510,11 @@
           <li class="flex gap-3"><span class="text-ice">✓</span> Dedicated campaign strategist</li>
           <li class="flex gap-3"><span class="text-ice">✓</span> Spotify pitching support</li>
         </ul>
-        <a href="#contact" class="block text-center px-6 py-3 rounded-full bg-ice text-black font-semibold glow-btn">Launch Campaign</a>
+        <a href="#contact"
+   class="package-btn inline-flex items-center justify-center w-full px-6 py-3 rounded-full bg-ice text-black font-semibold glow-btn"
+   data-package="Growth - $4,000">
+   Launch Campaign
+</a>
       </div>
 
       <!-- Plan 3: Global Push -->
@@ -523,7 +531,11 @@
           <li class="flex gap-3"><span class="text-ice">✓</span> Senior strategist + weekly calls</li>
           <li class="flex gap-3"><span class="text-ice">✓</span> Priority Spotify &amp; playlist pitching</li>
         </ul>
-        <a href="#contact" class="block text-center px-6 py-3 rounded-full border border-white/15 hover:border-ice/50 font-semibold transition-colors">Get Started</a>
+        <a href="#contact"
+   class="package-btn inline-flex items-center justify-center w-full px-6 py-3 rounded-full bg-ice text-black font-semibold glow-btn"
+   data-package="Global Push - $10,000">
+   Get Started
+</a>
       </div>
 
     </div>
@@ -685,18 +697,33 @@
         </select>
       </div>
 
-      <!-- Budget -->
-      <div class="flex flex-col gap-2">
-        <label for="field_budget" class="text-sm text-white/50">Budget <span class="text-ice">*</span></label>
-        <select id="field_budget" class="bg-black/40 border border-white/10 focus:border-ice/50 rounded-xl px-4 py-3 outline-none transition-colors text-white/80">
-          <option class="bg-[#0B0B0B]" value="">Select a budget...</option>
-          <option class="bg-[#0B0B0B]">Under $500</option>
-          <option class="bg-[#0B0B0B]">$1,000 – $4000 </option>
-          <option class="bg-[#0B0B0B]">$4,000 – $8000</option>
-          <option class="bg-[#0B0B0B]">$8,000 – $10,000</option>
-          <option class="bg-[#0B0B0B]">$10,000+</option>
-        </select>
-      </div>
+      <!-- Package -->
+<div class="flex flex-col gap-2">
+  <label for="field_budget" class="text-sm text-white/50">
+    Package <span class="text-ice">*</span>
+  </label>
+
+  <select id="field_budget"
+    class="bg-black/40 border border-white/10 focus:border-ice/50 rounded-xl px-4 py-3 outline-none transition-colors text-white/80">
+
+    <option class="bg-[#0B0B0B]" value="">
+      Select a package...
+    </option>
+
+    <option class="bg-[#0B0B0B]" value="Starter - $200">
+      Starter - $200
+    </option>
+
+    <option class="bg-[#0B0B0B]" value="Growth - $4,000">
+      Growth - $4,000
+    </option>
+
+    <option class="bg-[#0B0B0B]" value="Global Push - $10,000">
+      Global Push - $10,000
+    </option>
+
+  </select>
+</div>
 
       <!-- Release Date -->
       <div class="flex flex-col gap-2 sm:col-span-2">
@@ -870,6 +897,27 @@
      elements it references have been parsed).
      ============================================================ -->
 <script src="main.js"></script>
+
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+
+  document.querySelectorAll('.package-btn').forEach(button => {
+
+    button.addEventListener('click', () => {
+
+      const selectedPackage = button.dataset.package;
+      const packageField = document.getElementById('field_budget');
+
+      if (packageField) {
+        packageField.value = selectedPackage;
+      }
+
+    });
+
+  });
+
+});
+</script>
 
 </body>
 </html>
