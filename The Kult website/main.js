@@ -220,18 +220,14 @@ document.querySelectorAll('#caseStudyGrid [data-chart]').forEach(el => chartBarO
      duration — campaign length shown as "Campaign · X weeks"
    ---------------------------------------------------------------- */
 const artists = [
-  { name: 'Jaquarious indie',genre: 'Indie Pop',          tiktok: '2.2M',  spotify: '400k',  duration: '6 weeks'  },
-  { name: 'wer$e',           genre: 'Indie',              tiktok: '1.5M',  spotify: '300K',  duration: '1 week'   },
-  { name: 'exhibit',         genre: 'Ambient music',      tiktok: '18.7M', spotify: '2.3M',  duration: '10 weeks' },
-  { name: 'scrappydoll',     genre: 'Latin Trap',         tiktok: '4.8M',  spotify: '410K',  duration: '4 weeks'  },
-  { name: 'The Kavities',    genre: 'Dream Pop',          tiktok: '9.3M',  spotify: '1.6M',  duration: '6 weeks'  },
-  { name: 'Predayed',        genre: 'K-Pop Solo',         tiktok: '7.4M',  spotify: '880K',  duration: '8 weeks'  },
-  { name: 'ifwmyglokk',      genre: 'Hip-Hop',            tiktok: '15.2M', spotify: '2.1M',  duration: '8 weeks'  },
-  { name: 'razors',          genre: 'indie',              tiktok: '1.5M',  spotify: '30K',   duration:  '1 week'  },
-  { name: 'Lola Vance',      genre: 'Pop',                tiktok: '21.6M', spotify: '3.4M',  duration: '10 weeks' },
-  { name: 'Theo Marsh',      genre: 'Lo-fi',              tiktok: '2.6M',  spotify: '260K',  duration: '4 weeks'  },
-  { name: 'Cypher Row',      genre: 'Electronic',         tiktok: '11.8M', spotify: '1.4M',  duration: '6 weeks'  },
-  { name: 'Aria North',      genre: 'Singer-Songwriter',  tiktok: '5.9M',  spotify: '720K',  duration: '6 weeks'  },
+  { name: 'Jaquarious indie',genre: 'Indie Pop',          tiktok: '2.2M',  spotify: '200k',  duration: '2 weeks', image: 'images/jaquarious-indie.jpg', },
+  { name: 'wer$e',           genre: 'Indie',              tiktok: '1.5M',  spotify: '170K',  duration: '2 weeks', image: 'images/were.jpg', },
+  { name: 'exhibit',         genre: 'Ambient music',      tiktok: '3M'   , spotify: '500k',  duration: '10 weeks', image: 'The Kult website\images\exhibit.jpg', },
+  { name: 'The Kavities',    genre: 'Dream Pop',          tiktok: '2.5M',  spotify: '250k',  duration: '3 weeks', image: 'images/the-kavities.jpg', },
+  { name: 'Predayed',        genre: 'Rap',                tiktok: '6M',    spotify: '500K',  duration: '4 weeks', image: 'images/predayed.jpg', },
+  { name: 'ifwmyglokk',      genre: 'indie',              tiktok: '3M',    spotify: '400k',  duration: '2 weeks', image: 'images/ifwmyglokk.jpg', },
+  { name: 'razors',          genre: 'indie',              tiktok: '1.5M',  spotify: '30K',   duration:  '1 week', image: 'images/razors.jpg', },
+  { name: 'Lola Vance',      genre: 'Pop',                tiktok: '21.6M', spotify: '3.4M',  duration: '10 weeks', image: 'images/lola-vance.jpg', },
 ];
 
 const artistGrid     = document.getElementById('artistGrid');
