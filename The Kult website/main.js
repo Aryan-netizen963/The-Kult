@@ -226,8 +226,7 @@ const artists = [
   { name: 'The Kavities',    genre: 'Dream Pop',          tiktok: '2.5M',  spotify: '250k',  duration: '3 weeks', image: 'images/thekavities.jpg', },
   { name: 'Predayed',        genre: 'Rap',                tiktok: '6M',    spotify: '500K',  duration: '4 weeks', image: 'images/predayed.jpg', },
   { name: 'ifwmyglokk',      genre: 'indie',              tiktok: '3M',    spotify: '400k',  duration: '2 weeks', image: 'images/ifwmyglokk.jpg', },
-  { name: 'razors',          genre: 'indie',              tiktok: '1.5M',  spotify: '30K',   duration:  '1 week', image: 'images/razors.jpg', },
-  { name: 'Lola Vance',      genre: 'Pop',                tiktok: '21.6M', spotify: '3.4M',  duration: '10 weeks', image: 'images/lola-vance.jpg', },
+  { name: 'razors',          genre: 'indie',              tiktok: '1.5M',  spotify: '30K',   duration:  '1 week', image: 'images/razors.jpg', },,
 ];
 
 const artistGrid     = document.getElementById('artistGrid');

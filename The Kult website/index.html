@@ -167,52 +167,60 @@
     </div>
 
     <!-- Right column: floating glass card (showcase result) -->
-    <div class="relative reveal" style="transition-delay:.15s">
-      <div class="float-card glass-strong rounded-3xl p-6 sm:p-8 glow-ring max-w-md mx-auto">
+<div class="relative reveal" style="transition-delay:.15s">
+  <div class="float-card glass-strong rounded-3xl p-6 sm:p-8 glow-ring max-w-md mx-auto">
 
-        <!-- Album art placeholder -->
-        <div class="relative rounded-2xl overflow-hidden aspect-square mb-6">
-          <div class="absolute inset-0 bg-gradient-to-br from-ice/30 via-[#1a1a1a] to-black"></div>
-          <div class="absolute inset-0 flex items-center justify-center">
-            <svg width="84" height="84" viewBox="0 0 84 84" fill="none" class="opacity-90">
-              <circle cx="42" cy="42" r="40" stroke="#7DDCFF" stroke-width="1.5"/>
-              <circle cx="42" cy="42" r="14" fill="#7DDCFF"/>
-              <circle cx="42" cy="42" r="4" fill="#050505"/>
-            </svg>
-          </div>
-          <!-- Edit artist name + track title here -->
-          <div class="absolute bottom-4 left-4 right-4">
-            <p class="font-display font-semibold text-lg">Nova — "Glass Skies"</p>
-            <p class="text-white/50 text-xs font-mono mt-1">Campaign · 6 Weeks</p>
-          </div>
-        </div>
-
-        <!-- Result metrics — edit these figures to match your showcase artist -->
-        <div class="space-y-4">
-          <div class="flex items-center justify-between">
-            <span class="text-white/60 text-sm">TikTok Views</span>
-            <span class="font-display font-semibold text-ice glow-text">+12.4M</span>
-          </div>
-          <div class="hairline"></div>
-          <div class="flex items-center justify-between">
-            <span class="text-white/60 text-sm">Spotify Streams</span>
-            <span class="font-display font-semibold text-ice glow-text">+1.8M</span>
-          </div>
-          <div class="hairline"></div>
-          <div class="flex items-center justify-between">
-            <span class="text-white/60 text-sm">New Monthly Listeners</span>
-            <span class="font-display font-semibold text-ice glow-text">+72,000</span>
-          </div>
+    <!-- Album art -->
+    <div class="relative rounded-2xl overflow-hidden aspect-square mb-6">
+      <!-- Fallback gradient + icon — shown until the real image loads -->
+      <div class="hero-art-placeholder absolute inset-0 bg-gradient-to-br from-ice/30 via-[#1a1a1a] to-black">
+        <div class="absolute inset-0 flex items-center justify-center">
+          <svg width="84" height="84" viewBox="0 0 84 84" fill="none" class="opacity-90">
+            <circle cx="42" cy="42" r="40" stroke="#7DDCFF" stroke-width="1.5"/>
+            <circle cx="42" cy="42" r="14" fill="#7DDCFF"/>
+            <circle cx="42" cy="42" r="4" fill="#050505"/>
+          </svg>
         </div>
       </div>
 
-      <!-- Small floating badge — "live campaign tracking" indicator -->
-      <div class="hidden sm:flex absolute -bottom-6 -left-6 glass rounded-2xl px-5 py-3 items-center gap-3 float-card" style="animation-delay:1.2s">
-        <span class="w-2.5 h-2.5 rounded-full bg-ice glow-text"></span>
-        <span class="text-sm font-mono text-white/70">Live campaign tracking</span>
+      <!-- Real album art — edit src below to point at your image file -->
+      <img src="images/exhibit-poison-tree.jpg" alt="exhibit — Poison tree album art"
+           class="hero-art-image absolute inset-0 w-full h-full object-cover hidden"
+           onload="this.classList.remove('hidden'); this.previousElementSibling.classList.add('hidden');"
+           onerror="console.warn('Hero album art not found:', this.src);">
+
+      <!-- Edit artist name + track title here -->
+      <div class="absolute bottom-4 left-4 right-4">
+        <p class="font-display font-semibold text-lg">exhibit — "Poison tree"</p>
+        <p class="text-white/50 text-xs font-mono mt-1">Campaign · 6 Weeks</p>
       </div>
     </div>
 
+    <!-- Result metrics — edit these figures to match your showcase artist -->
+    <div class="space-y-4">
+      <div class="flex items-center justify-between">
+        <span class="text-white/60 text-sm">TikTok Views</span>
+        <span class="font-display font-semibold text-ice glow-text">+1M</span>
+      </div>
+      <div class="hairline"></div>
+      <div class="flex items-center justify-between">
+        <span class="text-white/60 text-sm">Spotify Streams</span>
+        <span class="font-display font-semibold text-ice glow-text">+200k</span>
+      </div>
+      <div class="hairline"></div>
+      <div class="flex items-center justify-between">
+        <span class="text-white/60 text-sm">New Monthly Listeners</span>
+        <span class="font-display font-semibold text-ice glow-text">+50,000</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Small floating badge — "live campaign tracking" indicator -->
+  <div class="hidden sm:flex absolute -bottom-6 -left-6 glass rounded-2xl px-5 py-3 items-center gap-3 float-card" style="animation-delay:1.2s">
+    <span class="w-2.5 h-2.5 rounded-full bg-ice glow-text"></span>
+    <span class="text-sm font-mono text-white/70">Live campaign tracking</span>
+  </div>
+</div>
   </div>
 </section>
 
@@ -561,6 +569,7 @@
           <li class="flex gap-3"><span class="text-ice">✓</span> 500 TikTok videos</li>
           <li class="flex gap-3"><span class="text-ice">✓</span> Estimated ~500,000 – 1,000,000 Spotify streams</li>
           <li class="flex gap-3"><span class="text-ice">✓</span> Dedicated campaign strategist</li>
+          <li class="flex gap-3"><span class="text-ice">✓</span> Weekly stat reports</li>
           <li class="flex gap-3"><span class="text-ice">✓</span> 5-week campaign window</li>
         </ul>
         <a href="#contact"
@@ -580,7 +589,8 @@
         <ul class="space-y-3 text-sm text-white/70 mb-8">
           <li class="flex gap-3"><span class="text-ice">✓</span> 800 TikTok videos</li>
           <li class="flex gap-3"><span class="text-ice">✓</span> Estimated ~800,000 – 1,800,000 Spotify streams</li>
-          <li class="flex gap-3"><span class="text-ice">✓</span> Dedicated campaign strategist</li>
+          <li class="flex gap-3"><span class="text-ice">✓</span> Senior strategist + weekly calls</li>
+          <li class="flex gap-3"><span class="text-ice">✓</span> Weekly stat reports</li>
           <li class="flex gap-3"><span class="text-ice">✓</span> 6-week campaign window</li>
         </ul>
         <a href="#contact"
@@ -599,7 +609,8 @@
         <ul class="space-y-3 text-sm text-white/65 mb-8">
           <li class="flex gap-3"><span class="text-ice">✓</span> 1,200 TikTok videos</li>
           <li class="flex gap-3"><span class="text-ice">✓</span> Estimated ~1.5M – 3M Spotify streams</li>
-          <li class="flex gap-3"><span class="text-ice">✓</span> Dedicated campaign strategist</li>
+          <li class="flex gap-3"><span class="text-ice">✓</span> Senior strategist + weekly calls</li>
+          <li class="flex gap-3"><span class="text-ice">✓</span> Weekly stat reports</li>
           <li class="flex gap-3"><span class="text-ice">✓</span> 7-week campaign window</li>
         </ul>
         <a href="#contact"
@@ -618,7 +629,8 @@
         <ul class="space-y-3 text-sm text-white/65 mb-8">
           <li class="flex gap-3"><span class="text-ice">✓</span> 1,600 TikTok videos</li>
           <li class="flex gap-3"><span class="text-ice">✓</span> Estimated ~2.5M – 5M Spotify streams</li>
-          <li class="flex gap-3"><span class="text-ice">✓</span> Dedicated campaign strategist</li>
+          <li class="flex gap-3"><span class="text-ice">✓</span> Senior strategist + weekly calls</li>
+          <li class="flex gap-3"><span class="text-ice">✓</span> Weekly stat reports</li>
           <li class="flex gap-3"><span class="text-ice">✓</span> 8-week campaign window</li>
         </ul>
         <a href="#contact"
@@ -638,7 +650,9 @@
           <li class="flex gap-3"><span class="text-ice">✓</span> 2,000+ TikTok videos</li>
           <li class="flex gap-3"><span class="text-ice">✓</span> Estimated ~4M – 8M+ Spotify streams</li>
           <li class="flex gap-3"><span class="text-ice">✓</span> Senior strategist + weekly calls</li>
+          <li class="flex gap-3"><span class="text-ice">✓</span> Weekly stat reports</li>
           <li class="flex gap-3"><span class="text-ice">✓</span> 10-week campaign window</li>
+          
         </ul>
         <a href="#contact"
    class="package-btn inline-flex items-center justify-center w-full px-6 py-3 rounded-full bg-ice text-black font-semibold glow-btn"
@@ -684,7 +698,7 @@
           <svg class="faq-icon shrink-0 transition-transform" width="18" height="18" viewBox="0 0 18 18" fill="none"><path d="M9 3v12M3 9h12" stroke="#7DDCFF" stroke-width="1.6" stroke-linecap="round"/></svg>
         </button>
         <div class="accordion-panel">
-          <p class="px-6 pb-6 text-white/55 leading-relaxed">Campaigns range from 2 to 10 weeks depending on plan. Most artists see meaningful stream growth begin within the first 7–10 days as creator content starts circulating.</p>
+          <p class="px-6 pb-6 text-white/55 leading-relaxed">Campaigns range from 1 to 10 weeks depending on plan. Most artists see meaningful stream growth begin within the first 7–10 days as creator content starts circulating.</p>
         </div>
       </div>
 
@@ -694,7 +708,7 @@
           <svg class="faq-icon shrink-0 transition-transform" width="18" height="18" viewBox="0 0 18 18" fill="none"><path d="M9 3v12M3 9h12" stroke="#7DDCFF" stroke-width="1.6" stroke-linecap="round"/></svg>
         </button>
         <div class="accordion-panel">
-          <p class="px-6 pb-6 text-white/55 leading-relaxed">Our 850+ verified creators span music discovery, lifestyle, dance, and niche genre communities. Each is vetted for engagement quality, audience fit, and content authenticity before joining a campaign.</p>
+          <p class="px-6 pb-6 text-white/55 leading-relaxed">Our 100+ verified creators span music discovery, lifestyle, dance, and niche genre communities. Each is vetted for engagement quality, audience fit, and content authenticity before joining a campaign.</p>
         </div>
       </div>
 
@@ -806,7 +820,7 @@
         </select>
       </div>
 
-      <!-- Package -->
+     <!-- Package -->
 <div class="flex flex-col gap-2">
   <label for="field_budget" class="text-sm text-white/50">
     Package <span class="text-ice">*</span>
@@ -815,21 +829,16 @@
   <select id="field_budget"
     class="bg-black/40 border border-white/10 focus:border-ice/50 rounded-xl px-4 py-3 outline-none transition-colors text-white/80">
 
-    <option class="bg-[#0B0B0B]" value="">
-      Select a package...
-    </option>
-
-    <option class="bg-[#0B0B0B]" value="Starter - $200">
-      Starter - $200
-    </option>
-
-    <option class="bg-[#0B0B0B]" value="Growth - $4,000">
-      Growth - $4,000
-    </option>
-
-    <option class="bg-[#0B0B0B]" value="Global Push - $10,000">
-      Global Push - $10,000
-    </option>
+    <option class="bg-[#0B0B0B]" value="">Select a package...</option>
+    <option class="bg-[#0B0B0B]" value="Starter - $200">Starter - $200</option>
+    <option class="bg-[#0B0B0B]" value="Growth - $500">Growth - $500</option>
+    <option class="bg-[#0B0B0B]" value="Scale - $1,000">Scale - $1,000</option>
+    <option class="bg-[#0B0B0B]" value="Premium - $1,500">Premium - $1,500</option>
+    <option class="bg-[#0B0B0B]" value="Platinum - $2,500">Platinum - $2,500</option>
+    <option class="bg-[#0B0B0B]" value="Gold Elite - $4,000">Gold Elite - $4,000</option>
+    <option class="bg-[#0B0B0B]" value="Diamond - $6,000">Diamond - $6,000</option>
+    <option class="bg-[#0B0B0B]" value="Executive - $8,000">Executive - $8,000</option>
+    <option class="bg-[#0B0B0B]" value="Global Push - $10,000">Global Push - $10,000</option>
 
   </select>
 </div>
