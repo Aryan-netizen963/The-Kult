@@ -265,59 +265,92 @@ artists.forEach((a, i) => {
 document.querySelectorAll('#artistGrid .reveal').forEach(el => revealObserver.observe(el));
 
 
-/* ----------------------------------------------------------------
-   9. CREATOR NETWORK VISUALIZATION — SVG graph
-   Draws a hub-and-spoke diagram inside #networkSvg.
-   The hub is centred at (400, 110); 14 creator nodes are
-   positioned evenly around an ellipse with slight randomness.
+/*/* ----------------------------------------------------------------
+   9. CREATOR NETWORK VISUALIZATION — 3D-style orbiting graph
+   Nodes orbit the hub on a tilted ellipse. Depth (front/back of
+   the orbit) controls size, opacity and line thickness, giving
+   a sense of 3D space. Small light pulses travel along each
+   spoke toward the hub to suggest live data flow.
    ---------------------------------------------------------------- */
-(function buildNetwork() {
-  const linesGroup = document.getElementById('networkLines');
-  const nodesGroup = document.getElementById('networkNodes');
+(function buildNetwork3D() {
+  const svg   = document.getElementById('networkSvg');
+  const group = document.getElementById('networkOrbit');
+  if (!svg || !group) return;
 
-  const hub       = { x: 400, y: 110 };
+  const hub      = { x: 400, y: 130 };
   const nodeCount = 14; // ← change to add/remove outer nodes
-  const nodes     = [hub];
+  const radiusX   = 300;
+  const radiusY   = 65;
 
-  // Generate outer node positions along an ellipse
+  const nodes = [];
   for (let i = 0; i < nodeCount; i++) {
-    const angle   = (i / nodeCount) * Math.PI * 2;
-    const radiusX = 320 + Math.random() * 40; // horizontal spread
-    const radiusY =  80 + Math.random() * 20; // vertical spread (flatter ellipse)
-
-    nodes.push({
-      x: hub.x + Math.cos(angle) * radiusX,
-      y: hub.y + Math.sin(angle) * radiusY,
-      r: 3 + Math.random() * 4, // node radius 3 – 7 px
-    });
+    nodes.push({ baseAngle: (i / nodeCount) * Math.PI * 2 });
   }
 
-  // Draw spoke lines from hub to each outer node
-  nodes.slice(1).forEach(n => {
-    const line = document.createElementNS('http://www.w3.org/2000/svg', 'line');
-    line.setAttribute('x1', hub.x);
-    line.setAttribute('y1', hub.y);
-    line.setAttribute('x2', n.x);
-    line.setAttribute('y2', n.y);
-    linesGroup.appendChild(line);
-  });
+  let rotation = 0;
+  const NS = 'http://www.w3.org/2000/svg';
 
-  // Draw nodes — hub is larger and glowing, outer nodes are smaller
-  nodes.forEach((n, i) => {
-    const circle = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
-    circle.setAttribute('cx', n.x);
-    circle.setAttribute('cy', n.y);
-    circle.setAttribute('r',    i === 0 ? 8 : n.r);
-    circle.setAttribute('fill', i === 0 ? '#7DDCFF' : 'rgba(125,220,255,0.55)');
+  let isVisible = true;
+  new IntersectionObserver((entries) => {
+    entries.forEach(e => { isVisible = e.isIntersecting; });
+  }, { threshold: 0.1 }).observe(svg);
 
-    if (i === 0) {
-      circle.style.filter = 'drop-shadow(0 0 10px #7DDCFF)';
+  function render() {
+    if (isVisible) {
+      group.innerHTML = '';
+      rotation += 0.0025;
+
+      const positioned = nodes.map((node, idx) => {
+        const a     = node.baseAngle + rotation;
+        const x     = hub.x + Math.cos(a) * radiusX;
+        const y     = hub.y + Math.sin(a) * radiusY;
+        const depth = (Math.sin(a) + 1) / 2;
+        return {
+          x, y, depth, idx,
+          scale:   0.5 + depth * 0.9,
+          opacity: 0.22 + depth * 0.68,
+        };
+      });
+
+      positioned.sort((p1, p2) => p1.depth - p2.depth);
+
+      positioned.forEach((node) => {
+        const line = document.createElementNS(NS, 'line');
+        line.setAttribute('x1', hub.x);
+        line.setAttribute('y1', hub.y);
+        line.setAttribute('x2', node.x);
+        line.setAttribute('y2', node.y);
+        line.setAttribute('stroke', '#7DDCFF');
+        line.setAttribute('stroke-width', 0.5 + node.depth * 1.2);
+        line.setAttribute('stroke-opacity', node.opacity * 0.4);
+        group.appendChild(line);
+
+        const circle = document.createElementNS(NS, 'circle');
+        circle.setAttribute('cx', node.x);
+        circle.setAttribute('cy', node.y);
+        circle.setAttribute('r', 3 + node.scale * 4);
+        circle.setAttribute('fill', '#7DDCFF');
+        circle.setAttribute('fill-opacity', node.opacity);
+        group.appendChild(circle);
+
+        const t  = (Date.now() / 1000 * 0.5 + node.idx * 0.35) % 1;
+        const px = hub.x + (node.x - hub.x) * t;
+        const py = hub.y + (node.y - hub.y) * t;
+        const pulse = document.createElementNS(NS, 'circle');
+        pulse.setAttribute('cx', px);
+        pulse.setAttribute('cy', py);
+        pulse.setAttribute('r', 1.6);
+        pulse.setAttribute('fill', '#B9F2FF');
+        pulse.setAttribute('fill-opacity', node.opacity);
+        group.appendChild(pulse);
+      });
     }
 
-    nodesGroup.appendChild(circle);
-  });
-})();
+    requestAnimationFrame(render);
+  }
 
+  render();
+})();
 
 /* ----------------------------------------------------------------
    10. FAQ ACCORDION
