@@ -226,7 +226,7 @@ const artists = [
   { name: 'The Kavities',    genre: 'Dream Pop',          tiktok: '2.5M',  spotify: '250k',  duration: '3 weeks', image: 'images/thekavities.jpg', },
   { name: 'Predayed',        genre: 'Rap',                tiktok: '6M',    spotify: '500K',  duration: '4 weeks', image: 'images/predayed.jpg', },
   { name: 'ifwmyglokk',      genre: 'indie',              tiktok: '3M',    spotify: '400k',  duration: '2 weeks', image: 'images/ifwmyglokk.jpg', },
-  { name: 'razors',          genre: 'indie',              tiktok: '1.5M',  spotify: '30K',   duration:  '1 week', image: 'images/razors.jpg', },,
+  { name: 'razors',          genre: 'indie',              tiktok: '1.5M',  spotify: '30K',   duration:  '1 week', image: 'images/razors.jpg', }
 ];
 
 const artistGrid     = document.getElementById('artistGrid');
@@ -265,12 +265,15 @@ artists.forEach((a, i) => {
 document.querySelectorAll('#artistGrid .reveal').forEach(el => revealObserver.observe(el));
 
 
-/*/* ----------------------------------------------------------------
+/* ----------------------------------------------------------------
    9. CREATOR NETWORK VISUALIZATION — 3D-style orbiting graph
    Nodes orbit the hub on a tilted ellipse. Depth (front/back of
    the orbit) controls size, opacity and line thickness, giving
    a sense of 3D space. Small light pulses travel along each
    spoke toward the hub to suggest live data flow.
+   The animation loop only runs while this section is on screen,
+   so it doesn't eat CPU/GPU elsewhere on the page (e.g. the hero
+   audio player above it).
    ---------------------------------------------------------------- */
 (function buildNetwork3D() {
   const svg   = document.getElementById('networkSvg');
@@ -287,13 +290,10 @@ document.querySelectorAll('#artistGrid .reveal').forEach(el => revealObserver.ob
     nodes.push({ baseAngle: (i / nodeCount) * Math.PI * 2 });
   }
 
-  let rotation = 0;
+  let rotation     = 0;
+  let isVisible    = true;
+  let needsRestart = false;
   const NS = 'http://www.w3.org/2000/svg';
-
-  let isVisible = true;
-  new IntersectionObserver((entries) => {
-    entries.forEach(e => { isVisible = e.isIntersecting; });
-  }, { threshold: 0.1 }).observe(svg);
 
   function render() {
     if (isVisible) {
@@ -344,12 +344,27 @@ document.querySelectorAll('#artistGrid .reveal').forEach(el => revealObserver.ob
         pulse.setAttribute('fill-opacity', node.opacity);
         group.appendChild(pulse);
       });
-    }
 
-    requestAnimationFrame(render);
+      // Only schedule the next frame while the section is actually on screen
+      requestAnimationFrame(render);
+    } else {
+      // Section scrolled away — stop the loop entirely until it's visible again
+      needsRestart = true;
+    }
   }
 
   render();
+
+  // Restart the loop once the section scrolls back into view
+  new IntersectionObserver((entries) => {
+    entries.forEach(e => {
+      isVisible = e.isIntersecting;
+      if (isVisible && needsRestart) {
+        needsRestart = false;
+        render();
+      }
+    });
+  }, { threshold: 0.1 }).observe(svg);
 })();
 
 /* ----------------------------------------------------------------
@@ -377,3 +392,81 @@ document.querySelectorAll('.faq-item').forEach(item => {
     }
   });
 });
+
+/* ----------------------------------------------------------------
+   12. HERO AUDIO PREVIEW
+   Fix: AbortError "play() interrupted by pause()"
+   Cause: play() is async — if pause() fires before the Promise
+   resolves (double-click, fast re-click), the browser throws.
+   Solution: an isTransitioning flag that locks the button during
+   the async gap between play() call and Promise resolution.
+   ---------------------------------------------------------------- */
+const heroPlayBtn   = document.getElementById('heroPlayBtn');
+const heroAudio     = document.getElementById('heroAudio');
+const heroPlayIcon  = document.getElementById('heroPlayIcon');
+const heroPauseIcon = document.getElementById('heroPauseIcon');
+
+if (!heroPlayBtn || !heroAudio || !heroPlayIcon || !heroPauseIcon) {
+  console.warn('[hero audio] Missing element — check IDs in index.html');
+} else {
+
+  /* -- Icon helpers --------------------------------------------- */
+  function showPlay() {
+    heroPlayIcon.classList.remove('hidden');
+    heroPauseIcon.classList.add('hidden');
+  }
+
+  function showPause() {
+    heroPlayIcon.classList.add('hidden');
+    heroPauseIcon.classList.remove('hidden');
+  }
+
+  /* -- Transition lock ------------------------------------------ */
+  // True during the async window between play() call and resolution.
+  // Prevents a second click from calling pause() before play() settles.
+  let isTransitioning = false;
+
+  /* -- Click handler -------------------------------------------- */
+  heroPlayBtn.addEventListener('click', async () => {
+
+    // Ignore clicks while play() Promise is still pending
+    if (isTransitioning) return;
+
+    if (heroAudio.paused) {
+      isTransitioning = true;           // lock button
+
+      try {
+        await heroAudio.play();         // wait for browser confirmation
+        showPause();                    // only flip icon after success
+      } catch (err) {
+        if (err.name === 'AbortError') {
+          // A pause() snuck in during the async gap — safe to ignore,
+          // the audio is already stopped so keep showing play icon.
+          console.info('[hero audio] Play interrupted (AbortError) — ignored safely.');
+        } else {
+          // Real error: file missing, codec unsupported, policy block, etc.
+          console.warn('[hero audio] play() failed:', err.name, err.message);
+        }
+        showPlay();                     // reset icon on any failure
+      } finally {
+        isTransitioning = false;        // always unlock, even on error
+      }
+
+    } else {
+      heroAudio.pause();
+      showPlay();
+    }
+  });
+
+  /* -- Auto-reset when clip ends --------------------------------- */
+  heroAudio.addEventListener('ended', showPlay);
+
+  /* -- Surface file-load errors ---------------------------------- */
+  heroAudio.addEventListener('error', () => {
+    const src = heroAudio.currentSrc
+      || heroAudio.querySelector('source')?.src
+      || 'unknown';
+    console.warn('[hero audio] Failed to load file:', src);
+  });
+
+}
