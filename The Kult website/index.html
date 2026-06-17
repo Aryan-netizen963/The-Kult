@@ -166,7 +166,7 @@
       </div>
     </div>
 
-    <!-- Right column: floating glass card (showcase result) -->
+  <!-- Right column: floating glass card (showcase result) -->
 <div class="relative reveal" style="transition-delay:.15s">
   <div class="float-card glass-strong rounded-3xl p-6 sm:p-8 glow-ring max-w-md mx-auto">
 
@@ -190,9 +190,26 @@
            onerror="console.warn('Hero album art not found:', this.src);">
 
       <!-- Edit artist name + track title here -->
-      <div class="absolute bottom-4 left-4 right-4">
-        <p class="font-display font-semibold text-lg">exhibit — "Poison tree"</p>
-        <p class="text-white/50 text-xs font-mono mt-1">Campaign · 6 Weeks</p>
+      <div class="absolute bottom-4 left-4 right-4 flex items-end justify-between gap-3">
+        <div>
+          <p class="font-display font-semibold text-lg">exhibit — "Poison tree"</p>
+          <p class="text-white/50 text-xs font-mono mt-1">Campaign · 6 Weeks</p>
+        </div>
+
+        <!-- Play button — edit the audio src below to point at your preview clip -->
+        <button id="heroPlayBtn" type="button" aria-label="Play song preview"
+          class="shrink-0 w-11 h-11 rounded-full bg-ice flex items-center justify-center glow-btn hover:scale-105 transition-transform">
+          <svg id="heroPlayIcon" width="16" height="16" viewBox="0 0 16 16" fill="none">
+            <path d="M4 2.5v11l9-5.5-9-5.5z" fill="black"/>
+          </svg>
+          <svg id="heroPauseIcon" width="16" height="16" viewBox="0 0 16 16" fill="none" class="hidden">
+            <rect x="3.5" y="2.5" width="3" height="11" rx="1" fill="black"/>
+            <rect x="9.5" y="2.5" width="3" height="11" rx="1" fill="black"/>
+          </svg>
+        </button>
+        <audio id="heroAudio" preload="none">
+          <source src="audio/exhibit-poison-tree-preview.mp3" type="audio/mpeg">
+        </audio>
       </div>
     </div>
 
@@ -221,7 +238,6 @@
     <span class="text-sm font-mono text-white/70">Live campaign tracking</span>
   </div>
 </div>
-  </div>
 </section>
 
 <!-- ============================================================
@@ -1041,6 +1057,39 @@ document.addEventListener('DOMContentLoaded', () => {
   });
 
 });
+</script>
+
+
+<script>
+  (function() {
+    const audio     = document.getElementById('heroAudio');
+    const btn       = document.getElementById('heroPlayBtn');
+    const playIcon  = document.getElementById('heroPlayIcon');
+    const pauseIcon = document.getElementById('heroPauseIcon');
+
+    btn.addEventListener('click', () => {
+      if (audio.paused) {
+        audio.play().catch(err => console.warn('Playback failed:', err));
+      } else {
+        audio.pause();
+      }
+    });
+
+    audio.addEventListener('play', () => {
+      playIcon.classList.add('hidden');
+      pauseIcon.classList.remove('hidden');
+    });
+
+    audio.addEventListener('pause', () => {
+      playIcon.classList.remove('hidden');
+      pauseIcon.classList.add('hidden');
+    });
+
+    audio.addEventListener('ended', () => {
+      playIcon.classList.remove('hidden');
+      pauseIcon.classList.add('hidden');
+    });
+  })();
 </script>
 
 </body>
