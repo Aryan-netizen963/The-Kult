@@ -196,20 +196,20 @@
           <p class="text-white/50 text-xs font-mono mt-1">Campaign · 2 Weeks</p>
         </div>
 
-        <!-- Play button — edit the audio src below to point at your preview clip -->
-        <button id="heroPlayBtn" type="button" aria-label="Play song preview"
-          class="shrink-0 w-11 h-11 rounded-full bg-ice flex items-center justify-center glow-btn hover:scale-105 transition-transform">
-          <svg id="heroPlayIcon" width="16" height="16" viewBox="0 0 16 16" fill="none">
-            <path d="M4 2.5v11l9-5.5-9-5.5z" fill="black"/>
-          </svg>
-          <svg id="heroPauseIcon" width="16" height="16" viewBox="0 0 16 16" fill="none" class="hidden">
-            <rect x="3.5" y="2.5" width="3" height="11" rx="1" fill="black"/>
-            <rect x="9.5" y="2.5" width="3" height="11" rx="1" fill="black"/>
-          </svg>
-        </button>
-        <audio id="heroAudio" preload="none">
-          <source src="/The Kult website/audio/jaquarious-indie-preview.mp3" type="audio/mpeg">
-        </audio>
+        <!-- Play button -->
+<button id="heroPlayBtn" type="button" aria-label="Play song preview"
+  class="shrink-0 w-11 h-11 rounded-full bg-ice flex items-center justify-center glow-btn hover:scale-105 transition-transform">
+  <svg id="heroPlayIcon" width="16" height="16" viewBox="0 0 16 16" fill="none">
+    <path d="M4 2.5v11l9-5.5-9-5.5z" fill="black"/>
+  </svg>
+  <svg id="heroPauseIcon" width="16" height="16" viewBox="0 0 16 16" fill="none" class="hidden">
+    <rect x="3.5" y="2.5" width="3" height="11" rx="1" fill="black"/>
+    <rect x="9.5" y="2.5" width="3" height="11" rx="1" fill="black"/>
+  </svg>
+</button>
+<audio id="heroAudio" preload="none">
+  <source src="audio/jaquarious-indie-preview.mp3" type="audio/mpeg">
+</audio>
       </div>
     </div>
 
@@ -1058,39 +1058,5 @@ document.addEventListener('DOMContentLoaded', () => {
 
 });
 </script>
-
-
-<script>
-  (function() {
-    const audio     = document.getElementById('heroAudio');
-    const btn       = document.getElementById('heroPlayBtn');
-    const playIcon  = document.getElementById('heroPlayIcon');
-    const pauseIcon = document.getElementById('heroPauseIcon');
-
-    btn.addEventListener('click', () => {
-      if (audio.paused) {
-        audio.play().catch(err => console.warn('Playback failed:', err));
-      } else {
-        audio.pause();
-      }
-    });
-
-    audio.addEventListener('play', () => {
-      playIcon.classList.add('hidden');
-      pauseIcon.classList.remove('hidden');
-    });
-
-    audio.addEventListener('pause', () => {
-      playIcon.classList.remove('hidden');
-      pauseIcon.classList.add('hidden');
-    });
-
-    audio.addEventListener('ended', () => {
-      playIcon.classList.remove('hidden');
-      pauseIcon.classList.add('hidden');
-    });
-  })();
-</script>
-
 </body>
 </html>
