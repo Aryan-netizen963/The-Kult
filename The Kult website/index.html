@@ -346,9 +346,16 @@
   <div class="reveal glass rounded-2xl overflow-hidden hover-lift flex flex-col">
     <!-- Card header: avatar + name -->
     <div class="p-6 pb-0 flex items-center gap-4">
-      <div class="w-14 h-14 rounded-full bg-gradient-to-br from-ice/40 to-[#111] border border-ice/20 flex items-center justify-center shrink-0">
-        <svg width="22" height="22" viewBox="0 0 22 22" fill="none"><circle cx="11" cy="8" r="4" stroke="#7DDCFF" stroke-width="1.4"/><path d="M3 19c0-3.5 3-6 8-6s8 2.5 8 6" stroke="#7DDCFF" stroke-width="1.4" stroke-linecap="round"/></svg>
-      </div>
+      <div class="w-14 h-14 rounded-full bg-gradient-to-br from-ice/40 to-[#111] border border-ice/20 flex items-center justify-center shrink-0 overflow-hidden">
+  <div class="case-study-placeholder w-full h-full flex items-center justify-center">
+    <svg width="22" height="22" viewBox="0 0 22 22" fill="none">
+      <circle cx="11" cy="8" r="4" stroke="#7DDCFF" stroke-width="1.4"/>
+      <path d="M3 19c0-3.5 3-6 8-6s8 2.5 8 6" stroke="#7DDCFF" stroke-width="1.4" stroke-linecap="round"/>
+    </svg>
+  </div>
+
+  <img class="case-study-image hidden w-full h-full object-cover" alt="">
+</div>
       <div>
         <p class="font-display font-semibold text-lg artist-name"></p>
         <p class="text-white/45 text-xs font-mono campaign-duration"></p>

@@ -150,12 +150,12 @@ counters.forEach(el => counterObserver.observe(el));
      bars          — array of 7 heights (0–100) for the mini chart
    ---------------------------------------------------------------- */
 const caseStudies = [
-  { name: 'Jaquarois indie', duration: '2-Week Campaign',  spotifyBefore: '1.2k streams',  spotifyAfter: '400k streams', tiktokBefore: '1K views', tiktokAfter: '2.2M views',   growth: '+2,567%', bars: [10,18,22,35,52,78,100] },
-  { name: 'Wer$e',  duration: '3-Week Campaign',  spotifyBefore: '82K streams',  spotifyAfter: '940K streams', tiktokBefore: '410K views', tiktokAfter: '6.1M views',  growth: '+1,046%', bars: [14,20,28,40,55,72,95]  },
-  { name: 'ifwmyglokk', duration: '4-Week Campaign', spotifyBefore: '120K streams', spotifyAfter: '2.3M streams', tiktokBefore: '600K views', tiktokAfter: '18.7M views', growth: '+1,817%', bars: [12,16,24,38,60,82,100] },
-  { name: 'predayed', duration: '3-Week Campaign',  spotifyBefore: '30K streams',  spotifyAfter: '410K streams', tiktokBefore: '180K views', tiktokAfter: '4.8M views',  growth: '+1,267%', bars: [8,15,26,40,58,76,98]   },
-  { name: 'scrappydoll', duration: '3-Week Campaign',  spotifyBefore: '95K streams',  spotifyAfter: '1.6M streams', tiktokBefore: '520K views', tiktokAfter: '9.3M views',  growth: '+1,584%', bars: [16,22,30,48,64,80,100] },
-  { name: 'The Kavities',   duration: '3-Week Campaign',  spotifyBefore: '60K streams',  spotifyAfter: '880K streams', tiktokBefore: '250K views', tiktokAfter: '7.4M views',  growth: '+1,367%', bars: [10,18,28,42,60,78,96]  },
+  { name: 'exhibit', duration: '4-Week Campaign',  spotifyBefore: '1.2k streams',  spotifyAfter: '500k streams', tiktokBefore: '1K views', tiktokAfter: '3M views',   growth: '+41,567%', image: 'images/exhibit.jpg', bars: [10,18,22,35,52,78,100]  },
+  { name: 'Jaquarious indie', duration: '2-Week Campaign',  spotifyBefore: '1.2k streams',  spotifyAfter: '200k streams', tiktokBefore: '1K views', tiktokAfter: '2.2M views',   growth: '+16,567%', image: 'images/jaquarious-indie.jpg', bars: [10,18,22,35,52,78,100]  },
+  { name: 'Wer$e',  duration: '2-Week Campaign',  spotifyBefore: '1k streams',  spotifyAfter: '170K streams', tiktokBefore: '1K views', tiktokAfter: '1.5M views',  growth: '+16,900%', image: 'images/wer$e.jpg', bars: [14,20,28,40,55,72,95]  },
+  { name: 'ifwmyglokk', duration: '2-Week Campaign', spotifyBefore: '12K streams', spotifyAfter: '400k streams', tiktokBefore: '60K views', tiktokAfter: '3M views', growth: '+3,233%', image: 'images/ifwmyglokk.jpg', bars: [12,16,24,38,60,82,100] },
+  { name: 'predayed', duration: '3-Week Campaign',  spotifyBefore: '30K streams',  spotifyAfter: '500K streams', tiktokBefore: '180K views', tiktokAfter: '6M views',  growth: '+1,567%', image: 'images/predayed.jpg', bars: [8,15,26,40,58,76,98]   },
+  { name: 'The Kavities',   duration: '3-Week Campaign',  spotifyBefore: '60K streams',  spotifyAfter: '250K streams', tiktokBefore: '25K views', tiktokAfter: '2.5M views',  growth: '+317%', image: 'images/thekavities.jpg', bars: [10,18,28,42,60,78,96]  },
 ];
 
 const caseGrid     = document.getElementById('caseStudyGrid');
@@ -172,6 +172,22 @@ caseStudies.forEach((c, i) => {
   node.querySelector('.tiktok-before').textContent     = c.tiktokBefore + ' →';
   node.querySelector('.tiktok-after').textContent      = c.tiktokAfter;
   node.querySelector('.growth-badge').textContent      = `${c.growth} growth`;
+ 
+  const caseImg = node.querySelector('.case-study-image');
+  const casePlaceholder = node.querySelector('.case-study-placeholder');
+
+  if (caseImg && casePlaceholder) {
+  caseImg.alt = c.name;
+  caseImg.onload = () => {
+    caseImg.classList.remove('hidden');
+    casePlaceholder.classList.add('hidden');
+  };
+  caseImg.onerror = () => {
+    console.warn(`Case study image not found for ${c.name}: ${c.image}`);
+  };
+  caseImg.src = c.image;
+}
+ 
 
   // Build the mini bar chart from the bars array
   const chartEl = node.querySelector('[data-chart]');
@@ -222,7 +238,7 @@ document.querySelectorAll('#caseStudyGrid [data-chart]').forEach(el => chartBarO
 const artists = [
   { name: 'Jaquarious indie',genre: 'Indie Pop',          tiktok: '2.2M',  spotify: '200k',  duration: '2 weeks', image: 'images/jaquarious-indie.jpg', },
   { name: 'wer$e',           genre: 'Indie',              tiktok: '1.5M',  spotify: '170K',  duration: '2 weeks', image: 'images/wer$e.jpg', },
-  { name: 'exhibit',         genre: 'Ambient music',      tiktok: '3M'   , spotify: '500k',  duration: '10 weeks', image: 'images/exhibit.jpg', },
+  { name: 'exhibit',         genre: 'Ambient music',      tiktok: '3M'   , spotify: '500k',  duration: '4 weeks', image: 'images/exhibit.jpg', },
   { name: 'The Kavities',    genre: 'Dream Pop',          tiktok: '2.5M',  spotify: '250k',  duration: '3 weeks', image: 'images/thekavities.jpg', },
   { name: 'Predayed',        genre: 'Rap',                tiktok: '6M',    spotify: '500K',  duration: '4 weeks', image: 'images/predayed.jpg', },
   { name: 'ifwmyglokk',      genre: 'indie',              tiktok: '3M',    spotify: '400k',  duration: '2 weeks', image: 'images/ifwmyglokk.jpg', },
