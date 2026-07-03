@@ -485,3 +485,59 @@ if (!heroPlayBtn || !heroAudio || !heroPlayIcon || !heroPauseIcon) {
   });
 
 }
+/* ----------------------------------------------------------------
+   HERO WAVEFORM BACKGROUND
+   Smooth, slow, subtle sine lines drifting across the hero.
+   ---------------------------------------------------------------- */
+(function initWaveform() {
+  const canvas = document.getElementById('waveCanvas');
+  if (!canvas) return;
+  const ctx = canvas.getContext('2d');
+  let t = 0;
+
+  function resize() {
+    canvas.width  = canvas.parentElement.offsetWidth;
+    canvas.height = canvas.parentElement.offsetHeight;
+  }
+  resize();
+  window.addEventListener('resize', resize);
+
+  const lines = [
+    { amp: 0.12, freq: 0.28, spd: 0.0012, yOff: 0.62, r:125, g:220, b:255, op: 0.75, lw: 1.8 },
+    { amp: 0.09, freq: 0.22, spd: 0.0008, yOff: 0.68, r:125, g:220, b:255, op: 0.40, lw: 1.2 },
+    { amp: 0.07, freq: 0.18, spd: 0.0015, yOff: 0.58, r:185, g:242, b:255, op: 0.22, lw: 0.9 },
+  ];
+
+  function draw() {
+    const W = canvas.width, H = canvas.height;
+    ctx.clearRect(0, 0, W, H);
+    const isMobile = W < 1024;
+
+    lines.forEach(l => {
+      ctx.beginPath();
+      for (let x = 0; x <= W; x++) {
+        const p = x / W;
+        const yOff = isMobile ? l.yOff - 0.3 : l.yOff;
+        const y = H * yOff
+          + Math.sin(p * Math.PI * l.freq * 10 + t * l.spd * 60) * H * l.amp
+          + Math.sin(p * Math.PI * l.freq * 4  - t * l.spd * 35) * H * l.amp * 0.25;
+        x === 0 ? ctx.moveTo(x, y) : ctx.lineTo(x, y);
+      }
+
+      const g = ctx.createLinearGradient(0, 0, W, 0);
+      g.addColorStop(0,    `rgba(${l.r},${l.g},${l.b},0)`);
+      g.addColorStop(0.15, `rgba(${l.r},${l.g},${l.b},${l.op})`);
+      g.addColorStop(0.85, `rgba(${l.r},${l.g},${l.b},${l.op})`);
+      g.addColorStop(1,    `rgba(${l.r},${l.g},${l.b},0)`);
+
+      ctx.strokeStyle = g;
+      ctx.lineWidth   = l.lw;
+      ctx.stroke();
+    });
+
+    t++;
+    requestAnimationFrame(draw);
+  }
+
+  draw();
+})();
