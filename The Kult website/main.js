@@ -651,3 +651,113 @@ document.addEventListener('DOMContentLoaded', () => {
    Actual form submit handler lives in the inline <script> tag
    immediately after the form in index.html (unchanged from v1).
    ---------------------------------------------------------------- */
+   /* ----------------------------------------------------------------
+   14. SCROLL FX ENGINE
+   Single rAF loop reads scrollY once/frame and derives:
+   progress bar, hero exit, parallax offsets, velocity skew.
+   Entrance effects (reveal variants, word cascade) reuse
+   IntersectionObserver — zero per-frame cost.
+   ---------------------------------------------------------------- */
+(function initScrollFX() {
+  const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  if (reduced) return;
+
+  /* -- Progress bar (injected) ----------------------------------- */
+  const bar = document.createElement('div');
+  bar.className = 'scroll-progress';
+  document.body.prepend(bar);
+
+  /* -- Collect targets once --------------------------------------- */
+  const hero        = document.querySelector('.hero-video');
+  const heroExitEls = hero ? [...hero.querySelectorAll('.hero-exit')] : [];
+  const parallaxEls = [...document.querySelectorAll('[data-parallax]')]
+    .map(el => ({ el, speed: parseFloat(el.dataset.parallax) || 0.15 }));
+  const tracks      = [...document.querySelectorAll('.bento-track')];
+
+  /* -- Frame state -------------------------------------------------- */
+  let lastY   = window.scrollY;
+  let velo    = 0;                       // smoothed px/frame
+  let ticking = true;
+
+  function frame() {
+    const y    = window.scrollY;
+    const maxY = document.documentElement.scrollHeight - innerHeight;
+    const vh   = innerHeight;
+
+    /* velocity — lerped so skew eases instead of jittering */
+    velo += ((y - lastY) - velo) * 0.12;
+    lastY = y;
+
+    /* 0. progress bar */
+    bar.style.transform = `scaleX(${maxY > 0 ? y / maxY : 0})`;
+
+    /* 5. hero exit: 0 at top → 1 after one viewport of scroll */
+    if (hero) {
+      const hp = Math.min(Math.max(y / (vh * 0.85), 0), 1);
+      heroExitEls.forEach(el => el.style.setProperty('--hp', hp.toFixed(4)));
+    }
+
+    /* 3. parallax: offset proportional to element's distance from
+          viewport center — elements drift as they cross the screen */
+    parallaxEls.forEach(({ el, speed }) => {
+      const r = el.getBoundingClientRect();
+      if (r.bottom < -200 || r.top > vh + 200) return;   // offscreen: skip
+      const centerDelta = (r.top + r.height / 2) - vh / 2;
+      el.style.setProperty('--sy', (centerDelta * -speed).toFixed(1) + 'px');
+    });
+
+    /* 4. velocity skew on carousel cards (capped ±2.5deg) */
+    const skew = Math.max(-2.5, Math.min(2.5, velo * 0.06));
+    tracks.forEach(track => {
+      const r = track.getBoundingClientRect();
+      if (r.bottom < 0 || r.top > vh) return;
+      track.querySelectorAll('.bento-card').forEach(card =>
+        card.style.setProperty('--vskew', skew.toFixed(2) + 'deg'));
+    });
+
+    if (ticking) requestAnimationFrame(frame);
+  }
+  requestAnimationFrame(frame);
+
+  /* Pause the loop when the tab is hidden */
+  document.addEventListener('visibilitychange', () => {
+    ticking = !document.hidden;
+    if (ticking) requestAnimationFrame(frame);
+  });
+})();
+
+
+/* ----------------------------------------------------------------
+   15. REVEAL VARIANTS + WORD CASCADE
+   data-reveal elements reuse the observer pattern from §3.
+   data-words headings are split into masked word spans first.
+   ---------------------------------------------------------------- */
+(function initEntrances() {
+  /* Split [data-words] headings into word spans */
+  document.querySelectorAll('[data-words]').forEach(h => {
+    const words = h.textContent.trim().split(/\s+/);
+    h.textContent = '';
+    words.forEach((w, i) => {
+      const mask = document.createElement('span');
+      mask.className = 'w-mask';
+      const word = document.createElement('span');
+      word.className = 'w-word';
+      word.style.setProperty('--wi', i);
+      word.textContent = w;
+      mask.appendChild(word);
+      h.appendChild(mask);
+      if (i < words.length - 1) h.appendChild(document.createTextNode(' '));
+    });
+  });
+
+  const io = new IntersectionObserver((entries) => {
+    entries.forEach(e => {
+      if (e.isIntersecting) {
+        e.target.classList.add('is-visible');
+        io.unobserve(e.target);
+      }
+    });
+  }, { threshold: 0.2 });
+
+  document.querySelectorAll('[data-reveal], [data-words]').forEach(el => io.observe(el));
+})();

@@ -645,3 +645,113 @@ h1, h2, h3, h4, .font-display {
   /* Respect motion preference for the footage itself */
   .hero-video-el.is-ready { opacity: 1; }
 }
+/* ================================================================
+   SCROLL FX SYSTEM
+   One engine (main.js §14) drives everything below.
+   All effects are transform/opacity only — GPU composited.
+   ================================================================ */
+
+/* -- 0. Page scroll progress bar (top edge) ----------------------- */
+.scroll-progress {
+  position: fixed;
+  top: 0; left: 0;
+  width: 100%;
+  height: 2px;
+  z-index: 60;
+  background: linear-gradient(90deg, var(--candy), var(--frost));
+  transform-origin: left;
+  transform: scaleX(0);
+  pointer-events: none;
+  will-change: transform;
+}
+
+/* -- 1. Reveal variants ---------------------------------------------
+   Replaces the single .reveal look. Element declares its entrance
+   via data-reveal; JS adds .is-visible (existing observer reused). */
+[data-reveal] {
+  opacity: 0;
+  transition:
+    opacity   0.9s var(--ease-expo),
+    transform 0.9s var(--ease-expo);
+  transition-delay: calc(var(--rd, 0) * 90ms);
+  will-change: transform, opacity;
+}
+[data-reveal="up"]    { transform: translateY(46px); }
+[data-reveal="left"]  { transform: translateX(-56px); }
+[data-reveal="right"] { transform: translateX(56px); }
+[data-reveal="scale"] { transform: scale(0.88); }
+[data-reveal="tilt"]  { transform: perspective(900px) rotateX(14deg) translateY(40px); transform-origin: top; }
+
+[data-reveal].is-visible {
+  opacity: 1;
+  transform: none;
+}
+
+/* Legacy .reveal keeps working unchanged */
+
+/* -- 2. Headline word-cascade ------------------------------------------
+   JS splits [data-words] headings into word spans; each rises out
+   of a line mask when .is-visible lands on the heading. */
+[data-words] .w-mask {
+  display: inline-block;
+  overflow: hidden;
+  vertical-align: bottom;
+  padding-bottom: 0.08em;
+  margin-bottom: -0.08em;
+}
+[data-words] .w-word {
+  display: inline-block;
+  transform: translateY(115%);
+  transition: transform 0.85s var(--ease-expo);
+  transition-delay: calc(var(--wi, 0) * 60ms);
+  will-change: transform;
+}
+[data-words].is-visible .w-word { transform: translateY(0); }
+
+/* -- 3. Scroll-scrub parallax -------------------------------------------
+   JS writes --sy (px) each frame based on element's viewport progress.
+   Speed set per element via data-parallax="0.15" etc. */
+[data-parallax] {
+  transform: translateY(var(--sy, 0px));
+  will-change: transform;
+}
+
+/* -- 4. Velocity skew on bento tracks --------------------------------------
+   JS writes --vskew from scroll velocity; cards lean into the motion. */
+.bento-track .bento-card {
+  transform: skewX(var(--vskew, 0deg));
+  transition: transform 0.35s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+/* -- 5. Hero scroll-out ------------------------------------------------------
+   Hero content sinks + fades as you leave; video stays put (natural
+   parallax against the moving content). --hp is 0→1 hero exit progress. */
+.hero-video .hero-exit {
+  transform: translateY(calc(var(--hp, 0) * 110px));
+  opacity: calc(1 - var(--hp, 0) * 1.35);
+  will-change: transform, opacity;
+}
+
+/* -- 6. Footer curtain reveal ---------------------------------------------------
+   Page content lifts off the footer, which sits fixed beneath. */
+.footer-curtain {
+  position: sticky;
+  bottom: 0;
+  z-index: 0;
+}
+main.page-lift,
+.page-lift {
+  position: relative;
+  z-index: 1;
+  box-shadow: 0 40px 80px -20px rgba(0, 0, 0, 0.9);
+}
+
+/* -- Reduced motion --------------------------------------------------------------- */
+@media (prefers-reduced-motion: reduce) {
+  .scroll-progress { display: none; }
+  [data-reveal]    { transition: none; opacity: 1; transform: none; }
+  [data-words] .w-word { transition: none; transform: none; }
+  [data-parallax]  { transform: none; }
+  .bento-track .bento-card { transform: none; transition: none; }
+  .hero-video .hero-exit   { transform: none; opacity: 1; }
+}
