@@ -7,7 +7,6 @@
 
 <!-- ============================================================
      TAILWIND CSS (CDN build)
-     Loaded first so our custom CSS can override it below.
      ============================================================ -->
 <script src="https://cdn.tailwindcss.com"></script>
 
@@ -15,30 +14,30 @@
 <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
 
 <!-- ============================================================
-     TAILWIND THEME TOKENS
-     Extend Tailwind with brand colors, fonts, and shadows.
-     To change the accent color update "ice" and "glow" here
-     AND the matching --ice / --glow variables in style.css.
+     TAILWIND THEME — v2 Carbon / Candy tokens
+     "ice" token is re-mapped to Candy Blue so every existing
+     bg-ice / text-ice / border-ice utility recolors automatically.
      ============================================================ -->
 <script>
   tailwind.config = {
     theme: {
       extend: {
         colors: {
-          base:  "#050505",                    // near-black page background
-          panel: "#0B0B0B",                    // card / section background
-          ice:   "#7DDCFF",                    // primary icy-blue accent
-          glow:  "#B9F2FF",                    // secondary glow accent
-          line:  "rgba(125,220,255,0.12)"      // hairline border color
+          base:  "#171717",                       // deep carbon background
+          deep:  "#121212",                       // contrast wells
+          panel: "#1E1E1E",                       // raised card fill
+          ice:   "#B2D5E5",                       // candy blue accent
+          glow:  "#DCEDF5",                       // frost highlight
+          line:  "rgba(255,255,255,0.08)"         // razor hairline
         },
         fontFamily: {
-          display: ['"Space Grotesk"', "sans-serif"],
-          body:    ['"Inter"',         "sans-serif"],
-          mono:    ['"JetBrains Mono"','monospace']
+          display: ['"Geist"', '"Inter"', "sans-serif"],
+          body:    ['"Geist"', '"Inter"', "sans-serif"],
+          mono:    ['"Geist Mono"', '"JetBrains Mono"', "monospace"]
         },
         boxShadow: {
-          ice:    "0 0 40px rgba(125,220,255,0.25)",
-          "ice-sm":"0 0 18px rgba(125,220,255,0.18)"
+          ice:     "0 0 60px rgba(178,213,229,0.18)",
+          "ice-sm":"0 0 24px rgba(178,213,229,0.12)"
         }
       }
     }
@@ -46,19 +45,12 @@
 </script>
 
 <!-- ============================================================
-     GOOGLE FONTS
-     Space Grotesk → headings | Inter → body | JetBrains Mono → labels
+     GOOGLE FONTS — Geist + Geist Mono (Inter/JetBrains as fallback)
      ============================================================ -->
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
-
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@300;400;500&family=Geist:wght@400;500;600;700&family=Geist+Mono:wght@400;500&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
 <link rel="icon" type="image/svg+xml" href="favicon.svg">
-
-<!-- ============================================================
-     CUSTOM STYLES
-     All custom CSS lives in style.css — edit that file for
-     animations, glass panels, glow effects, etc.
-     ============================================================ -->
 <link rel="stylesheet" href="style.css">
 </head>
 
@@ -66,190 +58,134 @@
 
 <!-- ============================================================
      SECTION 1 — NAVIGATION
-     Edit nav links here. The mobile menu mirrors the desktop links.
+     Floating pill morph on scroll handled in CSS (#navbar.scrolled).
      ============================================================ -->
-<nav id="navbar" class="fixed top-0 inset-x-0 z-50 border-b border-transparent">
-  <div class="max-w-7xl mx-auto px-6 lg:px-10 h-20 flex items-center justify-between">
+<nav id="navbar" class="fixed top-0 inset-x-0 z-50">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-10">
+    <div class="nav-shell h-16 sm:h-[4.5rem] flex items-center justify-between">
 
-    <!-- Logo — update the brand name text here -->
-    <a href="#home" class="flex items-center gap-2 group">
-      <svg width="30" height="30" viewBox="0 0 30 30" fill="none" xmlns="http://www.w3.org/2000/svg" class="transition-transform duration-500 group-hover:rotate-45">
-        <rect x="1" y="1" width="28" height="28" rx="6" stroke="#7DDCFF" stroke-width="1.5"/>
-        <path d="M9 20V10L21 10" stroke="#7DDCFF" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
-        <circle cx="21" cy="14" r="2.5" fill="#7DDCFF"/>
-      </svg>
-      <span class="font-display font-semibold text-lg tracking-tight">The Kult</span>
-    </a>
+      <!-- Logo -->
+      <a href="#home" class="magnetic flex items-center gap-2.5 group">
+        <svg width="30" height="30" viewBox="0 0 30 30" fill="none" xmlns="http://www.w3.org/2000/svg"
+             class="transition-transform duration-500 group-hover:rotate-45">
+          <rect x="1" y="1" width="28" height="28" rx="8" stroke="#B2D5E5" stroke-width="1.5"/>
+          <path d="M9 20V10L21 10" stroke="#B2D5E5" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+          <circle cx="21" cy="14" r="2.5" fill="#B2D5E5"/>
+        </svg>
+        <span class="font-display font-semibold text-lg tracking-tight">The Kult</span>
+      </a>
 
-    <!-- Desktop nav links -->
-    <div class="hidden lg:flex items-center gap-10 font-medium text-sm text-white/70">
+      <!-- Desktop nav links — each is a magnetic target -->
+      <div class="hidden lg:flex items-center gap-1 font-medium text-sm text-white/60">
+        <a href="#home"     class="magnetic px-4 py-2 rounded-full hover:text-ice hover:bg-white/[0.04] transition-colors">Home</a>
+        <a href="#results"  class="magnetic px-4 py-2 rounded-full hover:text-ice hover:bg-white/[0.04] transition-colors">Results</a>
+        <a href="#artists"  class="magnetic px-4 py-2 rounded-full hover:text-ice hover:bg-white/[0.04] transition-colors">Artists</a>
+        <a href="#services" class="magnetic px-4 py-2 rounded-full hover:text-ice hover:bg-white/[0.04] transition-colors">Services</a>
+        <a href="#pricing"  class="magnetic px-4 py-2 rounded-full hover:text-ice hover:bg-white/[0.04] transition-colors">Pricing</a>
+        <a href="#contact"  class="magnetic px-4 py-2 rounded-full hover:text-ice hover:bg-white/[0.04] transition-colors">Contact</a>
+      </div>
+
+      <!-- CTA + hamburger -->
+      <div class="flex items-center gap-3">
+        <a href="#contact"
+           class="magnetic hidden md:inline-flex items-center px-5 py-2.5 rounded-full bg-ice text-[#121212] text-sm font-semibold glow-btn">
+          Launch Campaign
+        </a>
+        <button id="mobileMenuBtn"
+                class="lg:hidden p-2.5 rounded-full border border-white/10 hover:border-ice/40 transition-colors"
+                aria-label="Open menu">
+          <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+            <path d="M3 5h14M3 10h14M3 15h14" stroke="white" stroke-width="1.5" stroke-linecap="round"/>
+          </svg>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Mobile dropdown — detached rounded card -->
+  <div id="mobileMenu" class="hidden lg:hidden mx-4 mt-2 rounded-3xl border border-white/[0.08] bg-[#171717]/95 backdrop-blur-xl overflow-hidden">
+    <div class="flex flex-col gap-4 px-6 py-6 text-white/80 font-medium">
       <a href="#home"     class="hover:text-ice transition-colors">Home</a>
       <a href="#results"  class="hover:text-ice transition-colors">Results</a>
       <a href="#artists"  class="hover:text-ice transition-colors">Artists</a>
       <a href="#services" class="hover:text-ice transition-colors">Services</a>
       <a href="#pricing"  class="hover:text-ice transition-colors">Pricing</a>
       <a href="#contact"  class="hover:text-ice transition-colors">Contact</a>
-    </div>
-
-    <!-- CTA button + hamburger -->
-    <div class="flex items-center gap-3">
-      <a href="#contact" class="hidden md:inline-flex items-center px-5 py-2.5 rounded-full bg-ice text-black text-sm font-semibold glow-btn">
+      <a href="#contact"
+         class="mt-2 inline-flex justify-center px-5 py-3 rounded-full bg-ice text-[#121212] font-semibold">
         Launch Campaign
       </a>
-      <button id="mobileMenuBtn" class="lg:hidden p-2 rounded-lg border border-white/10 hover:border-ice/40 transition-colors" aria-label="Open menu">
-        <svg width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M3 5h14M3 10h14M3 15h14" stroke="white" stroke-width="1.5" stroke-linecap="round"/></svg>
-      </button>
-    </div>
-  </div>
-
-  <!-- Mobile dropdown menu -->
-  <div id="mobileMenu" class="hidden lg:hidden border-t border-white/5 bg-base/95 backdrop-blur-xl">
-    <div class="flex flex-col gap-4 px-6 py-6 text-white/80 font-medium">
-      <a href="#home"     class="hover:text-ice">Home</a>
-      <a href="#results"  class="hover:text-ice">Results</a>
-      <a href="#artists"  class="hover:text-ice">Artists</a>
-      <a href="#services" class="hover:text-ice">Services</a>
-      <a href="#pricing"  class="hover:text-ice">Pricing</a>
-      <a href="#contact"  class="hover:text-ice">Contact</a>
-      <a href="#contact"  class="mt-2 inline-flex justify-center px-5 py-3 rounded-full bg-ice text-black font-semibold">Launch Campaign</a>
     </div>
   </div>
 </nav>
 
+
 <!-- ============================================================
-     SECTION 2 — HERO
-     Edit headline, sub-copy, and trust strip text here.
-     The floating card stats (TikTok Views etc.) are also editable.
+     SECTION 2 — HERO v4 "OVER FOOTAGE"
+     Minimal lowercase composition designed to sit over a
+     background video. Works today without the video (dark
+     fallback); when ready, drop your file into the <video>
+     element below and it just works.
      ============================================================ -->
-<section id="home" class="relative min-h-screen flex items-center pt-28 pb-20 overflow-hidden">
+<section id="home" class="hero-video relative min-h-screen flex items-end overflow-hidden">
 
-  <!-- Ambient background orbs (decorative, CSS-animated) -->
-  <div class="absolute -top-40 -left-40 w-[34rem] h-[34rem] rounded-full bg-ice/10 blur-[120px] pulse-orb pointer-events-none"></div>
-  <div class="absolute bottom-0 right-0 w-[28rem] h-[28rem] rounded-full bg-glow/10 blur-[120px] pulse-orb pointer-events-none" style="animation-delay:2s"></div>
-
-  <!-- Particle field — dots injected by JS (main.js Section 4) -->
- <div id="particleField" class="absolute inset-0 pointer-events-none overflow-hidden"></div>
- <canvas id="waveCanvas" class="absolute inset-0 w-full h-full pointer-events-none"></canvas>
-
-  <div class="relative max-w-7xl mx-auto px-6 lg:px-10 grid lg:grid-cols-2 gap-16 items-center w-full">
-
-    <!-- Left column: headline + CTA -->
-    <div class="reveal">
-      <!-- Eyebrow label -->
-      <p class="font-mono text-xs tracking-[0.3em] text-ice/80 mb-6 uppercase">Creator-Powered Music Marketing</p>
-
-      <!-- Main headline — edit the text here -->
-      <h1 class="font-display text-5xl sm:text-6xl lg:text-7xl font-semibold leading-[1.05] tracking-tight">
-        TURN TIKTOK<br/>
-        VIRALITY INTO<br/>
-        <span class="gradient-text">SPOTIFY STREAMS</span>
-      </h1>
-
-      <!-- Sub-copy -->
-      <p class="mt-7 text-lg text-white/60 max-w-lg leading-relaxed">
-        We help artists explode their reach through creator-powered campaigns that generate engagement, streams, and long-term audience growth.
-      </p>
-
-      <!-- CTA buttons -->
-      <div class="mt-10 flex flex-wrap items-center gap-4">
-        <a href="#contact" class="inline-flex items-center gap-2 px-7 py-4 rounded-full bg-ice text-black font-semibold glow-btn">
-          Launch Campaign
-          <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M3 8h10M9 4l4 4-4 4" stroke="black" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
-        </a>
-        <a href="#results" class="inline-flex items-center gap-2 px-7 py-4 rounded-full border border-white/15 hover:border-ice/50 font-semibold transition-colors">
-          View Results
-        </a>
-      </div>
-
-      <!-- Trust strip — edit these two figures as needed -->
-      <div class="mt-14 flex items-center gap-6 text-white/40 text-sm font-mono">
-        <span>Trusted in 14 markets</span>
-        <span class="w-px h-4 bg-white/10"></span>
-        <span>100+ verified creators</span>
-      </div>
-    </div>
-
-  <!-- Right column: floating glass card (showcase result) -->
-<div class="relative reveal" style="transition-delay:.15s">
-  <div class="float-card glass-strong rounded-3xl p-6 sm:p-8 glow-ring max-w-md mx-auto">
-
-    <!-- Album art -->
-    <div class="relative rounded-2xl overflow-hidden aspect-square mb-6">
-      <!-- Fallback gradient + icon — shown until the real image loads -->
-      <div class="hero-art-placeholder absolute inset-0 bg-gradient-to-br from-ice/30 via-[#1a1a1a] to-black">
-        <div class="absolute inset-0 flex items-center justify-center">
-          <svg width="84" height="84" viewBox="0 0 84 84" fill="none" class="opacity-90">
-            <circle cx="42" cy="42" r="40" stroke="#7DDCFF" stroke-width="1.5"/>
-            <circle cx="42" cy="42" r="14" fill="#7DDCFF"/>
-            <circle cx="42" cy="42" r="4" fill="#050505"/>
-          </svg>
-        </div>
-      </div>
-
-      <!-- Real album art — edit src below to point at your image file -->
-      <img src="images/jaquarious-indie-cover.jpg" alt="jaquarious indie — it's not the same anymore single art"
-           class="hero-art-image absolute inset-0 w-full h-full object-cover hidden"
-           onload="this.classList.remove('hidden'); this.previousElementSibling.classList.add('hidden');"
-           onerror="console.warn('Hero album art not found:', this.src);">
-
-      <!-- Edit artist name + track title here -->
-      <div class="absolute bottom-4 left-4 right-4 flex items-end justify-between gap-3">
-        <div>
-          <p class="font-display font-semibold text-lg">Jaquarious indie — "It's not the same anymore"</p>
-          <p class="text-white/50 text-xs font-mono mt-1">Campaign · 2 Weeks</p>
-        </div>
-
-        <!-- Play button -->
-<button id="heroPlayBtn" type="button" aria-label="Play song preview"
-  class="shrink-0 w-11 h-11 rounded-full bg-ice flex items-center justify-center glow-btn hover:scale-105 transition-transform">
-  <svg id="heroPlayIcon" width="16" height="16" viewBox="0 0 16 16" fill="none">
-    <path d="M4 2.5v11l9-5.5-9-5.5z" fill="black"/>
-  </svg>
-  <svg id="heroPauseIcon" width="16" height="16" viewBox="0 0 16 16" fill="none" class="hidden">
-    <rect x="3.5" y="2.5" width="3" height="11" rx="1" fill="black"/>
-    <rect x="9.5" y="2.5" width="3" height="11" rx="1" fill="black"/>
-  </svg>
-</button>
-<audio id="heroAudio" preload="none">
-  <source src="audio/jaquarious-indie-preview.mp3" type="audio/mpeg">
-</audio>
-      </div>
-    </div>
-
-    <!-- Result metrics — edit these figures to match your showcase artist -->
-    <div class="space-y-4">
-      <div class="flex items-center justify-between">
-        <span class="text-white/60 text-sm">TikTok Views</span>
-        <span class="font-display font-semibold text-ice glow-text">+1M</span>
-      </div>
-      <div class="hairline"></div>
-      <div class="flex items-center justify-between">
-        <span class="text-white/60 text-sm">Spotify Streams</span>
-        <span class="font-display font-semibold text-ice glow-text">+200k</span>
-      </div>
-      <div class="hairline"></div>
-      <div class="flex items-center justify-between">
-        <span class="text-white/60 text-sm">New Monthly Listeners</span>
-        <span class="font-display font-semibold text-ice glow-text">+50,000</span>
-      </div>
-    </div>
+  <!-- Background video slot ------------------------------------
+       To activate: put your clip at videos/hero.mp4 (and ideally
+       a first-frame image at images/hero-poster.jpg) and remove
+       nothing — the video fades in over the fallback on load.
+       Keep clips short (10–20s), muted, and compressed (H.264). -->
+  <div class="hero-media absolute inset-0" aria-hidden="true">
+    <video class="hero-video-el absolute inset-0 w-full h-full object-cover"
+           autoplay muted loop playsinline
+           poster="images/hero-poster.jpg"
+           onerror="this.remove()">
+      <source src="videos/hero.mp4" type="video/mp4">
+    </video>
+    <!-- Scrim — guarantees text legibility over any footage -->
+    <div class="hero-scrim absolute inset-0"></div>
   </div>
 
-  <!-- Small floating badge — "live campaign tracking" indicator -->
-  <div class="hidden sm:flex absolute -bottom-6 -left-6 glass rounded-2xl px-5 py-3 items-center gap-3 float-card" style="animation-delay:1.2s">
-    <span class="w-2.5 h-2.5 rounded-full bg-ice glow-text"></span>
-    <span class="text-sm font-mono text-white/70">Live campaign tracking</span>
+  <!-- Content — anchored bottom-left like a film lower-third -->
+  <div class="relative z-10 w-full max-w-7xl mx-auto px-6 lg:px-10 pb-24 sm:pb-28">
+
+    <h1 class="hero-line fade-up" style="--d:0">
+      we turn tiktok moments<br>
+      into <span class="hero-em">spotify careers</span>
+    </h1>
+
+    <p class="fade-up mt-6 text-white/50 text-base sm:text-lg" style="--d:1">
+      creator-powered music marketing.
+    </p>
+
+    <div class="fade-up mt-9 flex items-center gap-6" style="--d:2">
+      <a href="#contact"
+         class="magnetic inline-flex items-center gap-2 px-7 py-3.5 rounded-full bg-ice text-[#121212] font-medium glow-btn">
+        launch a campaign
+        <svg width="15" height="15" viewBox="0 0 16 16" fill="none">
+          <path d="M3 8h10M9 4l4 4-4 4" stroke="#121212" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+      </a>
+      <a href="#results" class="magnetic text-white/55 hover:text-ice text-sm font-medium transition-colors">
+        see results
+      </a>
+    </div>
+
   </div>
-</div>
+
+  <!-- Scroll hint — thin pulsing line, bottom-right -->
+  <div class="fade-up absolute bottom-10 right-6 lg:right-10 z-10 flex flex-col items-center gap-3" style="--d:3" aria-hidden="true">
+    <span class="font-mono text-[10px] tracking-[0.3em] text-white/30 [writing-mode:vertical-lr]">scroll</span>
+    <span class="scroll-line"></span>
+  </div>
+
 </section>
 
 <!-- ============================================================
      SECTION 3 — SOCIAL PROOF (animated stat counters)
-     Edit data-target and data-suffix for each counter.
-     The suffix is appended after the number (e.g. "M+" or "+").
      ============================================================ -->
-<section class="relative py-24 border-t border-white/5">
-  <div class="max-w-7xl mx-auto px-6 lg:px-10">
+<section data-glow class="relative py-24 border-t border-white/[0.06] overflow-hidden">
+  <div class="bleed bleed--soft" style="width:46rem;height:18rem;top:50%;left:50%;transform:translate(-50%,-50%);"></div>
+  <div class="relative max-w-7xl mx-auto px-6 lg:px-10">
     <div class="grid sm:grid-cols-2 lg:grid-cols-4 gap-6">
 
       <div class="reveal glass rounded-2xl p-8 text-center hover-lift">
@@ -276,11 +212,11 @@
   </div>
 </section>
 
+
 <!-- ============================================================
      SECTION 4 — HOW IT WORKS
-     Edit step titles, numbers, descriptions, and SVG icons here.
      ============================================================ -->
-<section id="services" class="relative py-28 border-t border-white/5">
+<section id="services" data-glow class="relative py-28 border-t border-white/[0.06]">
   <div class="max-w-7xl mx-auto px-6 lg:px-10">
 
     <div class="reveal max-w-2xl mb-16">
@@ -294,7 +230,9 @@
       <!-- Step 1 -->
       <div class="reveal glass rounded-2xl p-8 hover-lift group">
         <div class="w-14 h-14 rounded-xl bg-ice/10 border border-ice/20 flex items-center justify-center mb-6 group-hover:bg-ice/20 transition-colors">
-          <svg width="26" height="26" viewBox="0 0 26 26" fill="none"><path d="M13 4v18M6 14l7 7 7-7" stroke="#7DDCFF" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          <svg width="26" height="26" viewBox="0 0 26 26" fill="none">
+            <path d="M13 4v18M6 14l7 7 7-7" stroke="#B2D5E5" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
         </div>
         <p class="font-mono text-xs text-ice/70 mb-2">Step 01</p>
         <h3 class="font-display text-2xl font-semibold mb-3">Submit Your Track</h3>
@@ -304,7 +242,11 @@
       <!-- Step 2 -->
       <div class="reveal glass rounded-2xl p-8 hover-lift group" style="transition-delay:.1s">
         <div class="w-14 h-14 rounded-xl bg-ice/10 border border-ice/20 flex items-center justify-center mb-6 group-hover:bg-ice/20 transition-colors">
-          <svg width="26" height="26" viewBox="0 0 26 26" fill="none"><circle cx="9" cy="9" r="3.5" stroke="#7DDCFF" stroke-width="1.6"/><circle cx="18" cy="9" r="3.5" stroke="#7DDCFF" stroke-width="1.6"/><path d="M3 22c0-3.5 2.5-6 6-6s6 2.5 6 6M12 22c0-3.5 2.5-6 6-6s6 2.5 6 6" stroke="#7DDCFF" stroke-width="1.6" stroke-linecap="round"/></svg>
+          <svg width="26" height="26" viewBox="0 0 26 26" fill="none">
+            <circle cx="9" cy="9" r="3.5" stroke="#B2D5E5" stroke-width="1.6"/>
+            <circle cx="18" cy="9" r="3.5" stroke="#B2D5E5" stroke-width="1.6"/>
+            <path d="M3 22c0-3.5 2.5-6 6-6s6 2.5 6 6M12 22c0-3.5 2.5-6 6-6s6 2.5 6 6" stroke="#B2D5E5" stroke-width="1.6" stroke-linecap="round"/>
+          </svg>
         </div>
         <p class="font-mono text-xs text-ice/70 mb-2">Step 02</p>
         <h3 class="font-display text-2xl font-semibold mb-3">Our Creator Network Promotes It</h3>
@@ -314,7 +256,9 @@
       <!-- Step 3 -->
       <div class="reveal glass rounded-2xl p-8 hover-lift group" style="transition-delay:.2s">
         <div class="w-14 h-14 rounded-xl bg-ice/10 border border-ice/20 flex items-center justify-center mb-6 group-hover:bg-ice/20 transition-colors">
-          <svg width="26" height="26" viewBox="0 0 26 26" fill="none"><path d="M3 18l5-6 4 3 6-9 5 5" stroke="#7DDCFF" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" fill="none"/></svg>
+          <svg width="26" height="26" viewBox="0 0 26 26" fill="none">
+            <path d="M3 18l5-6 4 3 6-9 5 5" stroke="#B2D5E5" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+          </svg>
         </div>
         <p class="font-mono text-xs text-ice/70 mb-2">Step 03</p>
         <h3 class="font-display text-2xl font-semibold mb-3">Watch Streams &amp; Engagement Grow</h3>
@@ -325,47 +269,71 @@
   </div>
 </section>
 
+
 <!-- ============================================================
-     SECTION 5 — FEATURED RESULTS / CASE STUDIES
-     Cards are injected dynamically by main.js (Section 6).
-     To add/edit case studies, update the caseStudies array in main.js.
+     SECTION 5 — FEATURED RESULTS (Bento Carousel)
+     Cards injected by main.js from #caseStudyTemplate.
      ============================================================ -->
-<section id="results" class="relative py-28 border-t border-white/5">
-  <div class="max-w-7xl mx-auto px-6 lg:px-10">
+<section id="results" data-glow class="relative py-28 border-t border-white/[0.06] overflow-hidden">
 
-    <div class="reveal max-w-2xl mb-16">
-      <p class="font-mono text-xs tracking-[0.3em] text-ice/80 mb-4 uppercase">Case Studies</p>
-      <h2 class="font-display text-4xl sm:text-5xl font-semibold tracking-tight">Featured Results</h2>
-      <p class="mt-4 text-white/55 text-lg">Real campaigns, real growth. A snapshot of artists who scaled their audience with The Kult.</p>
+  <!-- Bleed sits BEHIND the track so sliding cards diffuse the light -->
+  <div class="bleed bleed--strong bleed--breathe" style="width:36rem;height:36rem;top:50%;left:33%;transform:translateY(-50%);"></div>
+
+  <div class="relative max-w-7xl mx-auto px-6 lg:px-10">
+    <div class="reveal flex flex-wrap items-end justify-between gap-6 mb-10">
+      <div class="max-w-2xl">
+        <p class="font-mono text-xs tracking-[0.3em] text-ice/80 mb-4 uppercase">Case Studies</p>
+        <h2 class="font-display text-4xl sm:text-5xl font-semibold tracking-tight">Featured Results</h2>
+        <p class="mt-4 text-white/55 text-lg">Real campaigns, real growth. A snapshot of artists who scaled their audience with The Kult.</p>
+      </div>
+      <!-- Carousel arrow controls -->
+      <div class="flex gap-3">
+        <button class="bento-arrow" data-bento-prev="caseStudyGrid" aria-label="Previous case study">
+          <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+            <path d="M10 3L5 8l5 5" stroke="#B2D5E5" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </button>
+        <button class="bento-arrow" data-bento-next="caseStudyGrid" aria-label="Next case study">
+          <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+            <path d="M6 3l5 5-5 5" stroke="#B2D5E5" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </button>
+      </div>
     </div>
+  </div>
 
-    <!-- Cards rendered here by main.js -->
-    <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-6" id="caseStudyGrid"></div>
+  <!-- Full-bleed swipable bento track — cards injected by JS -->
+  <div class="bento-track" id="caseStudyGrid" data-bento></div>
+
+  <!-- Progress rail -->
+  <div class="relative max-w-7xl mx-auto px-6 lg:px-10 mt-2">
+    <div class="bento-rail max-w-xs">
+      <div class="bento-rail-fill" data-bento-rail="caseStudyGrid"></div>
+    </div>
   </div>
 </section>
 
-<!-- Case study card template — cloned and populated in main.js Section 6 -->
+<!-- Case study card template — cloned and populated in main.js Section 7 -->
 <template id="caseStudyTemplate">
-  <div class="reveal glass rounded-2xl overflow-hidden hover-lift flex flex-col">
+  <div class="bento-card glass overflow-hidden hover-lift flex flex-col">
     <!-- Card header: avatar + name -->
     <div class="p-6 pb-0 flex items-center gap-4">
-      <div class="w-14 h-14 rounded-full bg-gradient-to-br from-ice/40 to-[#111] border border-ice/20 flex items-center justify-center shrink-0 overflow-hidden">
-  <div class="case-study-placeholder w-full h-full flex items-center justify-center">
-    <svg width="22" height="22" viewBox="0 0 22 22" fill="none">
-      <circle cx="11" cy="8" r="4" stroke="#7DDCFF" stroke-width="1.4"/>
-      <path d="M3 19c0-3.5 3-6 8-6s8 2.5 8 6" stroke="#7DDCFF" stroke-width="1.4" stroke-linecap="round"/>
-    </svg>
-  </div>
-
-  <img class="case-study-image hidden w-full h-full object-cover" alt="">
-</div>
+      <div class="w-14 h-14 rounded-full bg-gradient-to-br from-ice/40 to-[#1E1E1E] border border-ice/20 flex items-center justify-center shrink-0 overflow-hidden">
+        <div class="case-study-placeholder w-full h-full flex items-center justify-center">
+          <svg width="22" height="22" viewBox="0 0 22 22" fill="none">
+            <circle cx="11" cy="8" r="4" stroke="#B2D5E5" stroke-width="1.4"/>
+            <path d="M3 19c0-3.5 3-6 8-6s8 2.5 8 6" stroke="#B2D5E5" stroke-width="1.4" stroke-linecap="round"/>
+          </svg>
+        </div>
+        <img class="case-study-image hidden w-full h-full object-cover" alt="">
+      </div>
       <div>
         <p class="font-display font-semibold text-lg artist-name"></p>
         <p class="text-white/45 text-xs font-mono campaign-duration"></p>
       </div>
     </div>
 
-    <!-- Mini bar chart — bars appended by JS -->
+    <!-- Mini bar chart -->
     <div class="px-6 mt-6">
       <div class="flex items-end gap-1.5 h-20" data-chart></div>
     </div>
@@ -384,7 +352,7 @@
       </div>
     </div>
 
-    <!-- Growth percentage badge -->
+    <!-- Growth badge -->
     <div class="px-6 pb-6">
       <span class="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-ice/10 border border-ice/25 text-ice text-sm font-mono growth-badge"></span>
     </div>
@@ -393,33 +361,54 @@
 
 
 <!-- ============================================================
-     SECTION 7 — ARTIST PORTFOLIO
-     Cards injected by main.js (Section 7).
-     To add/edit artists, update the artists array in main.js.
+     SECTION 7 — ARTIST PORTFOLIO (Bento Carousel)
+     Cards injected by main.js from #artistTemplate.
      ============================================================ -->
-<section id="artists" class="relative py-28 border-t border-white/5">
-  <div class="max-w-7xl mx-auto px-6 lg:px-10">
+<section id="artists" data-glow class="relative py-28 border-t border-white/[0.06] overflow-hidden">
 
-    <div class="reveal max-w-2xl mb-16">
-      <p class="font-mono text-xs tracking-[0.3em] text-ice/80 mb-4 uppercase">Portfolio</p>
-      <h2 class="font-display text-4xl sm:text-5xl font-semibold tracking-tight">Artists We've Grown</h2>
-      <p class="mt-4 text-white/55 text-lg">A selection of independent artists across genres who scaled their audience through our creator network.</p>
+  <div class="bleed bleed--strong" style="width:30rem;height:30rem;top:50%;right:20%;transform:translateY(-50%);"></div>
+
+  <div class="relative max-w-7xl mx-auto px-6 lg:px-10">
+    <div class="reveal flex flex-wrap items-end justify-between gap-6 mb-10">
+      <div class="max-w-2xl">
+        <p class="font-mono text-xs tracking-[0.3em] text-ice/80 mb-4 uppercase">Portfolio</p>
+        <h2 class="font-display text-4xl sm:text-5xl font-semibold tracking-tight">Artists We've Grown</h2>
+        <p class="mt-4 text-white/55 text-lg">A selection of independent artists across genres who scaled their audience through our creator network.</p>
+      </div>
+      <div class="flex gap-3">
+        <button class="bento-arrow" data-bento-prev="artistGrid" aria-label="Previous artist">
+          <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+            <path d="M10 3L5 8l5 5" stroke="#B2D5E5" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </button>
+        <button class="bento-arrow" data-bento-next="artistGrid" aria-label="Next artist">
+          <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+            <path d="M6 3l5 5-5 5" stroke="#B2D5E5" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </button>
+      </div>
     </div>
+  </div>
 
-    <!-- Cards rendered here by main.js -->
-    <div class="grid sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5" id="artistGrid"></div>
+  <div class="bento-track" id="artistGrid" data-bento></div>
+
+  <div class="relative max-w-7xl mx-auto px-6 lg:px-10 mt-2">
+    <div class="bento-rail max-w-xs">
+      <div class="bento-rail-fill" data-bento-rail="artistGrid"></div>
+    </div>
   </div>
 </section>
 
-<!-- Artist card template — cloned and populated in main.js Section 7 -->
+<!-- Artist card template — cloned and populated in main.js Section 8 -->
 <template id="artistTemplate">
-  <div class="reveal glass rounded-2xl p-6 hover-lift group">
-    <div class="relative aspect-square rounded-xl overflow-hidden mb-4 bg-gradient-to-br from-[#111] to-black border border-white/5">
-      <!-- Placeholder icon — shown until/unless a real photo loads -->
+  <div class="bento-card glass p-6 hover-lift group">
+    <div class="relative aspect-square rounded-xl overflow-hidden mb-4 bg-gradient-to-br from-[#1E1E1E] to-[#121212] border border-white/5">
       <div class="placeholder-icon absolute inset-0 flex items-center justify-center opacity-70 group-hover:opacity-100 transition-opacity">
-        <svg width="40" height="40" viewBox="0 0 40 40" fill="none"><circle cx="20" cy="20" r="18" stroke="#7DDCFF" stroke-width="1.2"/><circle cx="20" cy="20" r="6" fill="#7DDCFF" opacity=".8"/></svg>
+        <svg width="40" height="40" viewBox="0 0 40 40" fill="none">
+          <circle cx="20" cy="20" r="18" stroke="#B2D5E5" stroke-width="1.2"/>
+          <circle cx="20" cy="20" r="6" fill="#B2D5E5" opacity=".8"/>
+        </svg>
       </div>
-      <!-- Artist photo — src/alt set in main.js Section 7 -->
       <img class="artist-image absolute inset-0 w-full h-full object-cover hidden" alt="">
       <span class="absolute top-3 left-3 text-[10px] font-mono px-2 py-1 rounded-full bg-black/50 border border-white/10 genre-tag"></span>
     </div>
@@ -432,12 +421,12 @@
   </div>
 </template>
 
+
 <!-- ============================================================
      SECTION 8 — CREATOR NETWORK
-     The SVG visualization is drawn by main.js (Section 9).
-     Edit the category cards (followers, engagement, reach) here.
+     SVG visualization drawn by main.js Section 9.
      ============================================================ -->
-<section class="relative py-28 border-t border-white/5 overflow-hidden">
+<section data-glow class="relative py-28 border-t border-white/[0.06] overflow-hidden">
   <div class="max-w-7xl mx-auto px-6 lg:px-10">
 
     <div class="reveal max-w-2xl mb-16">
@@ -481,230 +470,253 @@
 
     </div>
 
-    <!-- Network visualization SVG — nodes/lines drawn by main.js Section 9 -->
+    <!-- Network visualization -->
     <div class="reveal glass-strong rounded-3xl p-8 sm:p-12 glow-ring overflow-hidden">
-  <p class="font-mono text-xs tracking-[0.3em] text-ice/70 uppercase mb-6">Network Map — Live Snapshot</p>
-  <svg viewBox="0 0 800 260" class="w-full h-56 sm:h-64" id="networkSvg">
-    <defs>
-      <radialGradient id="hubGlow" cx="50%" cy="50%" r="50%">
-        <stop offset="0%" stop-color="#7DDCFF" stop-opacity="0.9"/>
-        <stop offset="100%" stop-color="#7DDCFF" stop-opacity="0"/>
-      </radialGradient>
-    </defs>
-    <g id="networkOrbit"></g>
-    <circle cx="400" cy="130" r="40" fill="url(#hubGlow)"/>
-    <circle cx="400" cy="130" r="10" fill="#7DDCFF"/>
-  </svg>
-</div>
+      <p class="font-mono text-xs tracking-[0.3em] text-ice/70 uppercase mb-6">Network Map — Live Snapshot</p>
+      <svg viewBox="0 0 800 260" class="w-full h-56 sm:h-64" id="networkSvg">
+        <defs>
+          <radialGradient id="hubGlow" cx="50%" cy="50%" r="50%">
+            <stop offset="0%"   stop-color="#B2D5E5" stop-opacity="0.9"/>
+            <stop offset="100%" stop-color="#B2D5E5" stop-opacity="0"/>
+          </radialGradient>
+        </defs>
+        <g id="networkOrbit"></g>
+        <circle cx="400" cy="130" r="40" fill="url(#hubGlow)"/>
+        <circle cx="400" cy="130" r="10" fill="#B2D5E5"/>
+      </svg>
+    </div>
 
   </div>
 </section>
+
 
 <!-- ============================================================
-     SECTION 10 — PRICING
-     Edit plan names, prices, descriptions, and feature lists here.
-     The "Most Popular" badge sits on the Gold Elite card.
+     SECTION 10 — PRICING (Bento Carousel — all 9 plans)
+     Each plan is a bento-card; Gold Elite gets bento-card--wide.
+     data-package attributes preserved for the autofill script.
      ============================================================ -->
-<section id="pricing" class="relative py-28 border-t border-white/5">
-  <div class="max-w-7xl mx-auto px-6 lg:px-10">
+<section id="pricing" data-glow class="relative py-28 border-t border-white/[0.06] overflow-hidden">
 
-    <div class="reveal max-w-2xl mb-16 mx-auto text-center lg:text-left lg:mx-0">
-      <p class="font-mono text-xs tracking-[0.3em] text-ice/80 mb-4 uppercase">Pricing</p>
-      <h2 class="font-display text-4xl sm:text-5xl font-semibold tracking-tight">Campaign Plans</h2>
-      <p class="mt-4 text-white/55 text-lg">Choose the scale of campaign that fits your release. Every plan includes dashboard access and dedicated strategy support.</p>
+  <div class="bleed bleed--strong bleed--breathe" style="width:44rem;height:44rem;top:50%;left:50%;transform:translate(-50%,-50%);"></div>
+
+  <div class="relative max-w-7xl mx-auto px-6 lg:px-10">
+    <div class="reveal flex flex-wrap items-end justify-between gap-6 mb-10">
+      <div class="max-w-2xl">
+        <p class="font-mono text-xs tracking-[0.3em] text-ice/80 mb-4 uppercase">Pricing</p>
+        <h2 class="font-display text-4xl sm:text-5xl font-semibold tracking-tight">Campaign Plans</h2>
+        <p class="mt-4 text-white/55 text-lg">Choose the scale of campaign that fits your release. Every plan includes dashboard access and dedicated strategy support.</p>
+      </div>
+      <div class="flex gap-3">
+        <button class="bento-arrow" data-bento-prev="pricingTrack" aria-label="Previous plan">
+          <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+            <path d="M10 3L5 8l5 5" stroke="#B2D5E5" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </button>
+        <button class="bento-arrow" data-bento-next="pricingTrack" aria-label="Next plan">
+          <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+            <path d="M6 3l5 5-5 5" stroke="#B2D5E5" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Full-bleed pricing carousel -->
+  <div class="bento-track items-stretch" id="pricingTrack" data-bento>
+
+    <!-- Plan 1: Starter -->
+    <div class="bento-card glass p-8 hover-lift flex flex-col">
+      <p class="font-display text-xl font-semibold mb-1">Starter</p>
+      <p class="text-white/45 text-sm mb-6">For your first push into TikTok-driven discovery.</p>
+      <p class="font-display text-4xl font-semibold mb-1">$200</p>
+      <p class="text-white/40 text-sm mb-8">per campaign</p>
+      <ul class="space-y-3 text-sm text-white/65 mb-8 flex-1">
+        <li class="flex gap-3"><span class="text-ice">✓</span> Number of videos depends on genre</li>
+        <li class="flex gap-3"><span class="text-ice">✓</span> Estimated ~7,000 – 35,000 Spotify streams</li>
+        <li class="flex gap-3"><span class="text-ice">✓</span> Dedicated campaign strategist</li>
+        <li class="flex gap-3"><span class="text-ice">✓</span> 1-week campaign window</li>
+      </ul>
+      <a href="#contact"
+         class="package-btn magnetic inline-flex items-center justify-center w-full px-6 py-3 rounded-full bg-ice text-[#121212] font-semibold glow-btn mt-auto"
+         data-package="Starter - $200">
+        Get Started
+      </a>
     </div>
 
-    <div class="grid sm:grid-cols-2 lg:grid-cols-3 gap-6 items-start">
+    <!-- Plan 2: Growth -->
+    <div class="bento-card glass p-8 hover-lift flex flex-col">
+      <p class="font-display text-xl font-semibold mb-1">Growth</p>
+      <p class="text-white/45 text-sm mb-6">Build early momentum with broader reach.</p>
+      <p class="font-display text-4xl font-semibold mb-1">$500</p>
+      <p class="text-white/40 text-sm mb-8">per campaign</p>
+      <ul class="space-y-3 text-sm text-white/65 mb-8 flex-1">
+        <li class="flex gap-3"><span class="text-ice">✓</span> Number of videos depends on genre</li>
+        <li class="flex gap-3"><span class="text-ice">✓</span> Estimated ~100,000 – 150,000 Spotify streams</li>
+        <li class="flex gap-3"><span class="text-ice">✓</span> Dedicated campaign strategist</li>
+        <li class="flex gap-3"><span class="text-ice">✓</span> 2-week campaign window</li>
+      </ul>
+      <a href="#contact"
+         class="package-btn magnetic inline-flex items-center justify-center w-full px-6 py-3 rounded-full bg-ice text-[#121212] font-semibold glow-btn mt-auto"
+         data-package="Growth - $500">
+        Get Started
+      </a>
+    </div>
 
-      <!-- Plan 1: Starter -->
-      <div class="reveal glass rounded-2xl p-8 hover-lift">
-        <p class="font-display text-xl font-semibold mb-1">Starter</p>
-        <p class="text-white/45 text-sm mb-6">For your first push into TikTok-driven discovery.</p>
-        <p class="font-display text-4xl font-semibold mb-1">$200</p>
-        <p class="text-white/40 text-sm mb-8">per campaign</p>
-        <ul class="space-y-3 text-sm text-white/65 mb-8">
-          <li class="flex gap-3"><span class="text-ice">✓</span> Number of videos depends on genre</li>
-          <li class="flex gap-3"><span class="text-ice">✓</span> Estimated ~7,000 – 35,000 Spotify streams</li>
-          <li class="flex gap-3"><span class="text-ice">✓</span> Dedicated campaign strategist</li>
-          <li class="flex gap-3"><span class="text-ice">✓</span> 1-week campaign window</li>
-        </ul>
-        <a href="#contact"
-   class="package-btn inline-flex items-center justify-center w-full px-6 py-3 rounded-full bg-ice text-black font-semibold glow-btn"
-   data-package="Starter - $200">
-   Get Started
-</a>
-      </div>
+    <!-- Plan 3: Scale -->
+    <div class="bento-card glass p-8 hover-lift flex flex-col">
+      <p class="font-display text-xl font-semibold mb-1">Scale</p>
+      <p class="text-white/45 text-sm mb-6">Expand reach across a wider creator pool.</p>
+      <p class="font-display text-4xl font-semibold mb-1">$1,000</p>
+      <p class="text-white/40 text-sm mb-8">per campaign</p>
+      <ul class="space-y-3 text-sm text-white/65 mb-8 flex-1">
+        <li class="flex gap-3"><span class="text-ice">✓</span> Number of videos depend on genre</li>
+        <li class="flex gap-3"><span class="text-ice">✓</span> Estimated ~175,000 – 400,000 Spotify streams</li>
+        <li class="flex gap-3"><span class="text-ice">✓</span> Dedicated campaign strategist</li>
+        <li class="flex gap-3"><span class="text-ice">✓</span> 3-week campaign window</li>
+      </ul>
+      <a href="#contact"
+         class="package-btn magnetic inline-flex items-center justify-center w-full px-6 py-3 rounded-full bg-ice text-[#121212] font-semibold glow-btn mt-auto"
+         data-package="Scale - $1,000">
+        Get Started
+      </a>
+    </div>
 
-      <!-- Plan 2: Growth -->
-      <div class="reveal glass rounded-2xl p-8 hover-lift" style="transition-delay:.05s">
-        <p class="font-display text-xl font-semibold mb-1">Growth</p>
-        <p class="text-white/45 text-sm mb-6">Build early momentum with broader reach.</p>
-        <p class="font-display text-4xl font-semibold mb-1">$500</p>
-        <p class="text-white/40 text-sm mb-8">per campaign</p>
-        <ul class="space-y-3 text-sm text-white/65 mb-8">
-          <li class="flex gap-3"><span class="text-ice">✓</span> Number of videos depends on genre</li>
-          <li class="flex gap-3"><span class="text-ice">✓</span> Estimated ~100,000 – 150,000 Spotify streams</li>
-          <li class="flex gap-3"><span class="text-ice">✓</span> Dedicated campaign strategist</li>
-          <li class="flex gap-3"><span class="text-ice">✓</span> 2-week campaign window</li>
-        </ul>
-        <a href="#contact"
-   class="package-btn inline-flex items-center justify-center w-full px-6 py-3 rounded-full bg-ice text-black font-semibold glow-btn"
-   data-package="Growth - $500">
-   Get Started
-</a>
-      </div>
+    <!-- Plan 4: Premium -->
+    <div class="bento-card glass p-8 hover-lift flex flex-col">
+      <p class="font-display text-xl font-semibold mb-1">Premium</p>
+      <p class="text-white/45 text-sm mb-6">A stronger push for an established release.</p>
+      <p class="font-display text-4xl font-semibold mb-1">$1,500</p>
+      <p class="text-white/40 text-sm mb-8">per campaign</p>
+      <ul class="space-y-3 text-sm text-white/65 mb-8 flex-1">
+        <li class="flex gap-3"><span class="text-ice">✓</span> Number of videos depend on genre</li>
+        <li class="flex gap-3"><span class="text-ice">✓</span> Estimated ~300,000 – 600,000 Spotify streams</li>
+        <li class="flex gap-3"><span class="text-ice">✓</span> Dedicated campaign strategist</li>
+        <li class="flex gap-3"><span class="text-ice">✓</span> 4-week campaign window</li>
+      </ul>
+      <a href="#contact"
+         class="package-btn magnetic inline-flex items-center justify-center w-full px-6 py-3 rounded-full bg-ice text-[#121212] font-semibold glow-btn mt-auto"
+         data-package="Premium - $1,500">
+        Get Started
+      </a>
+    </div>
 
-      <!-- Plan 3: Scale -->
-      <div class="reveal glass rounded-2xl p-8 hover-lift" style="transition-delay:.1s">
-        <p class="font-display text-xl font-semibold mb-1">Scale</p>
-        <p class="text-white/45 text-sm mb-6">Expand reach across a wider creator pool.</p>
-        <p class="font-display text-4xl font-semibold mb-1">$1,000</p>
-        <p class="text-white/40 text-sm mb-8">per campaign</p>
-        <ul class="space-y-3 text-sm text-white/65 mb-8">
-          <li class="flex gap-3"><span class="text-ice">✓</span> Number of videos depend on genre</li>
-          <li class="flex gap-3"><span class="text-ice">✓</span> Estimated ~175,000 – 400,000 Spotify streams</li>
-          <li class="flex gap-3"><span class="text-ice">✓</span> Dedicated campaign strategist</li>
-          <li class="flex gap-3"><span class="text-ice">✓</span> 3-week campaign window</li>
-        </ul>
-        <a href="#contact"
-   class="package-btn inline-flex items-center justify-center w-full px-6 py-3 rounded-full bg-ice text-black font-semibold glow-btn"
-   data-package="Scale - $1,000">
-   Get Started
-</a>
-      </div>
+    <!-- Plan 5: Platinum -->
+    <div class="bento-card glass p-8 hover-lift flex flex-col">
+      <p class="font-display text-xl font-semibold mb-1">Platinum</p>
+      <p class="text-white/45 text-sm mb-6">Serious scale for a high-priority release.</p>
+      <p class="font-display text-4xl font-semibold mb-1">$2,500</p>
+      <p class="text-white/40 text-sm mb-8">per campaign</p>
+      <ul class="space-y-3 text-sm text-white/65 mb-8 flex-1">
+        <li class="flex gap-3"><span class="text-ice">✓</span> Number of videos depend on genre</li>
+        <li class="flex gap-3"><span class="text-ice">✓</span> Estimated ~500,000 – 1,000,000 Spotify streams</li>
+        <li class="flex gap-3"><span class="text-ice">✓</span> Dedicated campaign strategist</li>
+        <li class="flex gap-3"><span class="text-ice">✓</span> Weekly stat reports</li>
+        <li class="flex gap-3"><span class="text-ice">✓</span> 5-week campaign window</li>
+      </ul>
+      <a href="#contact"
+         class="package-btn magnetic inline-flex items-center justify-center w-full px-6 py-3 rounded-full bg-ice text-[#121212] font-semibold glow-btn mt-auto"
+         data-package="Platinum - $2,500">
+        Get Started
+      </a>
+    </div>
 
-      <!-- Plan 4: Premium -->
-      <div class="reveal glass rounded-2xl p-8 hover-lift" style="transition-delay:.15s">
-        <p class="font-display text-xl font-semibold mb-1">Premium</p>
-        <p class="text-white/45 text-sm mb-6">A stronger push for an established release.</p>
-        <p class="font-display text-4xl font-semibold mb-1">$1,500</p>
-        <p class="text-white/40 text-sm mb-8">per campaign</p>
-        <ul class="space-y-3 text-sm text-white/65 mb-8">
-          <li class="flex gap-3"><span class="text-ice">✓</span> Number of videos depend on genre</li>
-          <li class="flex gap-3"><span class="text-ice">✓</span> Estimated ~300,000 – 600,000 Spotify streams</li>
-          <li class="flex gap-3"><span class="text-ice">✓</span> Dedicated campaign strategist</li>
-          <li class="flex gap-3"><span class="text-ice">✓</span> 4-week campaign window</li>
-        </ul>
-        <a href="#contact"
-   class="package-btn inline-flex items-center justify-center w-full px-6 py-3 rounded-full bg-ice text-black font-semibold glow-btn"
-   data-package="Premium - $1,500">
-   Get Started
-</a>
-      </div>
+    <!-- Plan 6: Gold Elite — featured / most popular -->
+    <div class="bento-card bento-card--wide glass-strong p-8 hover-lift glow-ring relative flex flex-col">
+      <span class="absolute -top-3 left-8 px-3 py-1 rounded-full bg-ice text-[#121212] text-xs font-semibold">Most Popular</span>
+      <p class="font-display text-xl font-semibold mb-1">Gold Elite</p>
+      <p class="text-white/45 text-sm mb-6">Sustained momentum for a release cycle.</p>
+      <p class="font-display text-4xl font-semibold mb-1 gradient-text">$4,000</p>
+      <p class="text-white/40 text-sm mb-8">per campaign</p>
+      <ul class="space-y-3 text-sm text-white/70 mb-8 flex-1">
+        <li class="flex gap-3"><span class="text-ice">✓</span> Number of videos depend on genre</li>
+        <li class="flex gap-3"><span class="text-ice">✓</span> Estimated ~800,000 – 1,800,000 Spotify streams</li>
+        <li class="flex gap-3"><span class="text-ice">✓</span> Senior strategist + weekly calls</li>
+        <li class="flex gap-3"><span class="text-ice">✓</span> Weekly stat reports</li>
+        <li class="flex gap-3"><span class="text-ice">✓</span> 6-week campaign window</li>
+      </ul>
+      <a href="#contact"
+         class="package-btn magnetic inline-flex items-center justify-center w-full px-6 py-3 rounded-full bg-ice text-[#121212] font-semibold glow-btn mt-auto"
+         data-package="Gold Elite - $4,000">
+        Launch Campaign
+      </a>
+    </div>
 
-      <!-- Plan 5: Platinum -->
-      <div class="reveal glass rounded-2xl p-8 hover-lift" style="transition-delay:.2s">
-        <p class="font-display text-xl font-semibold mb-1">Platinum</p>
-        <p class="text-white/45 text-sm mb-6">Serious scale for a high-priority release.</p>
-        <p class="font-display text-4xl font-semibold mb-1">$2,500</p>
-        <p class="text-white/40 text-sm mb-8">per campaign</p>
-        <ul class="space-y-3 text-sm text-white/65 mb-8">
-          <li class="flex gap-3"><span class="text-ice">✓</span> Number of videos depend on genre</li>
-          <li class="flex gap-3"><span class="text-ice">✓</span> Estimated ~500,000 – 1,000,000 Spotify streams</li>
-          <li class="flex gap-3"><span class="text-ice">✓</span> Dedicated campaign strategist</li>
-          <li class="flex gap-3"><span class="text-ice">✓</span> Weekly stat reports</li>
-          <li class="flex gap-3"><span class="text-ice">✓</span> 5-week campaign window</li>
-        </ul>
-        <a href="#contact"
-   class="package-btn inline-flex items-center justify-center w-full px-6 py-3 rounded-full bg-ice text-black font-semibold glow-btn"
-   data-package="Platinum - $2,500">
-   Get Started
-</a>
-      </div>
+    <!-- Plan 7: Diamond -->
+    <div class="bento-card glass p-8 hover-lift flex flex-col">
+      <p class="font-display text-xl font-semibold mb-1">Diamond</p>
+      <p class="text-white/45 text-sm mb-6">Heavyweight push for a major release.</p>
+      <p class="font-display text-4xl font-semibold mb-1">$6,000</p>
+      <p class="text-white/40 text-sm mb-8">per campaign</p>
+      <ul class="space-y-3 text-sm text-white/65 mb-8 flex-1">
+        <li class="flex gap-3"><span class="text-ice">✓</span> Number of videos depend on genre</li>
+        <li class="flex gap-3"><span class="text-ice">✓</span> Estimated ~1.5M – 3M Spotify streams</li>
+        <li class="flex gap-3"><span class="text-ice">✓</span> Senior strategist + weekly calls</li>
+        <li class="flex gap-3"><span class="text-ice">✓</span> Weekly stat reports</li>
+        <li class="flex gap-3"><span class="text-ice">✓</span> 7-week campaign window</li>
+      </ul>
+      <a href="#contact"
+         class="package-btn magnetic inline-flex items-center justify-center w-full px-6 py-3 rounded-full bg-ice text-[#121212] font-semibold glow-btn mt-auto"
+         data-package="Diamond - $6,000">
+        Get Started
+      </a>
+    </div>
 
-      <!-- Plan 6: Gold Elite (featured / most popular) -->
-      <div class="reveal glass-strong rounded-2xl p-8 hover-lift glow-ring relative" style="transition-delay:.25s">
-        <span class="absolute -top-3 left-8 px-3 py-1 rounded-full bg-ice text-black text-xs font-semibold">Most Popular</span>
-        <p class="font-display text-xl font-semibold mb-1">Gold Elite</p>
-        <p class="text-white/45 text-sm mb-6">Sustained momentum for a release cycle.</p>
-        <p class="font-display text-4xl font-semibold mb-1 gradient-text">$4,000</p>
-        <p class="text-white/40 text-sm mb-8">per campaign</p>
-        <ul class="space-y-3 text-sm text-white/70 mb-8">
-          <li class="flex gap-3"><span class="text-ice">✓</span> Number of videos depend on genre</li>
-          <li class="flex gap-3"><span class="text-ice">✓</span> Estimated ~800,000 – 1,800,000 Spotify streams</li>
-          <li class="flex gap-3"><span class="text-ice">✓</span> Senior strategist + weekly calls</li>
-          <li class="flex gap-3"><span class="text-ice">✓</span> Weekly stat reports</li>
-          <li class="flex gap-3"><span class="text-ice">✓</span> 6-week campaign window</li>
-        </ul>
-        <a href="#contact"
-   class="package-btn inline-flex items-center justify-center w-full px-6 py-3 rounded-full bg-ice text-black font-semibold glow-btn"
-   data-package="Gold Elite - $4,000">
-   Launch Campaign
-</a>
-      </div>
+    <!-- Plan 8: Executive -->
+    <div class="bento-card glass p-8 hover-lift flex flex-col">
+      <p class="font-display text-xl font-semibold mb-1">Executive</p>
+      <p class="text-white/45 text-sm mb-6">Premium scale for top-tier campaigns.</p>
+      <p class="font-display text-4xl font-semibold mb-1">$8,000</p>
+      <p class="text-white/40 text-sm mb-8">per campaign</p>
+      <ul class="space-y-3 text-sm text-white/65 mb-8 flex-1">
+        <li class="flex gap-3"><span class="text-ice">✓</span> Number of videos depend on genre</li>
+        <li class="flex gap-3"><span class="text-ice">✓</span> Estimated ~2.5M – 5M Spotify streams</li>
+        <li class="flex gap-3"><span class="text-ice">✓</span> Senior strategist + weekly calls</li>
+        <li class="flex gap-3"><span class="text-ice">✓</span> Weekly stat reports</li>
+        <li class="flex gap-3"><span class="text-ice">✓</span> 8-week campaign window</li>
+      </ul>
+      <a href="#contact"
+         class="package-btn magnetic inline-flex items-center justify-center w-full px-6 py-3 rounded-full bg-ice text-[#121212] font-semibold glow-btn mt-auto"
+         data-package="Executive - $8,000">
+        Get Started
+      </a>
+    </div>
 
-      <!-- Plan 7: Diamond -->
-      <div class="reveal glass rounded-2xl p-8 hover-lift" style="transition-delay:.3s">
-        <p class="font-display text-xl font-semibold mb-1">Diamond</p>
-        <p class="text-white/45 text-sm mb-6">Heavyweight push for a major release.</p>
-        <p class="font-display text-4xl font-semibold mb-1">$6,000</p>
-        <p class="text-white/40 text-sm mb-8">per campaign</p>
-        <ul class="space-y-3 text-sm text-white/65 mb-8">
-          <li class="flex gap-3"><span class="text-ice">✓</span> Number of videos depend on genre</li>
-          <li class="flex gap-3"><span class="text-ice">✓</span> Estimated ~1.5M – 3M Spotify streams</li>
-          <li class="flex gap-3"><span class="text-ice">✓</span> Senior strategist + weekly calls</li>
-          <li class="flex gap-3"><span class="text-ice">✓</span> Weekly stat reports</li>
-          <li class="flex gap-3"><span class="text-ice">✓</span> 7-week campaign window</li>
-        </ul>
-        <a href="#contact"
-   class="package-btn inline-flex items-center justify-center w-full px-6 py-3 rounded-full bg-ice text-black font-semibold glow-btn"
-   data-package="Diamond - $6,000">
-   Get Started
-</a>
-      </div>
+    <!-- Plan 9: Global Push -->
+    <div class="bento-card glass p-8 hover-lift flex flex-col">
+      <p class="font-display text-xl font-semibold mb-1">Global Push</p>
+      <p class="text-white/45 text-sm mb-6">Full-scale push for a flagship release.</p>
+      <p class="font-display text-4xl font-semibold mb-1">$10,000</p>
+      <p class="text-white/40 text-sm mb-8">per campaign</p>
+      <ul class="space-y-3 text-sm text-white/65 mb-8 flex-1">
+        <li class="flex gap-3"><span class="text-ice">✓</span> Number of videos depends on genre</li>
+        <li class="flex gap-3"><span class="text-ice">✓</span> Estimated ~4M – 8M+ Spotify streams</li>
+        <li class="flex gap-3"><span class="text-ice">✓</span> Senior strategist + weekly calls</li>
+        <li class="flex gap-3"><span class="text-ice">✓</span> Weekly stat reports</li>
+        <li class="flex gap-3"><span class="text-ice">✓</span> 10-week campaign window</li>
+      </ul>
+      <a href="#contact"
+         class="package-btn magnetic inline-flex items-center justify-center w-full px-6 py-3 rounded-full bg-ice text-[#121212] font-semibold glow-btn mt-auto"
+         data-package="Global Push - $10,000">
+        Get Started
+      </a>
+    </div>
 
-      <!-- Plan 8: Executive -->
-      <div class="reveal glass rounded-2xl p-8 hover-lift" style="transition-delay:.35s">
-        <p class="font-display text-xl font-semibold mb-1">Executive</p>
-        <p class="text-white/45 text-sm mb-6">Premium scale for top-tier campaigns.</p>
-        <p class="font-display text-4xl font-semibold mb-1">$8,000</p>
-        <p class="text-white/40 text-sm mb-8">per campaign</p>
-        <ul class="space-y-3 text-sm text-white/65 mb-8">
-          <li class="flex gap-3"><span class="text-ice">✓</span> Number of videos depend on genre</li>
-          <li class="flex gap-3"><span class="text-ice">✓</span> Estimated ~2.5M – 5M Spotify streams</li>
-          <li class="flex gap-3"><span class="text-ice">✓</span> Senior strategist + weekly calls</li>
-          <li class="flex gap-3"><span class="text-ice">✓</span> Weekly stat reports</li>
-          <li class="flex gap-3"><span class="text-ice">✓</span> 8-week campaign window</li>
-        </ul>
-        <a href="#contact"
-   class="package-btn inline-flex items-center justify-center w-full px-6 py-3 rounded-full bg-ice text-black font-semibold glow-btn"
-   data-package="Executive - $8,000">
-   Get Started
-</a>
-      </div>
+  </div>
 
-      <!-- Plan 9: Global Push -->
-      <div class="reveal glass rounded-2xl p-8 hover-lift" style="transition-delay:.4s">
-        <p class="font-display text-xl font-semibold mb-1">Global Push</p>
-        <p class="text-white/45 text-sm mb-6">Full-scale push for a flagship release.</p>
-        <p class="font-display text-4xl font-semibold mb-1">$10,000</p>
-        <p class="text-white/40 text-sm mb-8">per campaign</p>
-        <ul class="space-y-3 text-sm text-white/65 mb-8">
-          <li class="flex gap-3"><span class="text-ice">✓</span> Number of videos depends on genre</li>
-          <li class="flex gap-3"><span class="text-ice">✓</span> Estimated ~4M – 8M+ Spotify streams</li>
-          <li class="flex gap-3"><span class="text-ice">✓</span> Senior strategist + weekly calls</li>
-          <li class="flex gap-3"><span class="text-ice">✓</span> Weekly stat reports</li>
-          <li class="flex gap-3"><span class="text-ice">✓</span> 10-week campaign window</li>
-          
-        </ul>
-        <a href="#contact"
-   class="package-btn inline-flex items-center justify-center w-full px-6 py-3 rounded-full bg-ice text-black font-semibold glow-btn"
-   data-package="Global Push - $10,000">
-   Get Started
-</a>
-      </div>
-
+  <!-- Progress rail -->
+  <div class="relative max-w-7xl mx-auto px-6 lg:px-10 mt-2">
+    <div class="bento-rail max-w-xs">
+      <div class="bento-rail-fill" data-bento-rail="pricingTrack"></div>
     </div>
   </div>
 </section>
+
 
 <!-- ============================================================
      SECTION 11 — FAQ
-     Each .faq-item contains a trigger button and a panel.
-     The accordion logic is in main.js (Section 10).
-     To add a question: copy a .faq-item block and edit text.
+     Accordion logic in main.js Section 10.
      ============================================================ -->
-<section class="relative py-28 border-t border-white/5">
+<section data-glow class="relative py-28 border-t border-white/[0.06]">
   <div class="max-w-4xl mx-auto px-6 lg:px-10">
 
     <div class="reveal max-w-2xl mb-16">
@@ -714,51 +726,60 @@
 
     <div class="space-y-4" id="faqList">
 
-      <!-- FAQ item — duplicate this block to add questions -->
       <div class="reveal glass rounded-2xl overflow-hidden faq-item">
         <button class="faq-trigger w-full flex items-center justify-between gap-4 px-6 py-5 text-left">
           <span class="font-display font-medium text-lg">How does TikTok-driven Spotify promotion work?</span>
-          <svg class="faq-icon shrink-0 transition-transform" width="18" height="18" viewBox="0 0 18 18" fill="none"><path d="M9 3v12M3 9h12" stroke="#7DDCFF" stroke-width="1.6" stroke-linecap="round"/></svg>
+          <svg class="faq-icon shrink-0 transition-transform" width="18" height="18" viewBox="0 0 18 18" fill="none">
+            <path d="M9 3v12M3 9h12" stroke="#B2D5E5" stroke-width="1.6" stroke-linecap="round"/>
+          </svg>
         </button>
         <div class="accordion-panel">
           <p class="px-6 pb-6 text-white/55 leading-relaxed">We brief vetted TikTok creators to make organic-feeling content using your track's sound. As videos gain traction, viewers search for the song on Spotify — driving streams, saves, and follows that compound over time.</p>
         </div>
       </div>
 
-      <div class="reveal glass rounded-2xl overflow-hidden faq-item">
+      <div class="reveal glass rounded-2xl overflow-hidden faq-item" style="transition-delay:.05s">
         <button class="faq-trigger w-full flex items-center justify-between gap-4 px-6 py-5 text-left">
           <span class="font-display font-medium text-lg">How long does a typical campaign run?</span>
-          <svg class="faq-icon shrink-0 transition-transform" width="18" height="18" viewBox="0 0 18 18" fill="none"><path d="M9 3v12M3 9h12" stroke="#7DDCFF" stroke-width="1.6" stroke-linecap="round"/></svg>
+          <svg class="faq-icon shrink-0 transition-transform" width="18" height="18" viewBox="0 0 18 18" fill="none">
+            <path d="M9 3v12M3 9h12" stroke="#B2D5E5" stroke-width="1.6" stroke-linecap="round"/>
+          </svg>
         </button>
         <div class="accordion-panel">
           <p class="px-6 pb-6 text-white/55 leading-relaxed">Campaigns range from 1 to 10 weeks depending on plan. Most artists see meaningful stream growth begin within the first 7–10 days as creator content starts circulating.</p>
         </div>
       </div>
 
-      <div class="reveal glass rounded-2xl overflow-hidden faq-item">
+      <div class="reveal glass rounded-2xl overflow-hidden faq-item" style="transition-delay:.1s">
         <button class="faq-trigger w-full flex items-center justify-between gap-4 px-6 py-5 text-left">
           <span class="font-display font-medium text-lg">Who are the creators in your network?</span>
-          <svg class="faq-icon shrink-0 transition-transform" width="18" height="18" viewBox="0 0 18 18" fill="none"><path d="M9 3v12M3 9h12" stroke="#7DDCFF" stroke-width="1.6" stroke-linecap="round"/></svg>
+          <svg class="faq-icon shrink-0 transition-transform" width="18" height="18" viewBox="0 0 18 18" fill="none">
+            <path d="M9 3v12M3 9h12" stroke="#B2D5E5" stroke-width="1.6" stroke-linecap="round"/>
+          </svg>
         </button>
         <div class="accordion-panel">
           <p class="px-6 pb-6 text-white/55 leading-relaxed">Our 100+ verified creators span music discovery, lifestyle, dance, and niche genre communities. Each is vetted for engagement quality, audience fit, and content authenticity before joining a campaign.</p>
         </div>
       </div>
 
-      <div class="reveal glass rounded-2xl overflow-hidden faq-item">
+      <div class="reveal glass rounded-2xl overflow-hidden faq-item" style="transition-delay:.15s">
         <button class="faq-trigger w-full flex items-center justify-between gap-4 px-6 py-5 text-left">
           <span class="font-display font-medium text-lg">What results can I realistically expect?</span>
-          <svg class="faq-icon shrink-0 transition-transform" width="18" height="18" viewBox="0 0 18 18" fill="none"><path d="M9 3v12M3 9h12" stroke="#7DDCFF" stroke-width="1.6" stroke-linecap="round"/></svg>
+          <svg class="faq-icon shrink-0 transition-transform" width="18" height="18" viewBox="0 0 18 18" fill="none">
+            <path d="M9 3v12M3 9h12" stroke="#B2D5E5" stroke-width="1.6" stroke-linecap="round"/>
+          </svg>
         </button>
         <div class="accordion-panel">
           <p class="px-6 pb-6 text-white/55 leading-relaxed">Results vary by genre, release quality, and plan size, but most clients see 5–25x growth in TikTok views and 3–10x growth in Spotify streams over the campaign window. Your dashboard shows live progress against benchmarks.</p>
         </div>
       </div>
 
-      <div class="reveal glass rounded-2xl overflow-hidden faq-item">
+      <div class="reveal glass rounded-2xl overflow-hidden faq-item" style="transition-delay:.2s">
         <button class="faq-trigger w-full flex items-center justify-between gap-4 px-6 py-5 text-left">
           <span class="font-display font-medium text-lg">Do you guarantee viral results?</span>
-          <svg class="faq-icon shrink-0 transition-transform" width="18" height="18" viewBox="0 0 18 18" fill="none"><path d="M9 3v12M3 9h12" stroke="#7DDCFF" stroke-width="1.6" stroke-linecap="round"/></svg>
+          <svg class="faq-icon shrink-0 transition-transform" width="18" height="18" viewBox="0 0 18 18" fill="none">
+            <path d="M9 3v12M3 9h12" stroke="#B2D5E5" stroke-width="1.6" stroke-linecap="round"/>
+          </svg>
         </button>
         <div class="accordion-panel">
           <p class="px-6 pb-6 text-white/55 leading-relaxed">We can't guarantee virality — no one can. What we guarantee is consistent creator output, transparent reporting, and a strategy built around what's currently working on TikTok for your genre.</p>
@@ -769,16 +790,15 @@
   </div>
 </section>
 
+
 <!-- ============================================================
      SECTION 12 — CONTACT FORM
-     Edit field labels, placeholder text, and budget options here.
-     The form's submit handler shows an alert — replace with a
-     real backend endpoint (e.g. fetch('/api/contact', ...)) as needed.
+     EmailJS credentials preserved byte-for-byte.
+     Honeypot spam guard preserved.
      ============================================================ -->
-<!-- SECTION 12 — CONTACT FORM (upgraded) -->
-<section id="contact" class="relative py-28 border-t border-white/5 overflow-hidden">
+<section id="contact" data-glow class="relative py-28 border-t border-white/[0.06] overflow-hidden">
 
-  <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[40rem] h-[40rem] rounded-full bg-ice/8 blur-[140px] pulse-orb pointer-events-none"></div>
+  <div class="bleed bleed--strong bleed--breathe" style="width:40rem;height:40rem;top:50%;left:50%;transform:translate(-50%,-50%);"></div>
 
   <div class="relative max-w-4xl mx-auto px-6 lg:px-10">
 
@@ -791,16 +811,19 @@
     <!-- SUCCESS STATE -->
     <div id="formSuccess" class="hidden glass-strong rounded-3xl p-10 glow-ring text-center">
       <div class="w-16 h-16 rounded-full bg-ice/15 border border-ice/30 flex items-center justify-center mx-auto mb-6">
-        <svg width="32" height="32" viewBox="0 0 32 32" fill="none"><path d="M6 16l7 7 13-13" stroke="#7DDCFF" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        <svg width="32" height="32" viewBox="0 0 32 32" fill="none">
+          <path d="M6 16l7 7 13-13" stroke="#B2D5E5" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
       </div>
       <h3 class="font-display text-3xl font-semibold mb-3">Request Received!</h3>
       <p class="text-white/55 text-lg max-w-md mx-auto">Our team will review your submission and get back to you within 24 hours with a tailored campaign plan.</p>
+      <p id="confirmEmail" class="mt-4 text-white/35 text-sm font-mono"></p>
     </div>
 
     <!-- FORM -->
     <form id="campaignForm" class="reveal glass-strong rounded-3xl p-6 sm:p-10 glow-ring grid sm:grid-cols-2 gap-5">
 
-      <!-- Honeypot -->
+      <!-- Honeypot — hidden from users, catches bots -->
       <div style="position:absolute;left:-9999px;opacity:0;pointer-events:none" aria-hidden="true">
         <input type="text" name="website" id="honeypot" tabindex="-1" autocomplete="off">
       </div>
@@ -809,7 +832,7 @@
       <div class="flex flex-col gap-2">
         <label for="field_name" class="text-sm text-white/50">Name <span class="text-ice">*</span></label>
         <input id="field_name" type="text" required placeholder="Your full name"
-          class="bg-black/40 border border-white/10 focus:border-ice/50 rounded-xl px-4 py-3 outline-none transition-colors placeholder:text-white/25"/>
+          class="bg-[#121212]/60 border border-white/10 focus:border-ice/50 rounded-xl px-4 py-3 outline-none transition-colors placeholder:text-white/25 text-white"/>
         <p id="err_name" class="text-xs text-red-400 hidden">Please enter your name.</p>
       </div>
 
@@ -817,7 +840,7 @@
       <div class="flex flex-col gap-2">
         <label for="field_artist" class="text-sm text-white/50">Artist Name <span class="text-ice">*</span></label>
         <input id="field_artist" type="text" required placeholder="Your artist / project name"
-          class="bg-black/40 border border-white/10 focus:border-ice/50 rounded-xl px-4 py-3 outline-none transition-colors placeholder:text-white/25"/>
+          class="bg-[#121212]/60 border border-white/10 focus:border-ice/50 rounded-xl px-4 py-3 outline-none transition-colors placeholder:text-white/25 text-white"/>
         <p id="err_artist" class="text-xs text-red-400 hidden">Please enter your artist name.</p>
       </div>
 
@@ -825,7 +848,7 @@
       <div class="flex flex-col gap-2">
         <label for="field_email" class="text-sm text-white/50">Email <span class="text-ice">*</span></label>
         <input id="field_email" type="email" required placeholder="you@email.com"
-          class="bg-black/40 border border-white/10 focus:border-ice/50 rounded-xl px-4 py-3 outline-none transition-colors placeholder:text-white/25"/>
+          class="bg-[#121212]/60 border border-white/10 focus:border-ice/50 rounded-xl px-4 py-3 outline-none transition-colors placeholder:text-white/25 text-white"/>
         <p id="err_email" class="text-xs text-red-400 hidden">Please enter a valid email.</p>
       </div>
 
@@ -833,61 +856,61 @@
       <div class="flex flex-col gap-2">
         <label for="field_spotify" class="text-sm text-white/50">Spotify Link</label>
         <input id="field_spotify" type="url" placeholder="https://open.spotify.com/..."
-          class="bg-black/40 border border-white/10 focus:border-ice/50 rounded-xl px-4 py-3 outline-none transition-colors placeholder:text-white/25"/>
+          class="bg-[#121212]/60 border border-white/10 focus:border-ice/50 rounded-xl px-4 py-3 outline-none transition-colors placeholder:text-white/25 text-white"/>
       </div>
 
       <!-- Genre -->
       <div class="flex flex-col gap-2">
         <label for="field_genre" class="text-sm text-white/50">Genre</label>
-        <select id="field_genre" class="bg-black/40 border border-white/10 focus:border-ice/50 rounded-xl px-4 py-3 outline-none transition-colors text-white/80">
-          <option class="bg-[#0B0B0B]" value="">Select a genre...</option>
-          <option class="bg-[#0B0B0B]">Pop</option>
-          <option class="bg-[#0B0B0B]">Hip-Hop / Rap</option>
-          <option class="bg-[#0B0B0B]">R&B / Soul</option>
-          <option class="bg-[#0B0B0B]">Electronic / Dance</option>
-          <option class="bg-[#0B0B0B]">Indie / Alternative</option>
-          <option class="bg-[#0B0B0B]">Country</option>
-          <option class="bg-[#0B0B0B]">Latin</option>
-          <option class="bg-[#0B0B0B]">Other</option>
+        <select id="field_genre"
+          class="bg-[#121212]/60 border border-white/10 focus:border-ice/50 rounded-xl px-4 py-3 outline-none transition-colors text-white/80">
+          <option class="bg-[#1E1E1E]" value="">Select a genre...</option>
+          <option class="bg-[#1E1E1E]">Pop</option>
+          <option class="bg-[#1E1E1E]">Hip-Hop / Rap</option>
+          <option class="bg-[#1E1E1E]">R&amp;B / Soul</option>
+          <option class="bg-[#1E1E1E]">Electronic / Dance</option>
+          <option class="bg-[#1E1E1E]">Indie / Alternative</option>
+          <option class="bg-[#1E1E1E]">Country</option>
+          <option class="bg-[#1E1E1E]">Latin</option>
+          <option class="bg-[#1E1E1E]">Other</option>
         </select>
       </div>
 
-     <!-- Package -->
-<div class="flex flex-col gap-2">
-  <label for="field_budget" class="text-sm text-white/50">
-    Package <span class="text-ice">*</span>
-  </label>
-
-  <select id="field_budget"
-    class="bg-black/40 border border-white/10 focus:border-ice/50 rounded-xl px-4 py-3 outline-none transition-colors text-white/80">
-
-    <option class="bg-[#0B0B0B]" value="">Select a package...</option>
-    <option class="bg-[#0B0B0B]" value="Starter - $200">Starter - $200</option>
-    <option class="bg-[#0B0B0B]" value="Growth - $500">Growth - $500</option>
-    <option class="bg-[#0B0B0B]" value="Scale - $1,000">Scale - $1,000</option>
-    <option class="bg-[#0B0B0B]" value="Premium - $1,500">Premium - $1,500</option>
-    <option class="bg-[#0B0B0B]" value="Platinum - $2,500">Platinum - $2,500</option>
-    <option class="bg-[#0B0B0B]" value="Gold Elite - $4,000">Gold Elite - $4,000</option>
-    <option class="bg-[#0B0B0B]" value="Diamond - $6,000">Diamond - $6,000</option>
-    <option class="bg-[#0B0B0B]" value="Executive - $8,000">Executive - $8,000</option>
-    <option class="bg-[#0B0B0B]" value="Global Push - $10,000">Global Push - $10,000</option>
-
-  </select>
-</div>
+      <!-- Package -->
+      <div class="flex flex-col gap-2">
+        <label for="field_budget" class="text-sm text-white/50">Package <span class="text-ice">*</span></label>
+        <select id="field_budget"
+          class="bg-[#121212]/60 border border-white/10 focus:border-ice/50 rounded-xl px-4 py-3 outline-none transition-colors text-white/80">
+          <option class="bg-[#1E1E1E]" value="">Select a package...</option>
+          <option class="bg-[#1E1E1E]" value="Starter - $200">Starter - $200</option>
+          <option class="bg-[#1E1E1E]" value="Growth - $500">Growth - $500</option>
+          <option class="bg-[#1E1E1E]" value="Scale - $1,000">Scale - $1,000</option>
+          <option class="bg-[#1E1E1E]" value="Premium - $1,500">Premium - $1,500</option>
+          <option class="bg-[#1E1E1E]" value="Platinum - $2,500">Platinum - $2,500</option>
+          <option class="bg-[#1E1E1E]" value="Gold Elite - $4,000">Gold Elite - $4,000</option>
+          <option class="bg-[#1E1E1E]" value="Diamond - $6,000">Diamond - $6,000</option>
+          <option class="bg-[#1E1E1E]" value="Executive - $8,000">Executive - $8,000</option>
+          <option class="bg-[#1E1E1E]" value="Global Push - $10,000">Global Push - $10,000</option>
+        </select>
+      </div>
 
       <!-- Release Date -->
       <div class="flex flex-col gap-2 sm:col-span-2">
-        <label for="field_release" class="text-sm text-white/50">Planned Release Date <span class="text-white/30 text-xs">(if applicable)</span></label>
+        <label for="field_release" class="text-sm text-white/50">
+          Planned Release Date <span class="text-white/30 text-xs">(if applicable)</span>
+        </label>
         <input id="field_release" type="date"
-          class="bg-black/40 border border-white/10 focus:border-ice/50 rounded-xl px-4 py-3 outline-none transition-colors text-white/80"/>
+          class="bg-[#121212]/60 border border-white/10 focus:border-ice/50 rounded-xl px-4 py-3 outline-none transition-colors text-white/80"/>
       </div>
 
       <!-- Message -->
       <div class="flex flex-col gap-2 sm:col-span-2">
-        <label for="field_message" class="text-sm text-white/50">Message <span class="text-white/30 text-xs">(optional)</span></label>
+        <label for="field_message" class="text-sm text-white/50">
+          Message <span class="text-white/30 text-xs">(optional)</span>
+        </label>
         <textarea id="field_message" rows="4" maxlength="1000"
           placeholder="Tell us about your release, goals, or anything else we should know..."
-          class="bg-black/40 border border-white/10 focus:border-ice/50 rounded-xl px-4 py-3 outline-none transition-colors placeholder:text-white/25 resize-none"></textarea>
+          class="bg-[#121212]/60 border border-white/10 focus:border-ice/50 rounded-xl px-4 py-3 outline-none transition-colors placeholder:text-white/25 text-white resize-none"></textarea>
         <p class="text-xs text-white/30 text-right"><span id="charCount">0</span>/1000</p>
       </div>
 
@@ -898,10 +921,12 @@
 
       <!-- Submit -->
       <div class="sm:col-span-2 mt-2">
-        <button id="submitBtn" type="submit" class="w-full px-8 py-4 rounded-full bg-ice text-black font-semibold text-lg glow-btn flex items-center justify-center gap-2">
+        <button id="submitBtn" type="submit"
+          class="magnetic w-full px-8 py-4 rounded-full bg-ice text-[#121212] font-semibold text-lg glow-btn flex items-center justify-center gap-2">
           <span id="btnText">Launch My Campaign</span>
-          <svg id="btnSpinner" class="hidden" width="20" height="20" viewBox="0 0 24 24" fill="none" style="animation: spin 1s linear infinite;">
-            <circle cx="12" cy="12" r="10" stroke="black" stroke-width="2" stroke-dasharray="32" stroke-dashoffset="12"/>
+          <svg id="btnSpinner" class="hidden" width="20" height="20" viewBox="0 0 24 24" fill="none"
+               style="animation: spin 1s linear infinite;">
+            <circle cx="12" cy="12" r="10" stroke="#121212" stroke-width="2" stroke-dasharray="32" stroke-dashoffset="12"/>
           </svg>
         </button>
       </div>
@@ -914,11 +939,12 @@
   @keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
 </style>
 
+<!-- EmailJS submit handler — credentials preserved byte-for-byte -->
 <script>
   emailjs.init({ publicKey: 'q807FWLNiIYmlFvBT' });
 
-  const msgField   = document.getElementById('field_message');
-  const charCount  = document.getElementById('charCount');
+  const msgField  = document.getElementById('field_message');
+  const charCount = document.getElementById('charCount');
   msgField.addEventListener('input', () => { charCount.textContent = msgField.value.length; });
 
   document.getElementById('campaignForm').addEventListener('submit', async function(e) {
@@ -978,18 +1004,23 @@
   });
 </script>
 
+
 <!-- ============================================================
      FOOTER
-     Edit quick links, social links, and contact details here.
+     All links, socials, contact details preserved.
      ============================================================ -->
-<footer class="relative border-t border-white/5 pt-20 pb-10">
+<footer class="relative border-t border-white/[0.06] bg-[#121212] pt-20 pb-10">
   <div class="max-w-7xl mx-auto px-6 lg:px-10">
     <div class="grid sm:grid-cols-2 lg:grid-cols-4 gap-12 mb-16">
 
       <!-- Brand blurb -->
       <div>
         <a href="#home" class="flex items-center gap-2 mb-4">
-          <svg width="28" height="28" viewBox="0 0 30 30" fill="none"><rect x="1" y="1" width="28" height="28" rx="6" stroke="#7DDCFF" stroke-width="1.5"/><path d="M9 20V10L21 10" stroke="#7DDCFF" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/><circle cx="21" cy="14" r="2.5" fill="#7DDCFF"/></svg>
+          <svg width="28" height="28" viewBox="0 0 30 30" fill="none">
+            <rect x="1" y="1" width="28" height="28" rx="8" stroke="#B2D5E5" stroke-width="1.5"/>
+            <path d="M9 20V10L21 10" stroke="#B2D5E5" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+            <circle cx="21" cy="14" r="2.5" fill="#B2D5E5"/>
+          </svg>
           <span class="font-display font-semibold text-lg">The Kult</span>
         </a>
         <p class="text-white/45 text-sm leading-relaxed max-w-xs">A creator-powered music marketing agency turning TikTok virality into lasting Spotify growth.</p>
@@ -1006,7 +1037,7 @@
         </ul>
       </div>
 
-      <!-- Social links — update href values with real URLs -->
+      <!-- Social -->
       <div>
         <p class="font-display font-semibold mb-4">Connect</p>
         <ul class="space-y-3 text-sm text-white/50">
@@ -1015,13 +1046,11 @@
         </ul>
       </div>
 
-      <!-- Contact details — update email, phone, and locations here -->
+      <!-- Contact -->
       <div>
         <p class="font-display font-semibold mb-4">Contact</p>
         <ul class="space-y-3 text-sm text-white/50">
-          <li><a href="mailto:theonlykult@gmail.com" class="hover:text-ice transition-colors">
-        theonlykult@gmail.com
-      </a></li>
+          <li><a href="mailto:theonlykult@gmail.com" class="hover:text-ice transition-colors">theonlykult@gmail.com</a></li>
           <li>Cairo · Johannesburg · Pretoria</li>
         </ul>
       </div>
@@ -1031,7 +1060,6 @@
     <div class="hairline mb-8"></div>
 
     <div class="flex flex-col sm:flex-row justify-between items-center gap-4 text-white/35 text-sm">
-      <!-- Edit the copyright year / company name here -->
       <p>© 2026 The Kult Music Group. All rights reserved.</p>
       <div class="flex gap-6">
         <a href="privacy-policy.html" class="hover:text-ice transition-colors">Privacy Policy</a>
@@ -1041,33 +1069,24 @@
   </div>
 </footer>
 
+
 <!-- ============================================================
      JAVASCRIPT
-     All interactive behaviour is in main.js — edit that file.
-     It must be loaded at the end of <body> (after the HTML
-     elements it references have been parsed).
+     main.js must load at the end of <body>.
      ============================================================ -->
 <script src="main.js"></script>
 
+<!-- Package autofill — pre-selects #field_budget from pricing carousel CTAs -->
 <script>
-document.addEventListener('DOMContentLoaded', () => {
-
-  document.querySelectorAll('.package-btn').forEach(button => {
-
-    button.addEventListener('click', () => {
-
-      const selectedPackage = button.dataset.package;
-      const packageField = document.getElementById('field_budget');
-
-      if (packageField) {
-        packageField.value = selectedPackage;
-      }
-
+  document.addEventListener('DOMContentLoaded', () => {
+    document.querySelectorAll('.package-btn').forEach(button => {
+      button.addEventListener('click', () => {
+        const packageField = document.getElementById('field_budget');
+        if (packageField) packageField.value = button.dataset.package;
+      });
     });
-
   });
-
-});
 </script>
+
 </body>
 </html>
