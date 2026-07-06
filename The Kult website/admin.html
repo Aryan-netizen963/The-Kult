@@ -36,7 +36,6 @@
     -webkit-font-smoothing: antialiased;
   }
 
-  /* ── Lock screen ── */
   #lock {
     position: fixed; inset: 0; z-index: 100;
     background: var(--bg);
@@ -72,11 +71,9 @@
     min-height: 18px;
   }
 
-  /* ── App shell ── */
   #app { display: none; flex-direction: column; min-height: 100vh; }
   #app.visible { display: flex; }
 
-  /* ── Top bar ── */
   .topbar {
     position: sticky; top: 0; z-index: 50;
     background: rgba(17,17,17,0.92);
@@ -100,10 +97,8 @@
     padding: 3px 8px; border-radius: 20px;
   }
 
-  /* ── Main content ── */
   main { flex: 1; padding: 20px 16px 100px; max-width: 600px; margin: 0 auto; width: 100%; }
 
-  /* ── Section label ── */
   .section-label {
     font-family: 'Geist Mono', monospace;
     font-size: 10px; letter-spacing: 0.3em;
@@ -111,7 +106,6 @@
     margin-bottom: 12px; margin-top: 28px;
   }
 
-  /* ── Summary strip ── */
   .summary {
     display: grid; grid-template-columns: repeat(3, 1fr);
     gap: 10px; margin-bottom: 6px;
@@ -133,7 +127,6 @@
     font-family: 'Geist Mono', monospace; letter-spacing: 0.1em;
   }
 
-  /* ── Add song button ── */
   .add-btn {
     width: 100%; padding: 15px;
     background: var(--ice); color: #111; border: none;
@@ -147,7 +140,6 @@
 
   .add-btn:active { transform: scale(0.98); opacity: 0.85; }
 
-  /* ── Song cards ── */
   .song-card {
     background: var(--surface); border: 1px solid var(--border);
     border-radius: var(--r); margin-bottom: 12px;
@@ -178,9 +170,7 @@
 
   .song-artist { font-size: 12px; color: var(--muted); margin-top: 2px; }
 
-  .song-budget-pill {
-    flex-shrink: 0; text-align: right;
-  }
+  .song-budget-pill { flex-shrink: 0; text-align: right; }
 
   .pill-remaining {
     font-size: 13px; font-weight: 600; font-family: 'Geist Mono', monospace;
@@ -192,13 +182,9 @@
 
   .pill-label { font-size: 10px; color: var(--muted); margin-top: 1px; }
 
-  .song-chevron {
-    color: var(--muted); transition: transform 0.25s; flex-shrink: 0;
-  }
-
+  .song-chevron { color: var(--muted); transition: transform 0.25s; flex-shrink: 0; }
   .song-card.expanded .song-chevron { transform: rotate(180deg); }
 
-  /* ── Budget bar ── */
   .budget-bar-wrap { padding: 0 16px 14px; }
 
   .budget-bar-track {
@@ -220,12 +206,9 @@
     color: var(--muted); margin-top: 6px;
   }
 
-  /* ── Song expanded body ── */
   .song-body { border-top: 1px solid var(--border); }
-
   .song-body-inner { padding: 16px; }
 
-  /* ── Payout list ── */
   .payout-item {
     background: var(--panel); border: 1px solid var(--border);
     border-radius: var(--r-sm); padding: 12px 14px;
@@ -264,10 +247,7 @@
     font-family: 'Geist Mono', monospace;
   }
 
-  /* ── Action row in expanded song ── */
-  .song-actions {
-    display: flex; gap: 8px; margin-top: 12px;
-  }
+  .song-actions { display: flex; gap: 8px; margin-top: 12px; }
 
   .action-btn {
     flex: 1; padding: 12px 8px;
@@ -280,14 +260,12 @@
   }
 
   .action-btn:active { transform: scale(0.97); opacity: 0.8; }
-
   .action-btn.primary { background: var(--ice); color: #111; }
   .action-btn.ghost {
     background: var(--panel); color: var(--danger);
     border: 1px solid rgba(229,115,115,0.2);
   }
 
-  /* ── Bottom sheet modal ── */
   .overlay {
     position: fixed; inset: 0; z-index: 200;
     background: rgba(0,0,0,0.7); backdrop-filter: blur(4px);
@@ -320,7 +298,6 @@
     margin-bottom: 20px;
   }
 
-  /* ── Form fields ── */
   .field { margin-bottom: 14px; }
 
   .field label {
@@ -339,10 +316,8 @@
 
   .field input:focus, .field textarea:focus { border-color: var(--ice-mid); }
   .field textarea { resize: none; height: 80px; }
-
   .field input[type="number"] { -moz-appearance: textfield; }
   .field input[type="number"]::-webkit-inner-spin-button { display: none; }
-
   .field-row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
 
   .submit-btn {
@@ -360,7 +335,6 @@
   .submit-btn:active { transform: scale(0.98); opacity: 0.85; }
   .submit-btn:disabled { opacity: 0.5; pointer-events: none; }
 
-  /* ── Toast ── */
   .toast {
     position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%) translateY(80px);
     background: var(--panel); border: 1px solid var(--border);
@@ -375,7 +349,6 @@
   .toast.success { border-color: rgba(129,199,132,0.4); color: var(--green); }
   .toast.error   { border-color: rgba(229,115,115,0.4); color: var(--danger); }
 
-  /* ── Loading spinner ── */
   .spinner {
     width: 18px; height: 18px; border: 2px solid rgba(0,0,0,0.2);
     border-top-color: #111; border-radius: 50%;
@@ -390,7 +363,6 @@
     padding: 40px 20px;
   }
 
-  /* ── Confirm dialog ── */
   .confirm-overlay {
     position: fixed; inset: 0; z-index: 300;
     background: rgba(0,0,0,0.8); backdrop-filter: blur(4px);
@@ -418,26 +390,19 @@
   .confirm-btns button {
     flex: 1; padding: 12px; border-radius: var(--r-sm);
     font-size: 14px; font-weight: 600; cursor: pointer; border: none;
-    font-family: 'Geist', sans-serif;
-    transition: opacity 0.2s;
+    font-family: 'Geist', sans-serif; transition: opacity 0.2s;
   }
 
   .confirm-btns .cancel-btn { background: var(--panel); color: var(--text); }
   .confirm-btns .danger-btn { background: var(--danger); color: white; }
 
-  /* ── No songs empty state ── */
-  .empty-state {
-    text-align: center; padding: 48px 20px;
-    color: var(--muted);
-  }
-
+  .empty-state { text-align: center; padding: 48px 20px; color: var(--muted); }
   .empty-state svg { opacity: 0.3; margin-bottom: 16px; }
   .empty-state p { font-size: 14px; line-height: 1.6; }
 </style>
 </head>
 <body>
 
-<!-- ── Lock Screen ── -->
 <div id="lock">
   <div class="logo">
     <svg width="28" height="28" viewBox="0 0 30 30" fill="none">
@@ -449,19 +414,11 @@
   </div>
   <h2>Campaign Dashboard</h2>
   <input type="password" id="passwordInput" placeholder="Enter password" autocomplete="current-password" />
-  <button onclick="checkPassword()" style="
-    width:100%;max-width:320px;padding:15px;
-    background:#B2D5E5;color:#111;border:none;
-    border-radius:16px;font-size:16px;font-weight:600;
-    font-family:'Geist',sans-serif;cursor:pointer;
-    box-shadow:0 0 28px rgba(178,213,229,0.2);
-  ">Unlock</button>
+  <button onclick="checkPassword()" style="width:100%;max-width:320px;padding:15px;background:#B2D5E5;color:#111;border:none;border-radius:16px;font-size:16px;font-weight:600;font-family:'Geist',sans-serif;cursor:pointer;box-shadow:0 0 28px rgba(178,213,229,0.2);">Unlock</button>
   <p class="err" id="lockErr"></p>
 </div>
 
-<!-- ── App ── -->
 <div id="app">
-
   <div class="topbar">
     <div class="topbar-logo">
       <svg width="24" height="24" viewBox="0 0 30 30" fill="none">
@@ -475,8 +432,6 @@
   </div>
 
   <main>
-
-    <!-- Summary -->
     <p class="section-label">Overview</p>
     <div class="summary">
       <div class="summary-card">
@@ -493,7 +448,6 @@
       </div>
     </div>
 
-    <!-- Add song -->
     <p class="section-label" style="margin-top:24px">Songs</p>
     <button class="add-btn" id="addSongBtn">
       <svg width="18" height="18" viewBox="0 0 18 18" fill="none">
@@ -502,15 +456,12 @@
       Add New Song
     </button>
 
-    <!-- Song list -->
     <div id="songList">
       <div class="loading-state">Loading campaigns…</div>
     </div>
-
   </main>
 </div>
 
-<!-- ── Add Song Sheet ── -->
 <div class="overlay" id="songOverlay">
   <div class="sheet">
     <div class="sheet-handle"></div>
@@ -539,7 +490,6 @@
   </div>
 </div>
 
-<!-- ── Add Payout Sheet ── -->
 <div class="overlay" id="payoutOverlay">
   <div class="sheet">
     <div class="sheet-handle"></div>
@@ -570,7 +520,6 @@
   </div>
 </div>
 
-<!-- ── Confirm Dialog ── -->
 <div class="confirm-overlay" id="confirmOverlay">
   <div class="confirm-box">
     <h3 id="confirmTitle">Are you sure?</h3>
@@ -582,41 +531,53 @@
   </div>
 </div>
 
-<!-- ── Toast ── -->
 <div class="toast" id="toast"></div>
 
 <script>
-// ── Config ──────────────────────────────────────────────────────
 const API = 'https://script.google.com/macros/s/AKfycbz7lgw46bX191irbHKwIAnVbp1eClIE79bCEfDifrGVTWYelqWrrFOqJRH_Mk2wSCAlHQ/exec';
-const PASSWORD = '$maa- kult$';  // ← Change this to your own password
-
-// ── State ───────────────────────────────────────────────────────
-let songs    = [];
-let payouts  = {}; // { songId: [payout, ...] }
+const CACHE_KEY = 'kult_cache_v1';
+let SECRET_KEY = '';
+let songs = [];
+let payouts = {};
 let expanded = null;
 let currentSongId = null;
 
-// ── Lock screen ─────────────────────────────────────────────────
-const lockEl   = document.getElementById('lock');
-const appEl    = document.getElementById('app');
-const pwInput  = document.getElementById('passwordInput');
-const lockErr  = document.getElementById('lockErr');
+const lockEl  = document.getElementById('lock');
+const appEl   = document.getElementById('app');
+const pwInput = document.getElementById('passwordInput');
+const lockErr = document.getElementById('lockErr');
 
-if (sessionStorage.getItem('kult_auth') === '1') unlock();
+if (sessionStorage.getItem('kult_key')) {
+  SECRET_KEY = sessionStorage.getItem('kult_key');
+  unlock();
+}
 
-pwInput.addEventListener('keydown', e => {
-  if (e.key === 'Enter') checkPassword();
-});
-
+pwInput.addEventListener('keydown', e => { if (e.key === 'Enter') checkPassword(); });
 pwInput.addEventListener('input', () => { lockErr.textContent = ''; });
 
-function checkPassword() {
-  if (pwInput.value === PASSWORD) {
-    sessionStorage.setItem('kult_auth', '1');
+async function checkPassword() {
+  const attempt = pwInput.value;
+  if (!attempt) return;
+  lockErr.textContent = 'Checking…';
+  lockErr.style.color = 'rgba(255,255,255,0.45)';
+  try {
+    const url = API + '?' + new URLSearchParams({ action: 'getAll', key: attempt });
+    const res = await fetch(url);
+    const data = await res.json();
+    if (data.error === 'Unauthorized') {
+      lockErr.style.color = '';
+      lockErr.textContent = 'Incorrect password';
+      pwInput.value = '';
+      return;
+    }
+    SECRET_KEY = attempt;
+    sessionStorage.setItem('kult_key', attempt);
+    localStorage.setItem(CACHE_KEY, JSON.stringify(data));
+    lockErr.textContent = '';
     unlock();
-  } else {
-    lockErr.textContent = 'Incorrect password';
-    pwInput.value = '';
+  } catch (e) {
+    lockErr.style.color = '';
+    lockErr.textContent = 'Connection failed — try again';
   }
 }
 
@@ -626,19 +587,16 @@ function unlock() {
   loadSongs();
 }
 
-// ── API helpers ─────────────────────────────────────────────────
 async function api(params) {
-  const url = API + '?' + new URLSearchParams(params);
+  const url = API + '?' + new URLSearchParams({ ...params, key: SECRET_KEY });
   const res = await fetch(url);
   const data = await res.json();
   if (data.error) throw new Error(data.error);
   return data;
 }
 
-// ── Toast ────────────────────────────────────────────────────────
 const toastEl = document.getElementById('toast');
 let toastTimer;
-
 function showToast(msg, type = 'success') {
   toastEl.textContent = msg;
   toastEl.className = 'toast show ' + type;
@@ -646,81 +604,87 @@ function showToast(msg, type = 'success') {
   toastTimer = setTimeout(() => toastEl.className = 'toast', 2800);
 }
 
-// ── Confirm dialog ───────────────────────────────────────────────
 const confirmOverlay = document.getElementById('confirmOverlay');
 let confirmResolve;
-
 function confirm(title, msg) {
   document.getElementById('confirmTitle').textContent = title;
-  document.getElementById('confirmMsg').textContent   = msg;
+  document.getElementById('confirmMsg').textContent = msg;
   confirmOverlay.classList.add('open');
   return new Promise(res => { confirmResolve = res; });
 }
-
 document.getElementById('confirmOk').addEventListener('click', () => {
   confirmOverlay.classList.remove('open');
   confirmResolve && confirmResolve(true);
 });
-
 document.getElementById('confirmCancel').addEventListener('click', () => {
   confirmOverlay.classList.remove('open');
   confirmResolve && confirmResolve(false);
 });
 
-// ── Format helpers ───────────────────────────────────────────────
 function fmt(n) {
   const num = parseFloat(n) || 0;
   return '$' + num.toLocaleString('en-US', { minimumFractionDigits: 0, maximumFractionDigits: 0 });
 }
-
 function fmtK(n) {
   const num = parseFloat(n) || 0;
   if (num >= 1000) return '$' + (num/1000).toFixed(1).replace('.0','') + 'k';
   return fmt(num);
 }
-
 function spent(songId) {
   return (payouts[songId] || []).reduce((s, p) => s + (parseFloat(p.amount) || 0), 0);
 }
-
 function remaining(song) {
   return (parseFloat(song.budget) || 0) - spent(song.id);
 }
-
 function budgetColor(song) {
   const total = parseFloat(song.budget) || 0;
   if (total === 0) return 'green';
   const pct = spent(song.id) / total;
-  if (pct >= 1)    return 'red';
+  if (pct >= 1) return 'red';
   if (pct >= 0.75) return 'amber';
   return 'green';
 }
 
-// ── Load songs ───────────────────────────────────────────────────
-async function loadSongs() {
-  document.getElementById('songList').innerHTML = '<div class="loading-state">Loading…</div>';
+function applyData(data) {
+  songs = data.songs || [];
+  payouts = {};
+  (data.payouts || []).forEach(p => {
+    if (!payouts[p.songId]) payouts[p.songId] = [];
+    payouts[p.songId].push(p);
+  });
+  renderAll();
+}
+
+async function loadSongs(showLoading = true) {
+  const cached = localStorage.getItem(CACHE_KEY);
+  if (cached) {
+    try { applyData(JSON.parse(cached)); showLoading = false; } catch (e) {}
+  } else if (showLoading) {
+    document.getElementById('songList').innerHTML = '<div class="loading-state">Loading…</div>';
+  }
   try {
-    songs = await api({ action: 'getSongs' });
-    // Load all payouts for all songs in parallel
-    const results = await Promise.all(songs.map(s => api({ action: 'getPayouts', songId: s.id })));
-    songs.forEach((s, i) => { payouts[s.id] = results[i]; });
-    renderAll();
+    const data = await api({ action: 'getAll' });
+    localStorage.setItem(CACHE_KEY, JSON.stringify(data));
+    applyData(data);
   } catch (e) {
-    document.getElementById('songList').innerHTML = '<div class="loading-state" style="color:#E57373">Failed to load. Check connection.</div>';
+    if (!cached) {
+      document.getElementById('songList').innerHTML = '<div class="loading-state" style="color:#E57373">Failed to load. Check connection.</div>';
+    }
   }
 }
 
-// ── Render everything ────────────────────────────────────────────
-function renderAll() {
-  renderSummary();
-  renderSongs();
+function saveCache() {
+  const flat = [];
+  Object.keys(payouts).forEach(sid => (payouts[sid] || []).forEach(p => flat.push(p)));
+  localStorage.setItem(CACHE_KEY, JSON.stringify({ songs, payouts: flat }));
 }
+
+function renderAll() { renderSummary(); renderSongs(); }
 
 function renderSummary() {
   const totalBudget = songs.reduce((s, song) => s + (parseFloat(song.budget)||0), 0);
   const totalSpent  = songs.reduce((s, song) => s + spent(song.id), 0);
   const totalLeft   = totalBudget - totalSpent;
-
   document.getElementById('totalSongs').textContent     = songs.length;
   document.getElementById('totalSpent').textContent     = fmtK(totalSpent);
   document.getElementById('totalRemaining').textContent = fmtK(totalLeft);
@@ -729,39 +693,24 @@ function renderSummary() {
 function renderSongs() {
   const list = document.getElementById('songList');
   if (!songs.length) {
-    list.innerHTML = `
-      <div class="empty-state">
-        <svg width="40" height="40" viewBox="0 0 40 40" fill="none">
-          <circle cx="20" cy="20" r="18" stroke="#B2D5E5" stroke-width="1.4"/>
-          <path d="M14 20h12M20 14v12" stroke="#B2D5E5" stroke-width="1.4" stroke-linecap="round"/>
-        </svg>
-        <p>No songs yet.<br>Tap "Add New Song" to get started.</p>
-      </div>`;
+    list.innerHTML = `<div class="empty-state"><svg width="40" height="40" viewBox="0 0 40 40" fill="none"><circle cx="20" cy="20" r="18" stroke="#B2D5E5" stroke-width="1.4"/><path d="M14 20h12M20 14v12" stroke="#B2D5E5" stroke-width="1.4" stroke-linecap="round"/></svg><p>No songs yet.<br>Tap "Add New Song" to get started.</p></div>`;
     return;
   }
-
   list.innerHTML = '';
   songs.forEach(song => {
-    const rem    = remaining(song);
-    const total  = parseFloat(song.budget) || 0;
-    const sp     = spent(song.id);
-    const pct    = total > 0 ? Math.min(sp / total, 1) : 0;
-    const color  = budgetColor(song);
-    const isExp  = expanded === song.id;
-    const ps     = payouts[song.id] || [];
-
-    const card = document.createElement('div');
+    const rem   = remaining(song);
+    const total = parseFloat(song.budget) || 0;
+    const sp    = spent(song.id);
+    const pct   = total > 0 ? Math.min(sp / total, 1) : 0;
+    const color = budgetColor(song);
+    const isExp = expanded === song.id;
+    const ps    = payouts[song.id] || [];
+    const card  = document.createElement('div');
     card.className = 'song-card' + (isExp ? ' expanded' : '');
     card.dataset.id = song.id;
-
     card.innerHTML = `
       <div class="song-header" data-toggle="${song.id}">
-        <div class="song-icon">
-          <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
-            <circle cx="10" cy="10" r="8" stroke="#B2D5E5" stroke-width="1.3"/>
-            <circle cx="10" cy="10" r="3" fill="#B2D5E5"/>
-          </svg>
-        </div>
+        <div class="song-icon"><svg width="20" height="20" viewBox="0 0 20 20" fill="none"><circle cx="10" cy="10" r="8" stroke="#B2D5E5" stroke-width="1.3"/><circle cx="10" cy="10" r="3" fill="#B2D5E5"/></svg></div>
         <div class="song-info">
           <div class="song-name">${esc(song.name)}</div>
           <div class="song-artist">${esc(song.artist)} · ${ps.length} payout${ps.length !== 1 ? 's' : ''}</div>
@@ -770,74 +719,37 @@ function renderSongs() {
           <div class="pill-remaining ${color}">${fmt(rem)}</div>
           <div class="pill-label">remaining</div>
         </div>
-        <svg class="song-chevron" width="16" height="16" viewBox="0 0 16 16" fill="none">
-          <path d="M4 6l4 4 4-4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
-        </svg>
+        <svg class="song-chevron" width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M4 6l4 4 4-4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
       </div>
       <div class="budget-bar-wrap">
-        <div class="budget-bar-track">
-          <div class="budget-bar-fill ${color === 'green' ? '' : color}" style="width:${(pct*100).toFixed(1)}%"></div>
-        </div>
-        <div class="budget-nums">
-          <span>Spent ${fmt(sp)}</span>
-          <span>Budget ${fmt(total)}</span>
-        </div>
+        <div class="budget-bar-track"><div class="budget-bar-fill ${color === 'green' ? '' : color}" style="width:${(pct*100).toFixed(1)}%"></div></div>
+        <div class="budget-nums"><span>Spent ${fmt(sp)}</span><span>Budget ${fmt(total)}</span></div>
       </div>
-      ${isExp ? `
-      <div class="song-body">
-        <div class="song-body-inner">
-          <p class="section-label" style="margin-top:0">Payouts</p>
-          ${ps.length ? ps.map(p => `
-            <div class="payout-item">
-              <div class="payout-info">
-                <div class="payout-creator">${esc(p.creator)}</div>
-                <div class="payout-meta">${p.videos || 0} video${p.videos !== '1' ? 's' : ''} · ${p.date || 'No date'}${p.notes ? ' · ' + esc(p.notes) : ''}</div>
-              </div>
-              <div class="payout-amount">${fmt(p.amount)}</div>
-              <button class="del-btn" data-del-payout="${p.id}" data-song="${song.id}" title="Delete payout">
-                <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
-                  <path d="M3 4h10M6 4V3h4v1M6 7v5M10 7v5M4 4l.8 9h6.4L12 4" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/>
-                </svg>
-              </button>
+      ${isExp ? `<div class="song-body"><div class="song-body-inner">
+        <p class="section-label" style="margin-top:0">Payouts</p>
+        ${ps.length ? ps.map(p => `
+          <div class="payout-item">
+            <div class="payout-info">
+              <div class="payout-creator">${esc(p.creator)}</div>
+              <div class="payout-meta">${p.videos || 0} video${p.videos !== '1' ? 's' : ''} · ${p.date || 'No date'}${p.notes ? ' · ' + esc(p.notes) : ''}</div>
             </div>
-          `).join('') : '<div class="empty-payouts">No payouts logged yet</div>'}
-          <div class="song-actions">
-            <button class="action-btn primary" data-add-payout="${song.id}" data-name="${esc(song.name)}">
-              <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
-                <path d="M7 2v10M2 7h10" stroke="#111" stroke-width="1.8" stroke-linecap="round"/>
-              </svg>
-              Log Payout
-            </button>
-            <button class="action-btn ghost" data-del-song="${song.id}" data-name="${esc(song.name)}">
-              <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
-                <path d="M2.5 3.5h9M5 3.5V2.5h4v1M5 6v4.5M9 6v4.5M3.5 3.5l.7 8h5.6l.7-8" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/>
-              </svg>
-              Delete
-            </button>
-          </div>
+            <div class="payout-amount">${fmt(p.amount)}</div>
+            <button class="del-btn" data-del-payout="${p.id}" data-song="${song.id}"><svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M3 4h10M6 4V3h4v1M6 7v5M10 7v5M4 4l.8 9h6.4L12 4" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+          </div>`).join('') : '<div class="empty-payouts">No payouts logged yet</div>'}
+        <div class="song-actions">
+          <button class="action-btn primary" data-add-payout="${song.id}" data-name="${esc(song.name)}"><svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M7 2v10M2 7h10" stroke="#111" stroke-width="1.8" stroke-linecap="round"/></svg>Log Payout</button>
+          <button class="action-btn ghost" data-del-song="${song.id}" data-name="${esc(song.name)}"><svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M2.5 3.5h9M5 3.5V2.5h4v1M5 6v4.5M9 6v4.5M3.5 3.5l.7 8h5.6l.7-8" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/></svg>Delete</button>
         </div>
-      </div>` : ''}
-    `;
-
+      </div></div>` : ''}`;
     list.appendChild(card);
   });
 
-  // Bind events
   list.querySelectorAll('[data-toggle]').forEach(el => {
-    el.addEventListener('click', () => {
-      const id = el.dataset.toggle;
-      expanded = expanded === id ? null : id;
-      renderSongs();
-    });
+    el.addEventListener('click', () => { expanded = expanded === el.dataset.toggle ? null : el.dataset.toggle; renderSongs(); });
   });
-
   list.querySelectorAll('[data-add-payout]').forEach(el => {
-    el.addEventListener('click', e => {
-      e.stopPropagation();
-      openPayoutSheet(el.dataset.addPayout, el.dataset.name);
-    });
+    el.addEventListener('click', e => { e.stopPropagation(); openPayoutSheet(el.dataset.addPayout, el.dataset.name); });
   });
-
   list.querySelectorAll('[data-del-song]').forEach(el => {
     el.addEventListener('click', async e => {
       e.stopPropagation();
@@ -846,7 +758,6 @@ function renderSongs() {
       await deleteSong(el.dataset.delSong);
     });
   });
-
   list.querySelectorAll('[data-del-payout]').forEach(el => {
     el.addEventListener('click', async e => {
       e.stopPropagation();
@@ -861,9 +772,7 @@ function esc(str) {
   return String(str || '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
 }
 
-// ── Add Song ─────────────────────────────────────────────────────
 const songOverlay = document.getElementById('songOverlay');
-
 document.getElementById('addSongBtn').addEventListener('click', () => {
   document.getElementById('songName').value   = '';
   document.getElementById('songArtist').value = '';
@@ -873,56 +782,54 @@ document.getElementById('addSongBtn').addEventListener('click', () => {
   songOverlay.classList.add('open');
   setTimeout(() => document.getElementById('songName').focus(), 300);
 });
-
-songOverlay.addEventListener('click', e => {
-  if (e.target === songOverlay) songOverlay.classList.remove('open');
-});
+songOverlay.addEventListener('click', e => { if (e.target === songOverlay) songOverlay.classList.remove('open'); });
 
 document.getElementById('saveSongBtn').addEventListener('click', async () => {
   const name   = document.getElementById('songName').value.trim();
   const artist = document.getElementById('songArtist').value.trim();
   const budget = document.getElementById('songBudget').value.trim();
-
-  if (!name || !artist || !budget) {
-    showToast('Fill in all required fields', 'error'); return;
-  }
-
-  const btn = document.getElementById('saveSongBtn');
-  btn.disabled = true;
-  btn.innerHTML = '<div class="spinner"></div>';
-
+  if (!name || !artist || !budget) { showToast('Fill in all required fields', 'error'); return; }
+  const date  = document.getElementById('songDate').value;
+  const notes = document.getElementById('songNotes').value.trim();
+  const tempId = 'temp_' + Date.now();
+  songs.push({ id: tempId, name, artist, budget, date, notes });
+  payouts[tempId] = [];
+  renderAll(); saveCache();
+  songOverlay.classList.remove('open');
+  showToast('Song added ✓');
   try {
-    await api({
-      action: 'addSong', name, artist, budget,
-      date:  document.getElementById('songDate').value,
-      notes: document.getElementById('songNotes').value.trim()
-    });
-    songOverlay.classList.remove('open');
-    showToast('Song added ✓');
-    await loadSongs();
+    const res = await api({ action: 'addSong', name, artist, budget, date, notes });
+    const s = songs.find(x => x.id === tempId);
+    if (s) { s.id = res.id; payouts[res.id] = payouts[tempId] || []; delete payouts[tempId]; }
+    if (expanded === tempId) expanded = res.id;
+    saveCache(); renderAll();
   } catch (e) {
-    showToast('Error saving song', 'error');
-  } finally {
-    btn.disabled = false;
-    btn.textContent = 'Save Song';
+    songs = songs.filter(x => x.id !== tempId);
+    delete payouts[tempId];
+    renderAll(); saveCache();
+    showToast('Error saving song — removed', 'error');
   }
 });
 
-// ── Delete Song ───────────────────────────────────────────────────
 async function deleteSong(id) {
+  const backupSongs = [...songs];
+  const backupPayouts = payouts[id];
+  songs = songs.filter(s => s.id !== id);
+  delete payouts[id];
+  expanded = null;
+  renderAll(); saveCache();
+  showToast('Song deleted');
   try {
     await api({ action: 'deleteSong', id });
-    expanded = null;
-    showToast('Song deleted');
-    await loadSongs();
   } catch (e) {
-    showToast('Error deleting song', 'error');
+    songs = backupSongs;
+    if (backupPayouts) payouts[id] = backupPayouts;
+    renderAll(); saveCache();
+    showToast('Delete failed — restored', 'error');
   }
 }
 
-// ── Add Payout ────────────────────────────────────────────────────
 const payoutOverlay = document.getElementById('payoutOverlay');
-
 function openPayoutSheet(songId, songName) {
   currentSongId = songId;
   document.getElementById('payoutSheetTitle').textContent = `Log Payout — ${songName}`;
@@ -934,53 +841,47 @@ function openPayoutSheet(songId, songName) {
   payoutOverlay.classList.add('open');
   setTimeout(() => document.getElementById('payoutCreator').focus(), 300);
 }
-
-payoutOverlay.addEventListener('click', e => {
-  if (e.target === payoutOverlay) payoutOverlay.classList.remove('open');
-});
+payoutOverlay.addEventListener('click', e => { if (e.target === payoutOverlay) payoutOverlay.classList.remove('open'); });
 
 document.getElementById('savePayoutBtn').addEventListener('click', async () => {
   const creator = document.getElementById('payoutCreator').value.trim();
   const amount  = document.getElementById('payoutAmount').value.trim();
-
-  if (!creator || !amount) {
-    showToast('Creator and amount are required', 'error'); return;
-  }
-
-  const btn = document.getElementById('savePayoutBtn');
-  btn.disabled = true;
-  btn.innerHTML = '<div class="spinner"></div>';
-
+  if (!creator || !amount) { showToast('Creator and amount are required', 'error'); return; }
+  const videos = document.getElementById('payoutVideos').value.trim();
+  const date   = document.getElementById('payoutDate').value;
+  const notes  = document.getElementById('payoutNotes').value.trim();
+  const songId = currentSongId;
+  const tempId = 'temp_' + Date.now();
+  if (!payouts[songId]) payouts[songId] = [];
+  payouts[songId].push({ id: tempId, songId, creator, amount, videos, date, notes });
+  expanded = songId;
+  renderAll(); saveCache();
+  payoutOverlay.classList.remove('open');
+  showToast('Payout logged ✓');
   try {
-    await api({
-      action:   'addPayout',
-      songId:   currentSongId,
-      creator,  amount,
-      videos:   document.getElementById('payoutVideos').value.trim(),
-      date:     document.getElementById('payoutDate').value,
-      notes:    document.getElementById('payoutNotes').value.trim()
-    });
-    payoutOverlay.classList.remove('open');
-    showToast('Payout logged ✓');
-    await loadSongs();
+    const res = await api({ action: 'addPayout', songId, creator, amount, videos, date, notes });
+    const p = (payouts[songId] || []).find(x => x.id === tempId);
+    if (p) p.id = res.id;
+    saveCache();
   } catch (e) {
-    showToast('Error saving payout', 'error');
-  } finally {
-    btn.disabled = false;
-    btn.textContent = 'Save Payout';
+    payouts[songId] = (payouts[songId] || []).filter(x => x.id !== tempId);
+    renderAll(); saveCache();
+    showToast('Error saving payout — removed', 'error');
   }
 });
 
-// ── Delete Payout ─────────────────────────────────────────────────
 async function deletePayout(id, songId) {
+  const backup = [...(payouts[songId] || [])];
+  payouts[songId] = (payouts[songId] || []).filter(p => p.id !== id);
+  expanded = songId;
+  renderAll(); saveCache();
+  showToast('Payout removed');
   try {
     await api({ action: 'deletePayout', id });
-    showToast('Payout removed');
-    await loadSongs();
-    expanded = songId; // keep card open
-    renderAll();
   } catch (e) {
-    showToast('Error deleting payout', 'error');
+    payouts[songId] = backup;
+    renderAll(); saveCache();
+    showToast('Delete failed — restored', 'error');
   }
 }
 </script>
