@@ -366,6 +366,19 @@
   </div>
 </div>
 
+<!-- Edit Delivered Videos Sheet -->
+<div class="overlay" id="deliveredOverlay">
+  <div class="sheet">
+    <div class="sheet-handle"></div>
+    <div class="sheet-title">Update Video Count</div>
+    <input type="hidden" id="deliveredPayoutId"/>
+    <input type="hidden" id="deliveredSongId"/>
+    <div class="field"><label>Videos Expected</label><input type="number" id="deliveredExpected" placeholder="e.g. 3" inputmode="numeric"/></div>
+    <div class="field"><label>Videos Delivered</label><input type="number" id="deliveredCount" placeholder="e.g. 2" inputmode="numeric"/></div>
+    <button class="submit-btn" id="saveDeliveredBtn">Save</button>
+  </div>
+</div>
+
 <!-- Edit Song Sheet -->
 <div class="overlay" id="editSongOverlay">
   <div class="sheet">
@@ -686,7 +699,10 @@ function renderSongs() {
             ${expected > 0 ? `<div class="payout-videos">
               <div class="video-track"><div class="video-fill" style="width:${(vidPct*100).toFixed(0)}%"></div></div>
               <span class="video-label">${delivered}/${expected} videos</span>
-            </div>` : ''}
+              <button class="edit-delivered-btn" data-payout="${p.id}" data-song="${song.id}" data-delivered="${delivered}" data-expected="${expected}" style="background:none;border:none;cursor:pointer;color:var(--muted);padding:2px 4px;font-size:11px;font-family:'Geist Mono',monospace;-webkit-tap-highlight-color:transparent;">edit</button>
+            </div>` : `<div class="payout-videos">
+              <button class="edit-delivered-btn" data-payout="${p.id}" data-song="${song.id}" data-delivered="${delivered}" data-expected="${expected}" style="background:none;border:none;cursor:pointer;color:var(--muted);padding:2px 0;font-size:11px;font-family:'Geist Mono',monospace;-webkit-tap-highlight-color:transparent;">+ add video count</button>
+            </div>`}
           </div>`;
         }).join('') : '<div class="empty-payouts">No payouts logged yet</div>'}
 
@@ -705,6 +721,17 @@ function renderSongs() {
   });
   list.querySelectorAll('[data-add-payout]').forEach(el => {
     el.addEventListener('click', e => { e.stopPropagation(); openPayoutSheet(el.dataset.addPayout, el.dataset.name); });
+  });
+  list.querySelectorAll('.edit-delivered-btn').forEach(el => {
+    el.addEventListener('click', e => {
+      e.stopPropagation();
+      document.getElementById('deliveredPayoutId').value = el.dataset.payout;
+      document.getElementById('deliveredSongId').value   = el.dataset.song;
+      document.getElementById('deliveredExpected').value = el.dataset.expected || '';
+      document.getElementById('deliveredCount').value    = el.dataset.delivered || '';
+      document.getElementById('deliveredOverlay').classList.add('open');
+      setTimeout(() => document.getElementById('deliveredCount').focus(), 300);
+    });
   });
   list.querySelectorAll('[data-edit-song]').forEach(el => {
     el.addEventListener('click', e => {
@@ -885,6 +912,35 @@ async function deleteSong(id) {
   try { await api({action:'deleteSong',id}); }
   catch(e) { songs=bkSongs;if(bkPayouts)payouts[id]=bkPayouts;renderAll();saveCache();showToast('Delete failed','error'); }
 }
+
+// ── Edit Delivered Videos ─────────────────────────────────────────
+const deliveredOverlay = document.getElementById('deliveredOverlay');
+deliveredOverlay.addEventListener('click', e => { if(e.target===deliveredOverlay) deliveredOverlay.classList.remove('open'); });
+
+document.getElementById('saveDeliveredBtn').addEventListener('click', async () => {
+  const payoutId  = document.getElementById('deliveredPayoutId').value;
+  const songId    = document.getElementById('deliveredSongId').value;
+  const expected  = document.getElementById('deliveredExpected').value.trim();
+  const delivered = document.getElementById('deliveredCount').value.trim();
+
+  const p = (payouts[songId]||[]).find(x => x.id === payoutId);
+  if (!p) return;
+  const backup = { ...p };
+  p.videos    = expected;
+  p.delivered = delivered;
+  expanded = songId;
+  renderAll(); saveCache();
+  deliveredOverlay.classList.remove('open');
+  showToast('Video count updated ✓');
+
+  try {
+    await api({ action: 'updatePayout', id: payoutId, videos: expected, delivered });
+  } catch(e) {
+    Object.assign(p, backup);
+    renderAll(); saveCache();
+    showToast('Error saving','error');
+  }
+});
 
 // ── Edit Song ─────────────────────────────────────────────────────
 const editSongOverlay = document.getElementById('editSongOverlay');
