@@ -548,8 +548,7 @@ function spendableBudget(song) {
 }
 function profitAmount(song) {
   const total = parseFloat(song.budget)||0;
-  const pct   = parseFloat(song.spendable)||50;
-  return total * (1 - pct/100);
+  return total - spent(song.id);
 }
 function spent(songId) { return (payouts[songId]||[]).reduce((s,p) => s+(parseFloat(p.amount)||0), 0); }
 function remaining(song) { return spendableBudget(song) - spent(song.id); }
@@ -665,7 +664,7 @@ function renderSongs() {
 
         <!-- Profit split -->
         <div class="song-profit-box">
-          <div class="song-profit-title">Profit Split — ${fmt(profit)} (${100-(parseFloat(song.spendable)||50)}% of ${fmt(parseFloat(song.budget)||0)})</div>
+          <div class="song-profit-title">Profit Split — ${fmt(profit)} (Budget ${fmt(parseFloat(song.budget)||0)} − Spent ${fmt(sp)})</div>
           ${PARTNERS.map(p => `<div class="song-profit-row"><span class="pname">${p.name} (${p.pct*100}%)</span><span class="pamount">${fmt(profit*p.pct)}</span></div>`).join('')}
         </div>
 
