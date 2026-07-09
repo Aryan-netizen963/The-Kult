@@ -141,6 +141,7 @@
   .action-btn{flex:1;padding:12px 8px;border-radius:var(--r-sm);font-size:13px;font-weight:600;font-family:'Geist',sans-serif;cursor:pointer;border:none;display:flex;align-items:center;justify-content:center;gap:6px;transition:opacity 0.2s,transform 0.15s;-webkit-tap-highlight-color:transparent;}
   .action-btn:active{transform:scale(0.97);opacity:0.8;}
   .action-btn.primary{background:var(--ice);color:#111;}
+  .action-btn.secondary{background:var(--panel);color:var(--ice);border:1px solid var(--ice-mid);}
   .action-btn.ghost{background:var(--panel);color:var(--danger);border:1px solid rgba(229,115,115,0.2);}
 
   /* Expense items */
@@ -362,6 +363,41 @@
     </div>
     <div class="field"><label>Notes</label><textarea id="expenseNotes" placeholder="Any extra info…"></textarea></div>
     <button class="submit-btn" id="saveExpenseBtn">Save Expense</button>
+  </div>
+</div>
+
+<!-- Edit Song Sheet -->
+<div class="overlay" id="editSongOverlay">
+  <div class="sheet">
+    <div class="sheet-handle"></div>
+    <div class="sheet-title">Edit Song</div>
+    <input type="hidden" id="editSongId"/>
+    <div class="field"><label>Song Title *</label><input type="text" id="editSongName" placeholder="e.g. Midnight Drive"/></div>
+    <div class="field"><label>Artist Name *</label><input type="text" id="editSongArtist" placeholder="e.g. exhibit"/></div>
+    <div class="field"><label>Full Client Budget (USD) *</label><input type="number" id="editSongBudget" placeholder="e.g. 1000" inputmode="decimal"/></div>
+    <div class="field-row">
+      <div class="field"><label>Spendable %</label><input type="number" id="editSongSpendable" placeholder="50" inputmode="decimal"/></div>
+      <div class="field"><label>Status</label>
+        <select id="editSongStatus">
+          <option value="active">Active</option>
+          <option value="completed">Completed</option>
+          <option value="on-hold">On Hold</option>
+        </select>
+      </div>
+    </div>
+    <div class="field-row">
+      <div class="field"><label>Month</label>
+        <select id="editSongMonth">
+          <option value="1">January</option><option value="2">February</option><option value="3">March</option>
+          <option value="4">April</option><option value="5">May</option><option value="6">June</option>
+          <option value="7">July</option><option value="8">August</option><option value="9">September</option>
+          <option value="10">October</option><option value="11">November</option><option value="12">December</option>
+        </select>
+      </div>
+      <div class="field"><label>Year</label><input type="number" id="editSongYear" placeholder="2026" inputmode="numeric"/></div>
+    </div>
+    <div class="field"><label>Notes</label><textarea id="editSongNotes" placeholder="Any extra info…"></textarea></div>
+    <button class="submit-btn" id="saveEditSongBtn">Save Changes</button>
   </div>
 </div>
 
@@ -657,6 +693,7 @@ function renderSongs() {
 
         <div class="song-actions">
           <button class="action-btn primary" data-add-payout="${song.id}" data-name="${esc(song.name)}"><svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M7 2v10M2 7h10" stroke="#111" stroke-width="1.8" stroke-linecap="round"/></svg>Log Payout</button>
+          <button class="action-btn secondary" data-edit-song="${song.id}"><svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M2 10.5V12h1.5l5-5-1.5-1.5-5 5zM11.5 3.5a1 1 0 0 0-1.414-1.414L9 3.172 10.828 5l.672-.672z" fill="currentColor"/></svg>Edit</button>
           <button class="action-btn ghost" data-del-song="${song.id}" data-name="${esc(song.name)}"><svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M2.5 3.5h9M5 3.5V2.5h4v1M5 6v4.5M9 6v4.5M3.5 3.5l.7 8h5.6l.7-8" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/></svg>Delete</button>
         </div>
       </div></div>` : ''}`;
@@ -669,6 +706,12 @@ function renderSongs() {
   });
   list.querySelectorAll('[data-add-payout]').forEach(el => {
     el.addEventListener('click', e => { e.stopPropagation(); openPayoutSheet(el.dataset.addPayout, el.dataset.name); });
+  });
+  list.querySelectorAll('[data-edit-song]').forEach(el => {
+    el.addEventListener('click', e => {
+      e.stopPropagation();
+      openEditSongSheet(el.dataset.editSong);
+    });
   });
   list.querySelectorAll('[data-del-song]').forEach(el => {
     el.addEventListener('click', async e => {
@@ -843,6 +886,55 @@ async function deleteSong(id) {
   try { await api({action:'deleteSong',id}); }
   catch(e) { songs=bkSongs;if(bkPayouts)payouts[id]=bkPayouts;renderAll();saveCache();showToast('Delete failed','error'); }
 }
+
+// ── Edit Song ─────────────────────────────────────────────────────
+const editSongOverlay = document.getElementById('editSongOverlay');
+
+function openEditSongSheet(id) {
+  const song = songs.find(s => s.id === id);
+  if (!song) return;
+  document.getElementById('editSongId').value       = song.id;
+  document.getElementById('editSongName').value     = song.name || '';
+  document.getElementById('editSongArtist').value   = song.artist || '';
+  document.getElementById('editSongBudget').value   = song.budget || '';
+  document.getElementById('editSongSpendable').value= song.spendable || '50';
+  document.getElementById('editSongStatus').value   = song.status || 'active';
+  document.getElementById('editSongMonth').value    = song.month || (new Date().getMonth()+1);
+  document.getElementById('editSongYear').value     = song.year || new Date().getFullYear();
+  document.getElementById('editSongNotes').value    = song.notes || '';
+  editSongOverlay.classList.add('open');
+}
+
+editSongOverlay.addEventListener('click', e => { if(e.target===editSongOverlay) editSongOverlay.classList.remove('open'); });
+
+document.getElementById('saveEditSongBtn').addEventListener('click', async () => {
+  const id       = document.getElementById('editSongId').value;
+  const name     = document.getElementById('editSongName').value.trim();
+  const artist   = document.getElementById('editSongArtist').value.trim();
+  const budget   = document.getElementById('editSongBudget').value.trim();
+  if (!name||!artist||!budget) { showToast('Fill in all required fields','error'); return; }
+  const spendable= document.getElementById('editSongSpendable').value.trim()||'50';
+  const status   = document.getElementById('editSongStatus').value;
+  const month    = document.getElementById('editSongMonth').value;
+  const year     = document.getElementById('editSongYear').value;
+  const notes    = document.getElementById('editSongNotes').value.trim();
+
+  // Optimistic update
+  const song = songs.find(s => s.id === id);
+  const backup = { ...song };
+  Object.assign(song, { name, artist, budget, spendable, status, month, year, notes });
+  renderAll(); saveCache();
+  editSongOverlay.classList.remove('open');
+  showToast('Song updated ✓');
+
+  try {
+    await api({ action: 'updateSong', id, name, artist, budget, spendable, status, month, year, notes });
+  } catch(e) {
+    Object.assign(song, backup);
+    renderAll(); saveCache();
+    showToast('Error saving changes','error');
+  }
+});
 
 // ── Add Payout ────────────────────────────────────────────────────
 const payoutOverlay = document.getElementById('payoutOverlay');
