@@ -9,400 +9,202 @@
 <link rel="icon" type="image/svg+xml" href="favicon.svg">
 <style>
   :root {
-    --bg:       #111111;
-    --surface:  #181818;
-    --panel:    #202020;
-    --border:   rgba(255,255,255,0.08);
-    --ice:      #B2D5E5;
-    --ice-dim:  rgba(178,213,229,0.12);
-    --ice-mid:  rgba(178,213,229,0.25);
-    --frost:    #DCEDF5;
-    --text:     rgba(255,255,255,0.92);
-    --muted:    rgba(255,255,255,0.45);
-    --danger:   #E57373;
-    --green:    #81C784;
-    --amber:    #FFB74D;
-    --r:        16px;
-    --r-sm:     10px;
+    --bg:#111111;--surface:#181818;--panel:#202020;--border:rgba(255,255,255,0.08);
+    --ice:#B2D5E5;--ice-dim:rgba(178,213,229,0.12);--ice-mid:rgba(178,213,229,0.25);
+    --frost:#DCEDF5;--text:rgba(255,255,255,0.92);--muted:rgba(255,255,255,0.45);
+    --danger:#E57373;--green:#81C784;--amber:#FFB74D;--purple:#CE93D8;--r:16px;--r-sm:10px;
   }
-
-  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-
-  html, body {
-    background: var(--bg);
-    color: var(--text);
-    font-family: 'Geist', sans-serif;
-    min-height: 100vh;
-    -webkit-font-smoothing: antialiased;
-  }
-
-  #lock {
-    position: fixed; inset: 0; z-index: 100;
-    background: var(--bg);
-    display: flex; flex-direction: column;
-    align-items: center; justify-content: center;
-    gap: 24px; padding: 32px;
-  }
-
-  #lock .logo {
-    display: flex; align-items: center; gap: 10px;
-    font-size: 20px; font-weight: 600; letter-spacing: -0.03em;
-  }
-
-  #lock h2 {
-    font-size: 15px; color: var(--muted); font-weight: 400;
-    letter-spacing: 0.3em; text-transform: uppercase;
-    font-family: 'Geist Mono', monospace;
-  }
-
-  #lock input {
-    width: 100%; max-width: 320px;
-    background: var(--surface); border: 1px solid var(--border);
-    border-radius: var(--r); padding: 14px 18px;
-    color: var(--text); font-size: 16px; font-family: 'Geist Mono', monospace;
-    outline: none; text-align: center; letter-spacing: 0.15em;
-    transition: border-color 0.2s;
-  }
-
-  #lock input:focus { border-color: var(--ice-mid); }
-
-  #lock .err {
-    font-size: 13px; color: var(--danger); font-family: 'Geist Mono', monospace;
-    min-height: 18px;
-  }
-
-  #app { display: none; flex-direction: column; min-height: 100vh; }
-  #app.visible { display: flex; }
-
-  .topbar {
-    position: sticky; top: 0; z-index: 50;
-    background: rgba(17,17,17,0.92);
-    backdrop-filter: blur(16px);
-    border-bottom: 1px solid var(--border);
-    padding: 0 20px;
-    height: 56px;
-    display: flex; align-items: center; justify-content: space-between;
-  }
-
-  .topbar-logo {
-    display: flex; align-items: center; gap: 8px;
-    font-size: 17px; font-weight: 600; letter-spacing: -0.03em;
-  }
-
-  .topbar-tag {
-    font-family: 'Geist Mono', monospace;
-    font-size: 10px; letter-spacing: 0.25em;
-    color: var(--ice); text-transform: uppercase;
-    background: var(--ice-dim); border: 1px solid var(--ice-mid);
-    padding: 3px 8px; border-radius: 20px;
-  }
-
-  main { flex: 1; padding: 20px 16px 100px; max-width: 600px; margin: 0 auto; width: 100%; }
-
-  .section-label {
-    font-family: 'Geist Mono', monospace;
-    font-size: 10px; letter-spacing: 0.3em;
-    color: var(--ice); text-transform: uppercase;
-    margin-bottom: 12px; margin-top: 28px;
-  }
-
-  .summary {
-    display: grid; grid-template-columns: repeat(3, 1fr);
-    gap: 10px; margin-bottom: 6px;
-  }
-
-  .summary-card {
-    background: var(--surface); border: 1px solid var(--border);
-    border-radius: var(--r); padding: 14px 12px;
-    text-align: center;
-  }
-
-  .summary-card .val {
-    font-size: 22px; font-weight: 700; letter-spacing: -0.03em;
-    color: var(--ice); line-height: 1;
-  }
-
-  .summary-card .lbl {
-    font-size: 10px; color: var(--muted); margin-top: 4px;
-    font-family: 'Geist Mono', monospace; letter-spacing: 0.1em;
-  }
-
-  .add-btn {
-    width: 100%; padding: 15px;
-    background: var(--ice); color: #111; border: none;
-    border-radius: var(--r); font-size: 15px; font-weight: 600;
-    font-family: 'Geist', sans-serif; cursor: pointer;
-    display: flex; align-items: center; justify-content: center; gap: 8px;
-    box-shadow: 0 0 28px rgba(178,213,229,0.2);
-    transition: opacity 0.2s, transform 0.15s;
-    margin-bottom: 8px;
-  }
-
-  .add-btn:active { transform: scale(0.98); opacity: 0.85; }
-
-  .song-card {
-    background: var(--surface); border: 1px solid var(--border);
-    border-radius: var(--r); margin-bottom: 12px;
-    overflow: hidden; transition: border-color 0.2s;
-  }
-
-  .song-card.expanded { border-color: var(--ice-mid); }
-
-  .song-header {
-    padding: 16px; display: flex; align-items: center;
-    gap: 12px; cursor: pointer; user-select: none;
-    -webkit-tap-highlight-color: transparent;
-  }
-
-  .song-icon {
-    width: 42px; height: 42px; border-radius: 10px;
-    background: var(--ice-dim); border: 1px solid var(--ice-mid);
-    display: flex; align-items: center; justify-content: center;
-    flex-shrink: 0;
-  }
-
-  .song-info { flex: 1; min-width: 0; }
-
-  .song-name {
-    font-size: 15px; font-weight: 600; letter-spacing: -0.02em;
-    white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
-  }
-
-  .song-artist { font-size: 12px; color: var(--muted); margin-top: 2px; }
-
-  .song-budget-pill { flex-shrink: 0; text-align: right; }
-
-  .pill-remaining {
-    font-size: 13px; font-weight: 600; font-family: 'Geist Mono', monospace;
-  }
-
-  .pill-remaining.green { color: var(--green); }
-  .pill-remaining.amber { color: var(--amber); }
-  .pill-remaining.red   { color: var(--danger); }
-
-  .pill-label { font-size: 10px; color: var(--muted); margin-top: 1px; }
-
-  .song-chevron { color: var(--muted); transition: transform 0.25s; flex-shrink: 0; }
-  .song-card.expanded .song-chevron { transform: rotate(180deg); }
-
-  .budget-bar-wrap { padding: 0 16px 14px; }
-
-  .budget-bar-track {
-    height: 4px; background: var(--panel); border-radius: 4px; overflow: hidden;
-  }
-
-  .budget-bar-fill {
-    height: 100%; border-radius: 4px;
-    background: linear-gradient(90deg, var(--ice), var(--frost));
-    transition: width 0.5s cubic-bezier(0.22,1,0.36,1);
-  }
-
-  .budget-bar-fill.amber { background: linear-gradient(90deg, var(--amber), #FFD54F); }
-  .budget-bar-fill.red   { background: linear-gradient(90deg, var(--danger), #EF9A9A); }
-
-  .budget-nums {
-    display: flex; justify-content: space-between;
-    font-family: 'Geist Mono', monospace; font-size: 11px;
-    color: var(--muted); margin-top: 6px;
-  }
-
-  .song-body { border-top: 1px solid var(--border); }
-  .song-body-inner { padding: 16px; }
-
-  .payout-item {
-    background: var(--panel); border: 1px solid var(--border);
-    border-radius: var(--r-sm); padding: 12px 14px;
-    margin-bottom: 8px; display: flex; align-items: center; gap: 12px;
-  }
-
-  .payout-info { flex: 1; min-width: 0; }
-
-  .payout-creator {
-    font-size: 14px; font-weight: 500;
-    white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
-  }
-
-  .payout-meta {
-    font-size: 11px; color: var(--muted); margin-top: 2px;
-    font-family: 'Geist Mono', monospace;
-  }
-
-  .payout-amount {
-    font-size: 15px; font-weight: 700;
-    font-family: 'Geist Mono', monospace; color: var(--ice);
-    flex-shrink: 0;
-  }
-
-  .del-btn {
-    background: none; border: none; cursor: pointer;
-    color: var(--muted); padding: 4px; flex-shrink: 0;
-    transition: color 0.2s; -webkit-tap-highlight-color: transparent;
-  }
-
-  .del-btn:active { color: var(--danger); }
-
-  .empty-payouts {
-    text-align: center; color: var(--muted);
-    font-size: 13px; padding: 20px 0;
-    font-family: 'Geist Mono', monospace;
-  }
-
-  .song-actions { display: flex; gap: 8px; margin-top: 12px; }
-
-  .action-btn {
-    flex: 1; padding: 12px 8px;
-    border-radius: var(--r-sm); font-size: 13px; font-weight: 600;
-    font-family: 'Geist', sans-serif; cursor: pointer;
-    border: none; display: flex; align-items: center;
-    justify-content: center; gap: 6px;
-    transition: opacity 0.2s, transform 0.15s;
-    -webkit-tap-highlight-color: transparent;
-  }
-
-  .action-btn:active { transform: scale(0.97); opacity: 0.8; }
-  .action-btn.primary { background: var(--ice); color: #111; }
-  .action-btn.ghost {
-    background: var(--panel); color: var(--danger);
-    border: 1px solid rgba(229,115,115,0.2);
-  }
-
-  .overlay {
-    position: fixed; inset: 0; z-index: 200;
-    background: rgba(0,0,0,0.7); backdrop-filter: blur(4px);
-    display: flex; align-items: flex-end;
-    opacity: 0; pointer-events: none;
-    transition: opacity 0.25s;
-  }
-
-  .overlay.open { opacity: 1; pointer-events: all; }
-
-  .sheet {
-    width: 100%; background: var(--surface);
-    border-top: 1px solid var(--border);
-    border-radius: 24px 24px 0 0;
-    padding: 12px 20px 40px;
-    transform: translateY(100%);
-    transition: transform 0.3s cubic-bezier(0.22,1,0.36,1);
-    max-height: 90vh; overflow-y: auto;
-  }
-
-  .overlay.open .sheet { transform: translateY(0); }
-
-  .sheet-handle {
-    width: 36px; height: 4px; border-radius: 4px;
-    background: var(--border); margin: 0 auto 20px;
-  }
-
-  .sheet-title {
-    font-size: 18px; font-weight: 600; letter-spacing: -0.03em;
-    margin-bottom: 20px;
-  }
-
-  .field { margin-bottom: 14px; }
-
-  .field label {
-    display: block; font-size: 12px; color: var(--muted);
-    margin-bottom: 6px; font-family: 'Geist Mono', monospace;
-    letter-spacing: 0.05em; text-transform: uppercase;
-  }
-
-  .field input, .field textarea {
-    width: 100%; background: var(--panel); border: 1px solid var(--border);
-    border-radius: var(--r-sm); padding: 13px 14px;
-    color: var(--text); font-size: 16px; font-family: 'Geist', sans-serif;
-    outline: none; transition: border-color 0.2s;
-    -webkit-appearance: none;
-  }
-
-  .field input:focus, .field textarea:focus { border-color: var(--ice-mid); }
-  .field textarea { resize: none; height: 80px; }
-  .field input[type="number"] { -moz-appearance: textfield; }
-  .field input[type="number"]::-webkit-inner-spin-button { display: none; }
-  .field-row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
-
-  .submit-btn {
-    width: 100%; padding: 15px;
-    background: var(--ice); color: #111; border: none;
-    border-radius: var(--r); font-size: 16px; font-weight: 600;
-    font-family: 'Geist', sans-serif; cursor: pointer;
-    margin-top: 6px;
-    display: flex; align-items: center; justify-content: center; gap: 8px;
-    box-shadow: 0 0 28px rgba(178,213,229,0.2);
-    transition: opacity 0.2s, transform 0.15s;
-    -webkit-tap-highlight-color: transparent;
-  }
-
-  .submit-btn:active { transform: scale(0.98); opacity: 0.85; }
-  .submit-btn:disabled { opacity: 0.5; pointer-events: none; }
-
-  .toast {
-    position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%) translateY(80px);
-    background: var(--panel); border: 1px solid var(--border);
-    border-radius: 40px; padding: 10px 20px;
-    font-size: 13px; font-weight: 500;
-    white-space: nowrap; z-index: 300;
-    transition: transform 0.3s cubic-bezier(0.22,1,0.36,1), opacity 0.3s;
-    opacity: 0;
-  }
-
-  .toast.show { transform: translateX(-50%) translateY(0); opacity: 1; }
-  .toast.success { border-color: rgba(129,199,132,0.4); color: var(--green); }
-  .toast.error   { border-color: rgba(229,115,115,0.4); color: var(--danger); }
-
-  .spinner {
-    width: 18px; height: 18px; border: 2px solid rgba(0,0,0,0.2);
-    border-top-color: #111; border-radius: 50%;
-    animation: spin 0.7s linear infinite; display: inline-block;
-  }
-
-  @keyframes spin { to { transform: rotate(360deg); } }
-
-  .loading-state {
-    text-align: center; color: var(--muted);
-    font-family: 'Geist Mono', monospace; font-size: 13px;
-    padding: 40px 20px;
-  }
-
-  .confirm-overlay {
-    position: fixed; inset: 0; z-index: 300;
-    background: rgba(0,0,0,0.8); backdrop-filter: blur(4px);
-    display: flex; align-items: center; justify-content: center;
-    padding: 24px; opacity: 0; pointer-events: none;
-    transition: opacity 0.2s;
-  }
-
-  .confirm-overlay.open { opacity: 1; pointer-events: all; }
-
-  .confirm-box {
-    background: var(--surface); border: 1px solid var(--border);
-    border-radius: var(--r); padding: 24px; width: 100%; max-width: 320px;
-    transform: scale(0.92);
-    transition: transform 0.25s cubic-bezier(0.22,1,0.36,1);
-  }
-
-  .confirm-overlay.open .confirm-box { transform: scale(1); }
-
-  .confirm-box h3 { font-size: 17px; font-weight: 600; margin-bottom: 8px; }
-  .confirm-box p  { font-size: 14px; color: var(--muted); margin-bottom: 20px; line-height: 1.5; }
-
-  .confirm-btns { display: flex; gap: 10px; }
-
-  .confirm-btns button {
-    flex: 1; padding: 12px; border-radius: var(--r-sm);
-    font-size: 14px; font-weight: 600; cursor: pointer; border: none;
-    font-family: 'Geist', sans-serif; transition: opacity 0.2s;
-  }
-
-  .confirm-btns .cancel-btn { background: var(--panel); color: var(--text); }
-  .confirm-btns .danger-btn { background: var(--danger); color: white; }
-
-  .empty-state { text-align: center; padding: 48px 20px; color: var(--muted); }
-  .empty-state svg { opacity: 0.3; margin-bottom: 16px; }
-  .empty-state p { font-size: 14px; line-height: 1.6; }
+  *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+  html,body{background:var(--bg);color:var(--text);font-family:'Geist',sans-serif;min-height:100vh;-webkit-font-smoothing:antialiased;}
+
+  /* Lock */
+  #lock{position:fixed;inset:0;z-index:100;background:var(--bg);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:24px;padding:32px;}
+  #lock .logo{display:flex;align-items:center;gap:10px;font-size:20px;font-weight:600;letter-spacing:-0.03em;}
+  #lock h2{font-size:15px;color:var(--muted);font-weight:400;letter-spacing:0.3em;text-transform:uppercase;font-family:'Geist Mono',monospace;}
+  #lock input{width:100%;max-width:320px;background:var(--surface);border:1px solid var(--border);border-radius:var(--r);padding:14px 18px;color:var(--text);font-size:16px;font-family:'Geist Mono',monospace;outline:none;text-align:center;letter-spacing:0.15em;transition:border-color 0.2s;}
+  #lock input:focus{border-color:var(--ice-mid);}
+  #lock .err{font-size:13px;color:var(--danger);font-family:'Geist Mono',monospace;min-height:18px;}
+
+  /* App */
+  #app{display:none;flex-direction:column;min-height:100vh;}
+  #app.visible{display:flex;}
+
+  /* Topbar */
+  .topbar{position:sticky;top:0;z-index:50;background:rgba(17,17,17,0.92);backdrop-filter:blur(16px);border-bottom:1px solid var(--border);padding:0 20px;height:56px;display:flex;align-items:center;justify-content:space-between;}
+  .topbar-logo{display:flex;align-items:center;gap:8px;font-size:17px;font-weight:600;letter-spacing:-0.03em;}
+  .topbar-tag{font-family:'Geist Mono',monospace;font-size:10px;letter-spacing:0.25em;color:var(--ice);text-transform:uppercase;background:var(--ice-dim);border:1px solid var(--ice-mid);padding:3px 8px;border-radius:20px;}
+
+  /* Tabs */
+  .tabs{display:flex;gap:4px;padding:16px 16px 0;max-width:600px;margin:0 auto;width:100%;}
+  .tab-btn{flex:1;padding:10px 8px;border-radius:var(--r-sm);font-size:13px;font-weight:600;font-family:'Geist',sans-serif;cursor:pointer;border:1px solid var(--border);background:var(--surface);color:var(--muted);transition:all 0.2s;-webkit-tap-highlight-color:transparent;}
+  .tab-btn.active{background:var(--ice);color:#111;border-color:var(--ice);}
+
+  /* Main */
+  main{flex:1;padding:16px 16px 100px;max-width:600px;margin:0 auto;width:100%;}
+  .tab-panel{display:none;}
+  .tab-panel.active{display:block;}
+
+  /* Section label */
+  .section-label{font-family:'Geist Mono',monospace;font-size:10px;letter-spacing:0.3em;color:var(--ice);text-transform:uppercase;margin-bottom:12px;margin-top:24px;}
+
+  /* Summary strip */
+  .summary{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:6px;}
+  .summary-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);padding:12px 10px;text-align:center;}
+  .summary-card .val{font-size:18px;font-weight:700;letter-spacing:-0.03em;color:var(--ice);line-height:1;}
+  .summary-card .lbl{font-size:9px;color:var(--muted);margin-top:4px;font-family:'Geist Mono',monospace;letter-spacing:0.1em;}
+
+  /* Month selector */
+  .month-selector{display:flex;align-items:center;gap:10px;margin-bottom:16px;}
+  .month-selector select{flex:1;background:var(--surface);border:1px solid var(--border);border-radius:var(--r-sm);padding:11px 14px;color:var(--text);font-size:15px;font-family:'Geist',sans-serif;outline:none;-webkit-appearance:none;}
+
+  /* Monthly summary card */
+  .monthly-summary{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);padding:16px;margin-bottom:16px;}
+  .monthly-row{display:flex;justify-content:space-between;align-items:center;padding:8px 0;border-bottom:1px solid var(--border);font-size:14px;}
+  .monthly-row:last-child{border-bottom:none;}
+  .monthly-row.total{font-weight:700;font-size:15px;}
+  .monthly-row .label{color:var(--muted);}
+  .monthly-row .amount{font-family:'Geist Mono',monospace;font-weight:600;}
+  .monthly-row .amount.green{color:var(--green);}
+  .monthly-row .amount.red{color:var(--danger);}
+  .monthly-row .amount.amber{color:var(--amber);}
+  .monthly-row .amount.purple{color:var(--purple);}
+
+  /* Partner split */
+  .partner-split{background:var(--panel);border-radius:var(--r-sm);padding:12px 14px;margin-top:10px;}
+  .partner-row{display:flex;justify-content:space-between;align-items:center;padding:6px 0;font-size:13px;}
+  .partner-row .name{font-weight:500;}
+  .partner-row .cut{font-family:'Geist Mono',monospace;color:var(--purple);}
+
+  /* Add button */
+  .add-btn{width:100%;padding:15px;background:var(--ice);color:#111;border:none;border-radius:var(--r);font-size:15px;font-weight:600;font-family:'Geist',sans-serif;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px;box-shadow:0 0 28px rgba(178,213,229,0.2);transition:opacity 0.2s,transform 0.15s;margin-bottom:8px;}
+  .add-btn:active{transform:scale(0.98);opacity:0.85;}
+
+  /* Status badge */
+  .status-badge{display:inline-flex;align-items:center;padding:3px 8px;border-radius:20px;font-size:10px;font-weight:600;font-family:'Geist Mono',monospace;letter-spacing:0.05em;text-transform:uppercase;}
+  .status-badge.active{background:rgba(129,199,132,0.15);color:var(--green);border:1px solid rgba(129,199,132,0.3);}
+  .status-badge.completed{background:rgba(178,213,229,0.12);color:var(--ice);border:1px solid rgba(178,213,229,0.25);}
+  .status-badge.on-hold{background:rgba(255,183,77,0.12);color:var(--amber);border:1px solid rgba(255,183,77,0.25);}
+
+  /* Song cards */
+  .song-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);margin-bottom:12px;overflow:hidden;transition:border-color 0.2s;}
+  .song-card.expanded{border-color:var(--ice-mid);}
+  .song-header{padding:14px 16px;display:flex;align-items:center;gap:12px;cursor:pointer;user-select:none;-webkit-tap-highlight-color:transparent;}
+  .song-icon{width:40px;height:40px;border-radius:10px;background:var(--ice-dim);border:1px solid var(--ice-mid);display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+  .song-info{flex:1;min-width:0;}
+  .song-name{font-size:15px;font-weight:600;letter-spacing:-0.02em;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+  .song-meta{font-size:11px;color:var(--muted);margin-top:2px;display:flex;align-items:center;gap:6px;}
+  .song-budget-pill{flex-shrink:0;text-align:right;}
+  .pill-remaining{font-size:13px;font-weight:600;font-family:'Geist Mono',monospace;}
+  .pill-remaining.green{color:var(--green);}
+  .pill-remaining.amber{color:var(--amber);}
+  .pill-remaining.red{color:var(--danger);}
+  .pill-label{font-size:10px;color:var(--muted);margin-top:1px;}
+  .song-chevron{color:var(--muted);transition:transform 0.25s;flex-shrink:0;}
+  .song-card.expanded .song-chevron{transform:rotate(180deg);}
+
+  /* Budget bar */
+  .budget-bar-wrap{padding:0 16px 12px;}
+  .budget-bar-track{height:4px;background:var(--panel);border-radius:4px;overflow:hidden;}
+  .budget-bar-fill{height:100%;border-radius:4px;background:linear-gradient(90deg,var(--ice),var(--frost));transition:width 0.5s cubic-bezier(0.22,1,0.36,1);}
+  .budget-bar-fill.amber{background:linear-gradient(90deg,var(--amber),#FFD54F);}
+  .budget-bar-fill.red{background:linear-gradient(90deg,var(--danger),#EF9A9A);}
+  .budget-nums{display:flex;justify-content:space-between;font-family:'Geist Mono',monospace;font-size:11px;color:var(--muted);margin-top:6px;}
+
+  /* Song body */
+  .song-body{border-top:1px solid var(--border);}
+  .song-body-inner{padding:14px;}
+
+  /* Profit split inside song */
+  .song-profit-box{background:var(--panel);border-radius:var(--r-sm);padding:12px 14px;margin-bottom:12px;}
+  .song-profit-title{font-size:11px;font-family:'Geist Mono',monospace;color:var(--muted);letter-spacing:0.2em;text-transform:uppercase;margin-bottom:8px;}
+  .song-profit-row{display:flex;justify-content:space-between;align-items:center;padding:5px 0;font-size:13px;}
+  .song-profit-row .pname{font-weight:500;}
+  .song-profit-row .pamount{font-family:'Geist Mono',monospace;color:var(--purple);}
+
+  /* Payout list */
+  .payout-item{background:var(--panel);border:1px solid var(--border);border-radius:var(--r-sm);padding:12px 14px;margin-bottom:8px;}
+  .payout-top{display:flex;align-items:center;gap:10px;}
+  .payout-info{flex:1;min-width:0;}
+  .payout-creator{font-size:14px;font-weight:500;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+  .payout-meta{font-size:11px;color:var(--muted);margin-top:2px;font-family:'Geist Mono',monospace;}
+  .payout-amount{font-size:15px;font-weight:700;font-family:'Geist Mono',monospace;color:var(--ice);flex-shrink:0;}
+  .payout-videos{margin-top:8px;display:flex;gap:8px;align-items:center;}
+  .video-track{flex:1;height:3px;background:var(--border);border-radius:3px;overflow:hidden;}
+  .video-fill{height:100%;background:var(--ice);border-radius:3px;transition:width 0.4s;}
+  .video-label{font-size:11px;font-family:'Geist Mono',monospace;color:var(--muted);flex-shrink:0;}
+  .del-btn{background:none;border:none;cursor:pointer;color:var(--muted);padding:4px;flex-shrink:0;transition:color 0.2s;-webkit-tap-highlight-color:transparent;}
+  .del-btn:active{color:var(--danger);}
+  .empty-payouts{text-align:center;color:var(--muted);font-size:13px;padding:20px 0;font-family:'Geist Mono',monospace;}
+
+  /* Song actions */
+  .song-actions{display:flex;gap:8px;margin-top:12px;}
+  .action-btn{flex:1;padding:12px 8px;border-radius:var(--r-sm);font-size:13px;font-weight:600;font-family:'Geist',sans-serif;cursor:pointer;border:none;display:flex;align-items:center;justify-content:center;gap:6px;transition:opacity 0.2s,transform 0.15s;-webkit-tap-highlight-color:transparent;}
+  .action-btn:active{transform:scale(0.97);opacity:0.8;}
+  .action-btn.primary{background:var(--ice);color:#111;}
+  .action-btn.ghost{background:var(--panel);color:var(--danger);border:1px solid rgba(229,115,115,0.2);}
+
+  /* Expense items */
+  .expense-item{background:var(--surface);border:1px solid var(--border);border-radius:var(--r-sm);padding:12px 14px;margin-bottom:8px;display:flex;align-items:center;gap:12px;}
+  .expense-info{flex:1;min-width:0;}
+  .expense-name{font-size:14px;font-weight:500;}
+  .expense-meta{font-size:11px;color:var(--muted);margin-top:2px;font-family:'Geist Mono',monospace;}
+  .expense-amount{font-size:15px;font-weight:700;font-family:'Geist Mono',monospace;color:var(--amber);flex-shrink:0;}
+
+  /* Overlay / sheet */
+  .overlay{position:fixed;inset:0;z-index:200;background:rgba(0,0,0,0.7);backdrop-filter:blur(4px);display:flex;align-items:flex-end;opacity:0;pointer-events:none;transition:opacity 0.25s;}
+  .overlay.open{opacity:1;pointer-events:all;}
+  .sheet{width:100%;background:var(--surface);border-top:1px solid var(--border);border-radius:24px 24px 0 0;padding:12px 20px 40px;transform:translateY(100%);transition:transform 0.3s cubic-bezier(0.22,1,0.36,1);max-height:92vh;overflow-y:auto;}
+  .overlay.open .sheet{transform:translateY(0);}
+  .sheet-handle{width:36px;height:4px;border-radius:4px;background:var(--border);margin:0 auto 20px;}
+  .sheet-title{font-size:18px;font-weight:600;letter-spacing:-0.03em;margin-bottom:20px;}
+
+  /* Fields */
+  .field{margin-bottom:14px;}
+  .field label{display:block;font-size:12px;color:var(--muted);margin-bottom:6px;font-family:'Geist Mono',monospace;letter-spacing:0.05em;text-transform:uppercase;}
+  .field input,.field textarea,.field select{width:100%;background:var(--panel);border:1px solid var(--border);border-radius:var(--r-sm);padding:13px 14px;color:var(--text);font-size:16px;font-family:'Geist',sans-serif;outline:none;transition:border-color 0.2s;-webkit-appearance:none;}
+  .field input:focus,.field textarea:focus,.field select:focus{border-color:var(--ice-mid);}
+  .field textarea{resize:none;height:80px;}
+  .field input[type="number"]{-moz-appearance:textfield;}
+  .field input[type="number"]::-webkit-inner-spin-button{display:none;}
+  .field-row{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
+  .field-hint{font-size:11px;color:var(--muted);margin-top:4px;font-family:'Geist Mono',monospace;}
+
+  .submit-btn{width:100%;padding:15px;background:var(--ice);color:#111;border:none;border-radius:var(--r);font-size:16px;font-weight:600;font-family:'Geist',sans-serif;cursor:pointer;margin-top:6px;display:flex;align-items:center;justify-content:center;gap:8px;box-shadow:0 0 28px rgba(178,213,229,0.2);transition:opacity 0.2s,transform 0.15s;-webkit-tap-highlight-color:transparent;}
+  .submit-btn:active{transform:scale(0.98);opacity:0.85;}
+  .submit-btn:disabled{opacity:0.5;pointer-events:none;}
+
+  /* Toast */
+  .toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%) translateY(80px);background:var(--panel);border:1px solid var(--border);border-radius:40px;padding:10px 20px;font-size:13px;font-weight:500;white-space:nowrap;z-index:300;transition:transform 0.3s cubic-bezier(0.22,1,0.36,1),opacity 0.3s;opacity:0;}
+  .toast.show{transform:translateX(-50%) translateY(0);opacity:1;}
+  .toast.success{border-color:rgba(129,199,132,0.4);color:var(--green);}
+  .toast.error{border-color:rgba(229,115,115,0.4);color:var(--danger);}
+
+  /* Spinner */
+  .spinner{width:18px;height:18px;border:2px solid rgba(0,0,0,0.2);border-top-color:#111;border-radius:50%;animation:spin 0.7s linear infinite;display:inline-block;}
+  @keyframes spin{to{transform:rotate(360deg);}}
+  .loading-state{text-align:center;color:var(--muted);font-family:'Geist Mono',monospace;font-size:13px;padding:40px 20px;}
+
+  /* Confirm */
+  .confirm-overlay{position:fixed;inset:0;z-index:300;background:rgba(0,0,0,0.8);backdrop-filter:blur(4px);display:flex;align-items:center;justify-content:center;padding:24px;opacity:0;pointer-events:none;transition:opacity 0.2s;}
+  .confirm-overlay.open{opacity:1;pointer-events:all;}
+  .confirm-box{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);padding:24px;width:100%;max-width:320px;transform:scale(0.92);transition:transform 0.25s cubic-bezier(0.22,1,0.36,1);}
+  .confirm-overlay.open .confirm-box{transform:scale(1);}
+  .confirm-box h3{font-size:17px;font-weight:600;margin-bottom:8px;}
+  .confirm-box p{font-size:14px;color:var(--muted);margin-bottom:20px;line-height:1.5;}
+  .confirm-btns{display:flex;gap:10px;}
+  .confirm-btns button{flex:1;padding:12px;border-radius:var(--r-sm);font-size:14px;font-weight:600;cursor:pointer;border:none;font-family:'Geist',sans-serif;transition:opacity 0.2s;}
+  .confirm-btns .cancel-btn{background:var(--panel);color:var(--text);}
+  .confirm-btns .danger-btn{background:var(--danger);color:white;}
+
+  /* Empty state */
+  .empty-state{text-align:center;padding:48px 20px;color:var(--muted);}
+  .empty-state svg{opacity:0.3;margin-bottom:16px;}
+  .empty-state p{font-size:14px;line-height:1.6;}
 </style>
 </head>
 <body>
 
+<!-- Lock -->
 <div id="lock">
   <div class="logo">
     <svg width="28" height="28" viewBox="0 0 30 30" fill="none">
@@ -413,11 +215,12 @@
     The Kult
   </div>
   <h2>Campaign Dashboard</h2>
-  <input type="password" id="passwordInput" placeholder="Enter password" autocomplete="current-password" />
+  <input type="password" id="passwordInput" placeholder="Enter password" autocomplete="current-password"/>
   <button onclick="checkPassword()" style="width:100%;max-width:320px;padding:15px;background:#B2D5E5;color:#111;border:none;border-radius:16px;font-size:16px;font-weight:600;font-family:'Geist',sans-serif;cursor:pointer;box-shadow:0 0 28px rgba(178,213,229,0.2);">Unlock</button>
   <p class="err" id="lockErr"></p>
 </div>
 
+<!-- App -->
 <div id="app">
   <div class="topbar">
     <div class="topbar-logo">
@@ -431,95 +234,138 @@
     <span class="topbar-tag">Admin</span>
   </div>
 
+  <!-- Tabs -->
+  <div class="tabs">
+    <button class="tab-btn active" onclick="switchTab('songs')">Songs</button>
+    <button class="tab-btn" onclick="switchTab('monthly')">Monthly</button>
+    <button class="tab-btn" onclick="switchTab('expenses')">Expenses</button>
+  </div>
+
   <main>
-    <p class="section-label">Overview</p>
-    <div class="summary">
-      <div class="summary-card">
-        <div class="val" id="totalSongs">—</div>
-        <div class="lbl">Songs</div>
+
+    <!-- SONGS TAB -->
+    <div class="tab-panel active" id="tab-songs">
+      <p class="section-label" style="margin-top:8px">Overview</p>
+      <div class="summary">
+        <div class="summary-card"><div class="val" id="totalSongs">—</div><div class="lbl">Songs</div></div>
+        <div class="summary-card"><div class="val" id="totalSpent">—</div><div class="lbl">Paid Out</div></div>
+        <div class="summary-card"><div class="val" id="totalRemaining">—</div><div class="lbl">Spendable Left</div></div>
       </div>
-      <div class="summary-card">
-        <div class="val" id="totalSpent">—</div>
-        <div class="lbl">Paid Out</div>
-      </div>
-      <div class="summary-card">
-        <div class="val" id="totalRemaining">—</div>
-        <div class="lbl">Remaining</div>
-      </div>
+
+      <p class="section-label">Songs</p>
+      <button class="add-btn" id="addSongBtn">
+        <svg width="18" height="18" viewBox="0 0 18 18" fill="none"><path d="M9 3v12M3 9h12" stroke="#111" stroke-width="2" stroke-linecap="round"/></svg>
+        Add New Song
+      </button>
+      <div id="songList"><div class="loading-state">Loading campaigns…</div></div>
     </div>
 
-    <p class="section-label" style="margin-top:24px">Songs</p>
-    <button class="add-btn" id="addSongBtn">
-      <svg width="18" height="18" viewBox="0 0 18 18" fill="none">
-        <path d="M9 3v12M3 9h12" stroke="#111" stroke-width="2" stroke-linecap="round"/>
-      </svg>
-      Add New Song
-    </button>
-
-    <div id="songList">
-      <div class="loading-state">Loading campaigns…</div>
+    <!-- MONTHLY TAB -->
+    <div class="tab-panel" id="tab-monthly">
+      <p class="section-label" style="margin-top:8px">Monthly Summary</p>
+      <div class="month-selector">
+        <select id="monthSelect"></select>
+      </div>
+      <div id="monthlySummary"></div>
     </div>
+
+    <!-- EXPENSES TAB -->
+    <div class="tab-panel" id="tab-expenses">
+      <p class="section-label" style="margin-top:8px">Monthly Expenses</p>
+      <button class="add-btn" id="addExpenseBtn">
+        <svg width="18" height="18" viewBox="0 0 18 18" fill="none"><path d="M9 3v12M3 9h12" stroke="#111" stroke-width="2" stroke-linecap="round"/></svg>
+        Add Expense
+      </button>
+      <div id="expenseList"><div class="loading-state">Loading…</div></div>
+    </div>
+
   </main>
 </div>
 
+<!-- Add Song Sheet -->
 <div class="overlay" id="songOverlay">
   <div class="sheet">
     <div class="sheet-handle"></div>
     <div class="sheet-title">Add Song</div>
-    <div class="field">
-      <label>Song Title *</label>
-      <input type="text" id="songName" placeholder="e.g. Midnight Drive" />
+    <div class="field"><label>Song Title *</label><input type="text" id="songName" placeholder="e.g. Midnight Drive"/></div>
+    <div class="field"><label>Artist Name *</label><input type="text" id="songArtist" placeholder="e.g. exhibit"/></div>
+    <div class="field"><label>Full Client Budget (USD) *</label><input type="number" id="songBudget" placeholder="e.g. 1000" inputmode="decimal"/><p class="field-hint">Total amount the client paid you</p></div>
+    <div class="field-row">
+      <div class="field"><label>Spendable %</label><input type="number" id="songSpendable" placeholder="50" inputmode="decimal" value="50"/><p class="field-hint">Default 50%</p></div>
+      <div class="field"><label>Status</label>
+        <select id="songStatus">
+          <option value="active">Active</option>
+          <option value="completed">Completed</option>
+          <option value="on-hold">On Hold</option>
+        </select>
+      </div>
     </div>
-    <div class="field">
-      <label>Artist Name *</label>
-      <input type="text" id="songArtist" placeholder="e.g. exhibit" />
+    <div class="field-row">
+      <div class="field"><label>Month</label>
+        <select id="songMonth">
+          <option value="1">January</option><option value="2">February</option><option value="3">March</option>
+          <option value="4">April</option><option value="5">May</option><option value="6">June</option>
+          <option value="7">July</option><option value="8">August</option><option value="9">September</option>
+          <option value="10">October</option><option value="11">November</option><option value="12">December</option>
+        </select>
+      </div>
+      <div class="field"><label>Year</label><input type="number" id="songYear" placeholder="2026" inputmode="numeric"/></div>
     </div>
-    <div class="field">
-      <label>Marketing Budget (USD) *</label>
-      <input type="number" id="songBudget" placeholder="e.g. 1000" inputmode="decimal" />
-    </div>
-    <div class="field">
-      <label>Date Added</label>
-      <input type="date" id="songDate" />
-    </div>
-    <div class="field">
-      <label>Notes</label>
-      <textarea id="songNotes" placeholder="Any extra info…"></textarea>
-    </div>
+    <div class="field"><label>Notes</label><textarea id="songNotes" placeholder="Any extra info…"></textarea></div>
     <button class="submit-btn" id="saveSongBtn">Save Song</button>
   </div>
 </div>
 
+<!-- Add Payout Sheet -->
 <div class="overlay" id="payoutOverlay">
   <div class="sheet">
     <div class="sheet-handle"></div>
     <div class="sheet-title" id="payoutSheetTitle">Log Payout</div>
-    <div class="field">
-      <label>Creator Name / Account *</label>
-      <input type="text" id="payoutCreator" placeholder="e.g. @creator_handle" />
-    </div>
+    <div class="field"><label>Creator Name / Account *</label><input type="text" id="payoutCreator" placeholder="e.g. @creator_handle"/></div>
     <div class="field-row">
-      <div class="field">
-        <label>Amount Sent (USD) *</label>
-        <input type="number" id="payoutAmount" placeholder="e.g. 150" inputmode="decimal" />
-      </div>
-      <div class="field">
-        <label>Videos Expected</label>
-        <input type="number" id="payoutVideos" placeholder="e.g. 3" inputmode="numeric" />
-      </div>
+      <div class="field"><label>Amount Sent (USD) *</label><input type="number" id="payoutAmount" placeholder="e.g. 150" inputmode="decimal"/></div>
+      <div class="field"><label>Videos Expected</label><input type="number" id="payoutVideos" placeholder="e.g. 3" inputmode="numeric"/></div>
     </div>
-    <div class="field">
-      <label>Date Paid</label>
-      <input type="date" id="payoutDate" />
-    </div>
-    <div class="field">
-      <label>Notes</label>
-      <textarea id="payoutNotes" placeholder="Any extra info…"></textarea>
-    </div>
+    <div class="field"><label>Videos Delivered</label><input type="number" id="payoutDelivered" placeholder="e.g. 3" inputmode="numeric"/></div>
+    <div class="field"><label>Date Paid</label><input type="date" id="payoutDate"/></div>
+    <div class="field"><label>Notes</label><textarea id="payoutNotes" placeholder="Any extra info…"></textarea></div>
     <button class="submit-btn" id="savePayoutBtn">Save Payout</button>
   </div>
 </div>
 
+<!-- Add Expense Sheet -->
+<div class="overlay" id="expenseOverlay">
+  <div class="sheet">
+    <div class="sheet-handle"></div>
+    <div class="sheet-title">Add Expense</div>
+    <div class="field"><label>Expense Name *</label><input type="text" id="expenseName" placeholder="e.g. Social Media Team Salary"/></div>
+    <div class="field"><label>Amount (USD) *</label><input type="number" id="expenseAmount" placeholder="e.g. 500" inputmode="decimal"/></div>
+    <div class="field"><label>Category</label>
+      <select id="expenseCategory">
+        <option value="Salary">Salary</option>
+        <option value="Software">Software</option>
+        <option value="Marketing">Marketing</option>
+        <option value="Office">Office</option>
+        <option value="Other">Other</option>
+      </select>
+    </div>
+    <div class="field-row">
+      <div class="field"><label>Month</label>
+        <select id="expenseMonth">
+          <option value="1">January</option><option value="2">February</option><option value="3">March</option>
+          <option value="4">April</option><option value="5">May</option><option value="6">June</option>
+          <option value="7">July</option><option value="8">August</option><option value="9">September</option>
+          <option value="10">October</option><option value="11">November</option><option value="12">December</option>
+        </select>
+      </div>
+      <div class="field"><label>Year</label><input type="number" id="expenseYear" placeholder="2026" inputmode="numeric"/></div>
+    </div>
+    <div class="field"><label>Notes</label><textarea id="expenseNotes" placeholder="Any extra info…"></textarea></div>
+    <button class="submit-btn" id="saveExpenseBtn">Save Expense</button>
+  </div>
+</div>
+
+<!-- Confirm -->
 <div class="confirm-overlay" id="confirmOverlay">
   <div class="confirm-box">
     <h3 id="confirmTitle">Are you sure?</h3>
@@ -535,22 +381,29 @@
 
 <script>
 const API = 'https://script.google.com/macros/s/AKfycbz7lgw46bX191irbHKwIAnVbp1eClIE79bCEfDifrGVTWYelqWrrFOqJRH_Mk2wSCAlHQ/exec';
-const CACHE_KEY = 'kult_cache_v1';
+const CACHE_KEY = 'kult_cache_v2';
+const PARTNERS = [
+  { name: 'Ahmed',   pct: 0.60 },
+  { name: 'Mohamed', pct: 0.20 },
+  { name: 'Aryan',   pct: 0.20 },
+];
+const MONTHS = ['January','February','March','April','May','June','July','August','September','October','November','December'];
+
 let SECRET_KEY = '';
-let songs = [];
-let payouts = {};
+let songs    = [];
+let payouts  = {};
+let expenses = [];
 let expanded = null;
 let currentSongId = null;
+let activeTab = 'songs';
 
+// ── Lock ──────────────────────────────────────────────────────────
 const lockEl  = document.getElementById('lock');
 const appEl   = document.getElementById('app');
 const pwInput = document.getElementById('passwordInput');
 const lockErr = document.getElementById('lockErr');
 
-if (sessionStorage.getItem('kult_key')) {
-  SECRET_KEY = sessionStorage.getItem('kult_key');
-  unlock();
-}
+if (sessionStorage.getItem('kult_key')) { SECRET_KEY = sessionStorage.getItem('kult_key'); unlock(); }
 
 pwInput.addEventListener('keydown', e => { if (e.key === 'Enter') checkPassword(); });
 pwInput.addEventListener('input', () => { lockErr.textContent = ''; });
@@ -562,7 +415,7 @@ async function checkPassword() {
   lockErr.style.color = 'rgba(255,255,255,0.45)';
   try {
     const url = API + '?' + new URLSearchParams({ action: 'getAll', key: attempt });
-    const res = await fetch(url);
+    const res  = await fetch(url);
     const data = await res.json();
     if (data.error === 'Unauthorized') {
       lockErr.style.color = '';
@@ -575,7 +428,7 @@ async function checkPassword() {
     localStorage.setItem(CACHE_KEY, JSON.stringify(data));
     lockErr.textContent = '';
     unlock();
-  } catch (e) {
+  } catch(e) {
     lockErr.style.color = '';
     lockErr.textContent = 'Connection failed — try again';
   }
@@ -584,17 +437,47 @@ async function checkPassword() {
 function unlock() {
   lockEl.style.display = 'none';
   appEl.classList.add('visible');
-  loadSongs();
+  initMonthSelector();
+  loadAll();
 }
 
+// ── Tabs ──────────────────────────────────────────────────────────
+function switchTab(tab) {
+  activeTab = tab;
+  document.querySelectorAll('.tab-btn').forEach((b,i) => {
+    b.classList.toggle('active', ['songs','monthly','expenses'][i] === tab);
+  });
+  document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+  document.getElementById('tab-' + tab).classList.add('active');
+  if (tab === 'monthly') renderMonthly();
+}
+
+// ── Month selector ────────────────────────────────────────────────
+function initMonthSelector() {
+  const sel = document.getElementById('monthSelect');
+  const now = new Date();
+  for (let y = now.getFullYear(); y >= 2024; y--) {
+    for (let m = 11; m >= 0; m--) {
+      const opt = document.createElement('option');
+      opt.value = `${m+1}-${y}`;
+      opt.textContent = `${MONTHS[m]} ${y}`;
+      if (m === now.getMonth() && y === now.getFullYear()) opt.selected = true;
+      sel.appendChild(opt);
+    }
+  }
+  sel.addEventListener('change', renderMonthly);
+}
+
+// ── API ───────────────────────────────────────────────────────────
 async function api(params) {
   const url = API + '?' + new URLSearchParams({ ...params, key: SECRET_KEY });
-  const res = await fetch(url);
+  const res  = await fetch(url);
   const data = await res.json();
   if (data.error) throw new Error(data.error);
   return data;
 }
 
+// ── Toast ─────────────────────────────────────────────────────────
 const toastEl = document.getElementById('toast');
 let toastTimer;
 function showToast(msg, type = 'success') {
@@ -604,61 +487,50 @@ function showToast(msg, type = 'success') {
   toastTimer = setTimeout(() => toastEl.className = 'toast', 2800);
 }
 
+// ── Confirm ───────────────────────────────────────────────────────
 const confirmOverlay = document.getElementById('confirmOverlay');
 let confirmResolve;
-function confirm(title, msg) {
+function confirmDlg(title, msg) {
   document.getElementById('confirmTitle').textContent = title;
-  document.getElementById('confirmMsg').textContent = msg;
+  document.getElementById('confirmMsg').textContent   = msg;
   confirmOverlay.classList.add('open');
   return new Promise(res => { confirmResolve = res; });
 }
-document.getElementById('confirmOk').addEventListener('click', () => {
-  confirmOverlay.classList.remove('open');
-  confirmResolve && confirmResolve(true);
-});
-document.getElementById('confirmCancel').addEventListener('click', () => {
-  confirmOverlay.classList.remove('open');
-  confirmResolve && confirmResolve(false);
-});
+document.getElementById('confirmOk').addEventListener('click', () => { confirmOverlay.classList.remove('open'); confirmResolve && confirmResolve(true); });
+document.getElementById('confirmCancel').addEventListener('click', () => { confirmOverlay.classList.remove('open'); confirmResolve && confirmResolve(false); });
 
-function fmt(n) {
-  const num = parseFloat(n) || 0;
-  return '$' + num.toLocaleString('en-US', { minimumFractionDigits: 0, maximumFractionDigits: 0 });
+// ── Format helpers ────────────────────────────────────────────────
+function fmt(n) { const num = parseFloat(n)||0; return '$'+num.toLocaleString('en-US',{minimumFractionDigits:0,maximumFractionDigits:0}); }
+function fmtK(n) { const num = parseFloat(n)||0; if(num>=1000) return '$'+(num/1000).toFixed(1).replace('.0','')+'k'; return fmt(num); }
+function esc(str) { return String(str||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
+
+// ── Budget helpers ────────────────────────────────────────────────
+function spendableBudget(song) {
+  const total = parseFloat(song.budget)||0;
+  const pct   = parseFloat(song.spendable)||50;
+  return total * (pct/100);
 }
-function fmtK(n) {
-  const num = parseFloat(n) || 0;
-  if (num >= 1000) return '$' + (num/1000).toFixed(1).replace('.0','') + 'k';
-  return fmt(num);
+function profitAmount(song) {
+  const total = parseFloat(song.budget)||0;
+  const pct   = parseFloat(song.spendable)||50;
+  return total * (1 - pct/100);
 }
-function spent(songId) {
-  return (payouts[songId] || []).reduce((s, p) => s + (parseFloat(p.amount) || 0), 0);
-}
-function remaining(song) {
-  return (parseFloat(song.budget) || 0) - spent(song.id);
-}
+function spent(songId) { return (payouts[songId]||[]).reduce((s,p) => s+(parseFloat(p.amount)||0), 0); }
+function remaining(song) { return spendableBudget(song) - spent(song.id); }
 function budgetColor(song) {
-  const total = parseFloat(song.budget) || 0;
-  if (total === 0) return 'green';
-  const pct = spent(song.id) / total;
+  const sp  = spendableBudget(song);
+  if (sp === 0) return 'green';
+  const pct = spent(song.id) / sp;
   if (pct >= 1) return 'red';
   if (pct >= 0.75) return 'amber';
   return 'green';
 }
 
-function applyData(data) {
-  songs = data.songs || [];
-  payouts = {};
-  (data.payouts || []).forEach(p => {
-    if (!payouts[p.songId]) payouts[p.songId] = [];
-    payouts[p.songId].push(p);
-  });
-  renderAll();
-}
-
-async function loadSongs(showLoading = true) {
+// ── Load all data ─────────────────────────────────────────────────
+async function loadAll(showLoading = true) {
   const cached = localStorage.getItem(CACHE_KEY);
   if (cached) {
-    try { applyData(JSON.parse(cached)); showLoading = false; } catch (e) {}
+    try { applyData(JSON.parse(cached)); showLoading = false; } catch(e) {}
   } else if (showLoading) {
     document.getElementById('songList').innerHTML = '<div class="loading-state">Loading…</div>';
   }
@@ -666,30 +538,46 @@ async function loadSongs(showLoading = true) {
     const data = await api({ action: 'getAll' });
     localStorage.setItem(CACHE_KEY, JSON.stringify(data));
     applyData(data);
-  } catch (e) {
-    if (!cached) {
-      document.getElementById('songList').innerHTML = '<div class="loading-state" style="color:#E57373">Failed to load. Check connection.</div>';
-    }
+  } catch(e) {
+    if (!cached) document.getElementById('songList').innerHTML = '<div class="loading-state" style="color:#E57373">Failed to load. Check connection.</div>';
   }
+}
+
+function applyData(data) {
+  songs    = data.songs    || [];
+  expenses = data.expenses || [];
+  payouts  = {};
+  (data.payouts||[]).forEach(p => {
+    if (!payouts[p.songId]) payouts[p.songId] = [];
+    payouts[p.songId].push(p);
+  });
+  renderAll();
 }
 
 function saveCache() {
   const flat = [];
-  Object.keys(payouts).forEach(sid => (payouts[sid] || []).forEach(p => flat.push(p)));
-  localStorage.setItem(CACHE_KEY, JSON.stringify({ songs, payouts: flat }));
+  Object.keys(payouts).forEach(sid => (payouts[sid]||[]).forEach(p => flat.push(p)));
+  localStorage.setItem(CACHE_KEY, JSON.stringify({ songs, payouts: flat, expenses }));
 }
 
-function renderAll() { renderSummary(); renderSongs(); }
+function renderAll() {
+  renderSummary();
+  renderSongs();
+  renderExpenses();
+  if (activeTab === 'monthly') renderMonthly();
+}
 
+// ── Summary ───────────────────────────────────────────────────────
 function renderSummary() {
-  const totalBudget = songs.reduce((s, song) => s + (parseFloat(song.budget)||0), 0);
-  const totalSpent  = songs.reduce((s, song) => s + spent(song.id), 0);
-  const totalLeft   = totalBudget - totalSpent;
+  const totalSpent     = songs.reduce((s,song) => s + spent(song.id), 0);
+  const totalSpendable = songs.reduce((s,song) => s + spendableBudget(song), 0);
+  const totalLeft      = totalSpendable - totalSpent;
   document.getElementById('totalSongs').textContent     = songs.length;
   document.getElementById('totalSpent').textContent     = fmtK(totalSpent);
   document.getElementById('totalRemaining').textContent = fmtK(totalLeft);
 }
 
+// ── Song list ─────────────────────────────────────────────────────
 function renderSongs() {
   const list = document.getElementById('songList');
   if (!songs.length) {
@@ -698,54 +586,86 @@ function renderSongs() {
   }
   list.innerHTML = '';
   songs.forEach(song => {
-    const rem   = remaining(song);
-    const total = parseFloat(song.budget) || 0;
-    const sp    = spent(song.id);
-    const pct   = total > 0 ? Math.min(sp / total, 1) : 0;
-    const color = budgetColor(song);
-    const isExp = expanded === song.id;
-    const ps    = payouts[song.id] || [];
-    const card  = document.createElement('div');
+    const sp      = spent(song.id);
+    const sbudget = spendableBudget(song);
+    const profit  = profitAmount(song);
+    const rem     = sbudget - sp;
+    const pct     = sbudget > 0 ? Math.min(sp/sbudget, 1) : 0;
+    const color   = budgetColor(song);
+    const isExp   = expanded === song.id;
+    const ps      = payouts[song.id] || [];
+    const status  = song.status || 'active';
+    const monthLabel = song.month ? `${MONTHS[parseInt(song.month)-1]} ${song.year||''}` : '';
+
+    const card = document.createElement('div');
     card.className = 'song-card' + (isExp ? ' expanded' : '');
     card.dataset.id = song.id;
+
     card.innerHTML = `
       <div class="song-header" data-toggle="${song.id}">
         <div class="song-icon"><svg width="20" height="20" viewBox="0 0 20 20" fill="none"><circle cx="10" cy="10" r="8" stroke="#B2D5E5" stroke-width="1.3"/><circle cx="10" cy="10" r="3" fill="#B2D5E5"/></svg></div>
         <div class="song-info">
           <div class="song-name">${esc(song.name)}</div>
-          <div class="song-artist">${esc(song.artist)} · ${ps.length} payout${ps.length !== 1 ? 's' : ''}</div>
+          <div class="song-meta">
+            <span class="status-badge ${status}">${status === 'on-hold' ? 'On Hold' : status.charAt(0).toUpperCase()+status.slice(1)}</span>
+            ${monthLabel ? `<span style="color:var(--muted);font-size:11px">${monthLabel}</span>` : ''}
+            <span style="color:var(--muted);font-size:11px">${ps.length} payout${ps.length!==1?'s':''}</span>
+          </div>
         </div>
         <div class="song-budget-pill">
           <div class="pill-remaining ${color}">${fmt(rem)}</div>
-          <div class="pill-label">remaining</div>
+          <div class="pill-label">spendable left</div>
         </div>
         <svg class="song-chevron" width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M4 6l4 4 4-4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
       </div>
       <div class="budget-bar-wrap">
-        <div class="budget-bar-track"><div class="budget-bar-fill ${color === 'green' ? '' : color}" style="width:${(pct*100).toFixed(1)}%"></div></div>
-        <div class="budget-nums"><span>Spent ${fmt(sp)}</span><span>Budget ${fmt(total)}</span></div>
+        <div class="budget-bar-track"><div class="budget-bar-fill ${color==='green'?'':color}" style="width:${(pct*100).toFixed(1)}%"></div></div>
+        <div class="budget-nums">
+          <span>Spent ${fmt(sp)} of ${fmt(sbudget)} spendable</span>
+          <span>Total ${fmt(parseFloat(song.budget)||0)}</span>
+        </div>
       </div>
       ${isExp ? `<div class="song-body"><div class="song-body-inner">
+
+        <!-- Profit split -->
+        <div class="song-profit-box">
+          <div class="song-profit-title">Profit Split — ${fmt(profit)} (${100-(parseFloat(song.spendable)||50)}% of ${fmt(parseFloat(song.budget)||0)})</div>
+          ${PARTNERS.map(p => `<div class="song-profit-row"><span class="pname">${p.name} (${p.pct*100}%)</span><span class="pamount">${fmt(profit*p.pct)}</span></div>`).join('')}
+        </div>
+
+        <!-- Payouts -->
         <p class="section-label" style="margin-top:0">Payouts</p>
-        ${ps.length ? ps.map(p => `
-          <div class="payout-item">
-            <div class="payout-info">
-              <div class="payout-creator">${esc(p.creator)}</div>
-              <div class="payout-meta">${p.videos || 0} video${p.videos !== '1' ? 's' : ''} · ${p.date || 'No date'}${p.notes ? ' · ' + esc(p.notes) : ''}</div>
+        ${ps.length ? ps.map(p => {
+          const expected  = parseInt(p.videos)||0;
+          const delivered = parseInt(p.delivered)||0;
+          const vidPct    = expected > 0 ? Math.min(delivered/expected,1) : 0;
+          return `<div class="payout-item">
+            <div class="payout-top">
+              <div class="payout-info">
+                <div class="payout-creator">${esc(p.creator)}</div>
+                <div class="payout-meta">${p.date||'No date'}${p.notes?' · '+esc(p.notes):''}</div>
+              </div>
+              <div class="payout-amount">${fmt(p.amount)}</div>
+              <button class="del-btn" data-del-payout="${p.id}" data-song="${song.id}"><svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M3 4h10M6 4V3h4v1M6 7v5M10 7v5M4 4l.8 9h6.4L12 4" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
             </div>
-            <div class="payout-amount">${fmt(p.amount)}</div>
-            <button class="del-btn" data-del-payout="${p.id}" data-song="${song.id}"><svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M3 4h10M6 4V3h4v1M6 7v5M10 7v5M4 4l.8 9h6.4L12 4" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
-          </div>`).join('') : '<div class="empty-payouts">No payouts logged yet</div>'}
+            ${expected > 0 ? `<div class="payout-videos">
+              <div class="video-track"><div class="video-fill" style="width:${(vidPct*100).toFixed(0)}%"></div></div>
+              <span class="video-label">${delivered}/${expected} videos</span>
+            </div>` : ''}
+          </div>`;
+        }).join('') : '<div class="empty-payouts">No payouts logged yet</div>'}
+
         <div class="song-actions">
           <button class="action-btn primary" data-add-payout="${song.id}" data-name="${esc(song.name)}"><svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M7 2v10M2 7h10" stroke="#111" stroke-width="1.8" stroke-linecap="round"/></svg>Log Payout</button>
           <button class="action-btn ghost" data-del-song="${song.id}" data-name="${esc(song.name)}"><svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M2.5 3.5h9M5 3.5V2.5h4v1M5 6v4.5M9 6v4.5M3.5 3.5l.7 8h5.6l.7-8" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/></svg>Delete</button>
         </div>
       </div></div>` : ''}`;
+
     list.appendChild(card);
   });
 
   list.querySelectorAll('[data-toggle]').forEach(el => {
-    el.addEventListener('click', () => { expanded = expanded === el.dataset.toggle ? null : el.dataset.toggle; renderSongs(); });
+    el.addEventListener('click', () => { expanded = expanded===el.dataset.toggle?null:el.dataset.toggle; renderSongs(); });
   });
   list.querySelectorAll('[data-add-payout]').forEach(el => {
     el.addEventListener('click', e => { e.stopPropagation(); openPayoutSheet(el.dataset.addPayout, el.dataset.name); });
@@ -753,136 +673,265 @@ function renderSongs() {
   list.querySelectorAll('[data-del-song]').forEach(el => {
     el.addEventListener('click', async e => {
       e.stopPropagation();
-      const ok = await confirm('Delete Song', `Delete "${el.dataset.name}" and all its payouts? This cannot be undone.`);
+      const ok = await confirmDlg('Delete Song', `Delete "${el.dataset.name}" and all its payouts?`);
       if (!ok) return;
-      await deleteSong(el.dataset.delSong);
+      deleteSong(el.dataset.delSong);
     });
   });
   list.querySelectorAll('[data-del-payout]').forEach(el => {
     el.addEventListener('click', async e => {
       e.stopPropagation();
-      const ok = await confirm('Delete Payout', 'Remove this payout entry?');
+      const ok = await confirmDlg('Delete Payout', 'Remove this payout entry?');
       if (!ok) return;
-      await deletePayout(el.dataset.delPayout, el.dataset.song);
+      deletePayout(el.dataset.delPayout, el.dataset.song);
     });
   });
 }
 
-function esc(str) {
-  return String(str || '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+// ── Monthly summary ───────────────────────────────────────────────
+function renderMonthly() {
+  const [m, y] = document.getElementById('monthSelect').value.split('-').map(Number);
+  const monthSongs = songs.filter(s => parseInt(s.month)===m && parseInt(s.year)===y);
+  const monthExp   = expenses.filter(e => parseInt(e.month)===m && parseInt(e.year)===y);
+
+  const totalRevenue  = monthSongs.reduce((s,song) => s+(parseFloat(song.budget)||0), 0);
+  const totalProfit   = monthSongs.reduce((s,song) => s+profitAmount(song), 0);
+  const totalSpendable= monthSongs.reduce((s,song) => s+spendableBudget(song), 0);
+  const totalPaid     = monthSongs.reduce((s,song) => s+spent(song.id), 0);
+  const totalOverhead = monthExp.reduce((s,e) => s+(parseFloat(e.amount)||0), 0);
+  const netProfit     = totalProfit - totalOverhead;
+
+  const el = document.getElementById('monthlySummary');
+
+  if (!monthSongs.length && !monthExp.length) {
+    el.innerHTML = '<div class="loading-state">No data for this month</div>';
+    return;
+  }
+
+  el.innerHTML = `
+    <div class="monthly-summary">
+      <div class="monthly-row"><span class="label">Total Revenue</span><span class="amount">${fmt(totalRevenue)}</span></div>
+      <div class="monthly-row"><span class="label">Spendable Allocated</span><span class="amount">${fmt(totalSpendable)}</span></div>
+      <div class="monthly-row"><span class="label">Paid to Creators</span><span class="amount red">${fmt(totalPaid)}</span></div>
+      <div class="monthly-row"><span class="label">Creator Budget Remaining</span><span class="amount green">${fmt(totalSpendable-totalPaid)}</span></div>
+      <div class="monthly-row"><span class="label">Gross Profit</span><span class="amount amber">${fmt(totalProfit)}</span></div>
+      <div class="monthly-row"><span class="label">Overhead Expenses</span><span class="amount red">${fmt(totalOverhead)}</span></div>
+      <div class="monthly-row total"><span class="label">Net Profit</span><span class="amount ${netProfit>=0?'green':'red'}">${fmt(netProfit)}</span></div>
+    </div>
+
+    <p class="section-label">Partner Splits (Net Profit)</p>
+    <div class="partner-split">
+      ${PARTNERS.map(p => `<div class="partner-row"><span class="name">${p.name} (${p.pct*100}%)</span><span class="cut">${fmt(netProfit*p.pct)}</span></div>`).join('')}
+    </div>
+
+    ${monthSongs.length ? `
+    <p class="section-label">Songs This Month</p>
+    ${monthSongs.map(song => `
+      <div style="background:var(--surface);border:1px solid var(--border);border-radius:var(--r-sm);padding:12px 14px;margin-bottom:8px;display:flex;justify-content:space-between;align-items:center;">
+        <div>
+          <div style="font-size:14px;font-weight:600">${esc(song.name)}</div>
+          <div style="font-size:11px;color:var(--muted);font-family:'Geist Mono',monospace;margin-top:2px">${esc(song.artist)} · ${fmt(spendableBudget(song))} spendable</div>
+        </div>
+        <div style="text-align:right">
+          <div style="font-size:13px;font-weight:600;font-family:'Geist Mono',monospace;color:var(--purple)">${fmt(profitAmount(song))} profit</div>
+          <div style="font-size:11px;color:var(--muted)">${fmt(spent(song.id))} paid out</div>
+        </div>
+      </div>`).join('')}` : ''}
+
+    ${monthExp.length ? `
+    <p class="section-label">Expenses This Month</p>
+    ${monthExp.map(e => `
+      <div style="background:var(--surface);border:1px solid var(--border);border-radius:var(--r-sm);padding:12px 14px;margin-bottom:8px;display:flex;justify-content:space-between;align-items:center;">
+        <div>
+          <div style="font-size:14px;font-weight:600">${esc(e.name)}</div>
+          <div style="font-size:11px;color:var(--muted);font-family:'Geist Mono',monospace;margin-top:2px">${esc(e.category||'Other')}</div>
+        </div>
+        <div style="font-size:15px;font-weight:700;font-family:'Geist Mono',monospace;color:var(--amber)">${fmt(e.amount)}</div>
+      </div>`).join('')}` : ''}
+  `;
 }
 
+// ── Expenses list ─────────────────────────────────────────────────
+function renderExpenses() {
+  const list = document.getElementById('expenseList');
+  if (!expenses.length) {
+    list.innerHTML = '<div class="empty-state"><p>No expenses yet.<br>Tap "Add Expense" to get started.</p></div>';
+    return;
+  }
+  // Group by month/year
+  const groups = {};
+  expenses.forEach(e => {
+    const key = `${e.month}-${e.year}`;
+    if (!groups[key]) groups[key] = { month: e.month, year: e.year, items: [] };
+    groups[key].items.push(e);
+  });
+  const sorted = Object.values(groups).sort((a,b) => b.year-a.year || b.month-a.month);
+
+  list.innerHTML = sorted.map(g => `
+    <p class="section-label" style="margin-top:16px">${MONTHS[parseInt(g.month)-1]} ${g.year}</p>
+    ${g.items.map(e => `
+      <div class="expense-item">
+        <div class="expense-info">
+          <div class="expense-name">${esc(e.name)}</div>
+          <div class="expense-meta">${esc(e.category||'Other')}${e.notes?' · '+esc(e.notes):''}</div>
+        </div>
+        <div style="display:flex;align-items:center;gap:10px">
+          <div class="expense-amount">${fmt(e.amount)}</div>
+          <button class="del-btn" data-del-expense="${e.id}"><svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M3 4h10M6 4V3h4v1M6 7v5M10 7v5M4 4l.8 9h6.4L12 4" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+        </div>
+      </div>`).join('')}
+  `).join('');
+
+  list.querySelectorAll('[data-del-expense]').forEach(el => {
+    el.addEventListener('click', async () => {
+      const ok = await confirmDlg('Delete Expense', 'Remove this expense?');
+      if (!ok) return;
+      deleteExpense(el.dataset.delExpense);
+    });
+  });
+}
+
+// ── Add Song ──────────────────────────────────────────────────────
 const songOverlay = document.getElementById('songOverlay');
 document.getElementById('addSongBtn').addEventListener('click', () => {
-  document.getElementById('songName').value   = '';
-  document.getElementById('songArtist').value = '';
-  document.getElementById('songBudget').value = '';
-  document.getElementById('songDate').value   = new Date().toISOString().split('T')[0];
-  document.getElementById('songNotes').value  = '';
+  const now = new Date();
+  document.getElementById('songName').value     = '';
+  document.getElementById('songArtist').value   = '';
+  document.getElementById('songBudget').value   = '';
+  document.getElementById('songSpendable').value= '50';
+  document.getElementById('songStatus').value   = 'active';
+  document.getElementById('songMonth').value    = now.getMonth()+1;
+  document.getElementById('songYear').value     = now.getFullYear();
+  document.getElementById('songNotes').value    = '';
   songOverlay.classList.add('open');
   setTimeout(() => document.getElementById('songName').focus(), 300);
 });
-songOverlay.addEventListener('click', e => { if (e.target === songOverlay) songOverlay.classList.remove('open'); });
+songOverlay.addEventListener('click', e => { if(e.target===songOverlay) songOverlay.classList.remove('open'); });
 
 document.getElementById('saveSongBtn').addEventListener('click', async () => {
-  const name   = document.getElementById('songName').value.trim();
-  const artist = document.getElementById('songArtist').value.trim();
-  const budget = document.getElementById('songBudget').value.trim();
-  if (!name || !artist || !budget) { showToast('Fill in all required fields', 'error'); return; }
-  const date  = document.getElementById('songDate').value;
-  const notes = document.getElementById('songNotes').value.trim();
-  const tempId = 'temp_' + Date.now();
-  songs.push({ id: tempId, name, artist, budget, date, notes });
+  const name     = document.getElementById('songName').value.trim();
+  const artist   = document.getElementById('songArtist').value.trim();
+  const budget   = document.getElementById('songBudget').value.trim();
+  if (!name||!artist||!budget) { showToast('Fill in all required fields','error'); return; }
+  const spendable= document.getElementById('songSpendable').value.trim()||'50';
+  const status   = document.getElementById('songStatus').value;
+  const month    = document.getElementById('songMonth').value;
+  const year     = document.getElementById('songYear').value;
+  const notes    = document.getElementById('songNotes').value.trim();
+  const tempId   = 'temp_'+Date.now();
+  songs.push({id:tempId,name,artist,budget,spendable,status,month,year,notes});
   payouts[tempId] = [];
   renderAll(); saveCache();
   songOverlay.classList.remove('open');
   showToast('Song added ✓');
   try {
-    const res = await api({ action: 'addSong', name, artist, budget, date, notes });
-    const s = songs.find(x => x.id === tempId);
-    if (s) { s.id = res.id; payouts[res.id] = payouts[tempId] || []; delete payouts[tempId]; }
-    if (expanded === tempId) expanded = res.id;
+    const res = await api({action:'addSong',name,artist,budget,spendable,status,month,year,notes});
+    const s = songs.find(x=>x.id===tempId);
+    if(s){s.id=res.id;payouts[res.id]=payouts[tempId]||[];delete payouts[tempId];}
+    if(expanded===tempId) expanded=res.id;
     saveCache(); renderAll();
-  } catch (e) {
-    songs = songs.filter(x => x.id !== tempId);
-    delete payouts[tempId];
-    renderAll(); saveCache();
-    showToast('Error saving song — removed', 'error');
+  } catch(e) {
+    songs=songs.filter(x=>x.id!==tempId);delete payouts[tempId];
+    renderAll();saveCache();showToast('Error saving song','error');
   }
 });
 
 async function deleteSong(id) {
-  const backupSongs = [...songs];
-  const backupPayouts = payouts[id];
-  songs = songs.filter(s => s.id !== id);
-  delete payouts[id];
-  expanded = null;
-  renderAll(); saveCache();
-  showToast('Song deleted');
-  try {
-    await api({ action: 'deleteSong', id });
-  } catch (e) {
-    songs = backupSongs;
-    if (backupPayouts) payouts[id] = backupPayouts;
-    renderAll(); saveCache();
-    showToast('Delete failed — restored', 'error');
-  }
+  const bkSongs=([...songs]),bkPayouts=payouts[id];
+  songs=songs.filter(s=>s.id!==id);delete payouts[id];expanded=null;
+  renderAll();saveCache();showToast('Song deleted');
+  try { await api({action:'deleteSong',id}); }
+  catch(e) { songs=bkSongs;if(bkPayouts)payouts[id]=bkPayouts;renderAll();saveCache();showToast('Delete failed','error'); }
 }
 
+// ── Add Payout ────────────────────────────────────────────────────
 const payoutOverlay = document.getElementById('payoutOverlay');
 function openPayoutSheet(songId, songName) {
   currentSongId = songId;
   document.getElementById('payoutSheetTitle').textContent = `Log Payout — ${songName}`;
-  document.getElementById('payoutCreator').value = '';
-  document.getElementById('payoutAmount').value  = '';
-  document.getElementById('payoutVideos').value  = '';
-  document.getElementById('payoutDate').value    = new Date().toISOString().split('T')[0];
-  document.getElementById('payoutNotes').value   = '';
+  document.getElementById('payoutCreator').value   = '';
+  document.getElementById('payoutAmount').value    = '';
+  document.getElementById('payoutVideos').value    = '';
+  document.getElementById('payoutDelivered').value = '';
+  document.getElementById('payoutDate').value      = new Date().toISOString().split('T')[0];
+  document.getElementById('payoutNotes').value     = '';
   payoutOverlay.classList.add('open');
   setTimeout(() => document.getElementById('payoutCreator').focus(), 300);
 }
-payoutOverlay.addEventListener('click', e => { if (e.target === payoutOverlay) payoutOverlay.classList.remove('open'); });
+payoutOverlay.addEventListener('click', e => { if(e.target===payoutOverlay) payoutOverlay.classList.remove('open'); });
 
 document.getElementById('savePayoutBtn').addEventListener('click', async () => {
-  const creator = document.getElementById('payoutCreator').value.trim();
-  const amount  = document.getElementById('payoutAmount').value.trim();
-  if (!creator || !amount) { showToast('Creator and amount are required', 'error'); return; }
-  const videos = document.getElementById('payoutVideos').value.trim();
-  const date   = document.getElementById('payoutDate').value;
-  const notes  = document.getElementById('payoutNotes').value.trim();
-  const songId = currentSongId;
-  const tempId = 'temp_' + Date.now();
-  if (!payouts[songId]) payouts[songId] = [];
-  payouts[songId].push({ id: tempId, songId, creator, amount, videos, date, notes });
-  expanded = songId;
-  renderAll(); saveCache();
-  payoutOverlay.classList.remove('open');
-  showToast('Payout logged ✓');
+  const creator   = document.getElementById('payoutCreator').value.trim();
+  const amount    = document.getElementById('payoutAmount').value.trim();
+  if (!creator||!amount) { showToast('Creator and amount are required','error'); return; }
+  const videos    = document.getElementById('payoutVideos').value.trim();
+  const delivered = document.getElementById('payoutDelivered').value.trim();
+  const date      = document.getElementById('payoutDate').value;
+  const notes     = document.getElementById('payoutNotes').value.trim();
+  const songId    = currentSongId;
+  const tempId    = 'temp_'+Date.now();
+  if (!payouts[songId]) payouts[songId]=[];
+  payouts[songId].push({id:tempId,songId,creator,amount,videos,delivered,date,notes});
+  expanded=songId;renderAll();saveCache();
+  payoutOverlay.classList.remove('open');showToast('Payout logged ✓');
   try {
-    const res = await api({ action: 'addPayout', songId, creator, amount, videos, date, notes });
-    const p = (payouts[songId] || []).find(x => x.id === tempId);
-    if (p) p.id = res.id;
-    saveCache();
-  } catch (e) {
-    payouts[songId] = (payouts[songId] || []).filter(x => x.id !== tempId);
-    renderAll(); saveCache();
-    showToast('Error saving payout — removed', 'error');
+    const res = await api({action:'addPayout',songId,creator,amount,videos,delivered,date,notes});
+    const p=(payouts[songId]||[]).find(x=>x.id===tempId);if(p)p.id=res.id;saveCache();
+  } catch(e) {
+    payouts[songId]=(payouts[songId]||[]).filter(x=>x.id!==tempId);
+    renderAll();saveCache();showToast('Error saving payout','error');
   }
 });
 
 async function deletePayout(id, songId) {
-  const backup = [...(payouts[songId] || [])];
-  payouts[songId] = (payouts[songId] || []).filter(p => p.id !== id);
-  expanded = songId;
-  renderAll(); saveCache();
-  showToast('Payout removed');
+  const backup=[...(payouts[songId]||[])];
+  payouts[songId]=(payouts[songId]||[]).filter(p=>p.id!==id);
+  expanded=songId;renderAll();saveCache();showToast('Payout removed');
+  try { await api({action:'deletePayout',id}); }
+  catch(e) { payouts[songId]=backup;renderAll();saveCache();showToast('Delete failed','error'); }
+}
+
+// ── Add Expense ───────────────────────────────────────────────────
+const expenseOverlay = document.getElementById('expenseOverlay');
+document.getElementById('addExpenseBtn').addEventListener('click', () => {
+  const now = new Date();
+  document.getElementById('expenseName').value    = '';
+  document.getElementById('expenseAmount').value  = '';
+  document.getElementById('expenseCategory').value= 'Salary';
+  document.getElementById('expenseMonth').value   = now.getMonth()+1;
+  document.getElementById('expenseYear').value    = now.getFullYear();
+  document.getElementById('expenseNotes').value   = '';
+  expenseOverlay.classList.add('open');
+  setTimeout(() => document.getElementById('expenseName').focus(), 300);
+});
+expenseOverlay.addEventListener('click', e => { if(e.target===expenseOverlay) expenseOverlay.classList.remove('open'); });
+
+document.getElementById('saveExpenseBtn').addEventListener('click', async () => {
+  const name    = document.getElementById('expenseName').value.trim();
+  const amount  = document.getElementById('expenseAmount').value.trim();
+  if (!name||!amount) { showToast('Name and amount are required','error'); return; }
+  const category= document.getElementById('expenseCategory').value;
+  const month   = document.getElementById('expenseMonth').value;
+  const year    = document.getElementById('expenseYear').value;
+  const notes   = document.getElementById('expenseNotes').value.trim();
+  const tempId  = 'temp_'+Date.now();
+  expenses.push({id:tempId,name,amount,category,month,year,notes});
+  renderAll();saveCache();
+  expenseOverlay.classList.remove('open');showToast('Expense added ✓');
   try {
-    await api({ action: 'deletePayout', id });
-  } catch (e) {
-    payouts[songId] = backup;
-    renderAll(); saveCache();
-    showToast('Delete failed — restored', 'error');
+    const res = await api({action:'addExpense',name,amount,category,month,year,notes});
+    const ex=expenses.find(x=>x.id===tempId);if(ex)ex.id=res.id;saveCache();
+  } catch(e) {
+    expenses=expenses.filter(x=>x.id!==tempId);renderAll();saveCache();showToast('Error saving expense','error');
   }
+});
+
+async function deleteExpense(id) {
+  const backup=[...expenses];
+  expenses=expenses.filter(e=>e.id!==id);
+  renderAll();saveCache();showToast('Expense removed');
+  try { await api({action:'deleteExpense',id}); }
+  catch(e) { expenses=backup;renderAll();saveCache();showToast('Delete failed','error'); }
 }
 </script>
 </body>
