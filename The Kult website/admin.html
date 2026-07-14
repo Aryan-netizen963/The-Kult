@@ -1706,9 +1706,10 @@
       // ── Confirm ───────────────────────────────────────────────────────
       const confirmOverlay = document.getElementById("confirmOverlay");
       let confirmResolve;
-      function confirmDlg(title, msg) {
+      function confirmDlg(title, msg, confirmLabel = "Delete") {
         document.getElementById("confirmTitle").textContent = title;
         document.getElementById("confirmMsg").textContent = msg;
+        document.getElementById("confirmOk").textContent = confirmLabel;
         confirmOverlay.classList.add("open");
         return new Promise((res) => {
           confirmResolve = res;
@@ -2698,6 +2699,7 @@
           const ok = await confirmDlg(
             "Import Creators",
             `Found ${toImport.length} new creator${toImport.length !== 1 ? "s" : ""} from your payouts. Import them all?`,
+            "Import",
           );
           if (!ok) return;
 
