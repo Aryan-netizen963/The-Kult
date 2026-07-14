@@ -4,33 +4,45 @@
     <meta charset="UTF-8" />
     <meta
       name="viewport"
-      content="width=device-width, initial-scale=1.0, maximum-scale=1.0"
+      content="width=device-width, initial-scale=1.0, viewport-fit=cover"
     />
     <title>Kult — Campaign Dashboard</title>
     <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
-      href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700&family=Geist+Mono:wght@400;500&display=swap"
+      href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700&family=Geist+Mono:wght@400;500;600&display=swap"
       rel="stylesheet"
     />
     <link rel="icon" type="image/svg+xml" href="favicon.svg" />
     <style>
+      /* ─────────────────────────────────────────────────────────────
+         THE KULT · OPS  — design system
+         cool near-black · ice accent · mono numerals · level meters
+      ───────────────────────────────────────────────────────────── */
       :root {
-        --bg: #111111;
-        --surface: #181818;
-        --panel: #202020;
-        --border: rgba(255, 255, 255, 0.08);
+        --bg: #0c0e10;
+        --surface: #14171a;
+        --surface-2: #171b1e;
+        --panel: #1c2125;
+        --border: rgba(178, 213, 229, 0.09);
+        --border-soft: rgba(255, 255, 255, 0.06);
         --ice: #b2d5e5;
-        --ice-dim: rgba(178, 213, 229, 0.12);
-        --ice-mid: rgba(178, 213, 229, 0.25);
+        --ice-dim: rgba(178, 213, 229, 0.1);
+        --ice-mid: rgba(178, 213, 229, 0.28);
         --frost: #dcedf5;
-        --text: rgba(255, 255, 255, 0.92);
-        --muted: rgba(255, 255, 255, 0.45);
+        --text: rgba(240, 247, 250, 0.94);
+        --muted: rgba(198, 216, 224, 0.46);
+        --faint: rgba(198, 216, 224, 0.28);
         --danger: #e57373;
         --green: #81c784;
         --amber: #ffb74d;
         --purple: #ce93d8;
-        --r: 16px;
-        --r-sm: 10px;
+        --r: 18px;
+        --r-sm: 12px;
+        --rail-w: 232px;
+        --dock-h: 68px;
+        --glow: 0 0 32px rgba(178, 213, 229, 0.22);
+        --ease-spring: cubic-bezier(0.22, 1, 0.36, 1);
       }
       *,
       *::before,
@@ -38,6 +50,9 @@
         box-sizing: border-box;
         margin: 0;
         padding: 0;
+      }
+      html {
+        color-scheme: dark;
       }
       html,
       body {
@@ -47,81 +62,208 @@
         min-height: 100vh;
         -webkit-font-smoothing: antialiased;
       }
+      button {
+        font-family: inherit;
+        color: inherit;
+      }
+      ::selection {
+        background: rgba(178, 213, 229, 0.25);
+      }
+      :focus-visible {
+        outline: 2px solid var(--ice-mid);
+        outline-offset: 2px;
+        border-radius: 6px;
+      }
 
-      /* Lock */
+      /* Ambient aurora — one fixed wash behind everything */
+      .aurora {
+        position: fixed;
+        inset: 0;
+        z-index: 0;
+        pointer-events: none;
+        overflow: hidden;
+      }
+      .aurora::before,
+      .aurora::after {
+        content: "";
+        position: absolute;
+        border-radius: 50%;
+        filter: blur(90px);
+        opacity: 0.5;
+      }
+      .aurora::before {
+        width: 60vmax;
+        height: 42vmax;
+        top: -24vmax;
+        left: -14vmax;
+        background: radial-gradient(
+          closest-side,
+          rgba(178, 213, 229, 0.14),
+          transparent 70%
+        );
+        animation: drift-a 26s ease-in-out infinite alternate;
+      }
+      .aurora::after {
+        width: 48vmax;
+        height: 40vmax;
+        bottom: -26vmax;
+        right: -16vmax;
+        background: radial-gradient(
+          closest-side,
+          rgba(206, 147, 216, 0.07),
+          transparent 70%
+        );
+        animation: drift-b 32s ease-in-out infinite alternate;
+      }
+      @keyframes drift-a {
+        to {
+          transform: translate(9vmax, 6vmax);
+        }
+      }
+      @keyframes drift-b {
+        to {
+          transform: translate(-8vmax, -5vmax);
+        }
+      }
+
+      /* ── Lock ─────────────────────────────────────────────────── */
       #lock {
         position: fixed;
         inset: 0;
         z-index: 100;
-        background: var(--bg);
         display: flex;
         flex-direction: column;
         align-items: center;
         justify-content: center;
-        gap: 24px;
         padding: 32px;
+        background:
+          radial-gradient(
+            80vmax 60vmax at 50% -20%,
+            rgba(178, 213, 229, 0.09),
+            transparent 60%
+          ),
+          var(--bg);
+      }
+      .lock-card {
+        width: 100%;
+        max-width: 360px;
+        background: rgba(20, 23, 26, 0.75);
+        border: 1px solid var(--border);
+        border-radius: 24px;
+        padding: 40px 28px 32px;
+        backdrop-filter: blur(20px);
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 22px;
+        box-shadow:
+          0 30px 80px rgba(0, 0, 0, 0.5),
+          inset 0 1px 0 rgba(255, 255, 255, 0.05);
+        animation: lock-in 0.7s var(--ease-spring) both;
+      }
+      @keyframes lock-in {
+        from {
+          opacity: 0;
+          transform: translateY(16px) scale(0.98);
+        }
       }
       #lock .logo {
         display: flex;
+        flex-direction: column;
         align-items: center;
-        gap: 10px;
-        font-size: 20px;
+        gap: 14px;
+        font-size: 21px;
         font-weight: 600;
         letter-spacing: -0.03em;
       }
+      #lock .logo svg {
+        filter: drop-shadow(0 0 18px rgba(178, 213, 229, 0.4));
+      }
       #lock h2 {
-        font-size: 15px;
+        font-size: 11px;
         color: var(--muted);
-        font-weight: 400;
-        letter-spacing: 0.3em;
+        font-weight: 500;
+        letter-spacing: 0.34em;
         text-transform: uppercase;
         font-family: "Geist Mono", monospace;
       }
+      #lock .lock-meter {
+        width: 120px;
+        height: 6px;
+        border-radius: 2px;
+        background: repeating-linear-gradient(
+          90deg,
+          var(--ice-mid) 0 5px,
+          transparent 5px 9px
+        );
+        opacity: 0.55;
+        mask-image: linear-gradient(
+          90deg,
+          transparent,
+          #000 20% 80%,
+          transparent
+        );
+        -webkit-mask-image: linear-gradient(
+          90deg,
+          transparent,
+          #000 20% 80%,
+          transparent
+        );
+      }
       #lock input {
         width: 100%;
-        max-width: 320px;
-        background: var(--surface);
+        background: var(--bg);
         border: 1px solid var(--border);
-        border-radius: var(--r);
-        padding: 14px 18px;
+        border-radius: 14px;
+        padding: 15px 18px;
         color: var(--text);
         font-size: 16px;
         font-family: "Geist Mono", monospace;
         outline: none;
         text-align: center;
-        letter-spacing: 0.15em;
-        transition: border-color 0.2s;
+        letter-spacing: 0.18em;
+        transition:
+          border-color 0.2s,
+          box-shadow 0.2s;
       }
       #lock input:focus {
         border-color: var(--ice-mid);
+        box-shadow: 0 0 0 4px rgba(178, 213, 229, 0.08);
       }
       #lock .err {
-        font-size: 13px;
+        font-size: 12.5px;
         color: var(--danger);
         font-family: "Geist Mono", monospace;
         min-height: 18px;
+        text-align: center;
+      }
+      .lock-btn {
+        margin-top: 0;
       }
 
-      /* App */
+      /* ── App frame ────────────────────────────────────────────── */
       #app {
         display: none;
-        flex-direction: column;
         min-height: 100vh;
+        position: relative;
+        z-index: 1;
       }
       #app.visible {
-        display: flex;
+        display: block;
       }
 
-      /* Topbar */
+      /* Topbar — mobile only */
       .topbar {
         position: sticky;
         top: 0;
         z-index: 50;
-        background: rgba(17, 17, 17, 0.92);
-        backdrop-filter: blur(16px);
-        border-bottom: 1px solid var(--border);
+        background: rgba(12, 14, 16, 0.82);
+        backdrop-filter: blur(18px);
+        -webkit-backdrop-filter: blur(18px);
+        border-bottom: 1px solid var(--border-soft);
         padding: 0 20px;
-        height: 56px;
+        padding-top: env(safe-area-inset-top);
+        height: calc(56px + env(safe-area-inset-top));
         display: flex;
         align-items: center;
         justify-content: space-between;
@@ -129,57 +271,92 @@
       .topbar-logo {
         display: flex;
         align-items: center;
-        gap: 8px;
+        gap: 9px;
         font-size: 17px;
         font-weight: 600;
         letter-spacing: -0.03em;
       }
       .topbar-tag {
         font-family: "Geist Mono", monospace;
-        font-size: 10px;
-        letter-spacing: 0.25em;
+        font-size: 9.5px;
+        letter-spacing: 0.26em;
         color: var(--ice);
         text-transform: uppercase;
         background: var(--ice-dim);
         border: 1px solid var(--ice-mid);
-        padding: 3px 8px;
+        padding: 4px 9px;
         border-radius: 20px;
       }
 
-      /* Tabs */
+      /* ── Nav: bottom dock (mobile) / left rail (desktop) ──────── */
       .tabs {
+        position: fixed;
+        z-index: 60;
+        left: 50%;
+        transform: translateX(-50%);
+        bottom: calc(12px + env(safe-area-inset-bottom));
+        width: min(440px, calc(100% - 24px));
+        height: var(--dock-h);
         display: flex;
         gap: 4px;
-        padding: 16px 16px 0;
-        max-width: 600px;
-        margin: 0 auto;
-        width: 100%;
+        padding: 6px;
+        border-radius: 22px;
+        background: rgba(20, 23, 26, 0.82);
+        border: 1px solid var(--border);
+        backdrop-filter: blur(20px);
+        -webkit-backdrop-filter: blur(20px);
+        box-shadow: 0 16px 48px rgba(0, 0, 0, 0.55);
       }
       .tab-btn {
         flex: 1;
-        padding: 10px 8px;
-        border-radius: var(--r-sm);
-        font-size: 13px;
-        font-weight: 600;
-        font-family: "Geist", sans-serif;
-        cursor: pointer;
-        border: 1px solid var(--border);
-        background: var(--surface);
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        gap: 4px;
+        border: none;
+        background: transparent;
+        border-radius: 16px;
         color: var(--muted);
-        transition: all 0.2s;
+        font-size: 10.5px;
+        font-weight: 600;
+        letter-spacing: 0.02em;
+        cursor: pointer;
+        transition:
+          color 0.2s,
+          background 0.2s;
         -webkit-tap-highlight-color: transparent;
       }
+      .tab-btn svg {
+        width: 19px;
+        height: 19px;
+        transition: transform 0.25s var(--ease-spring);
+      }
       .tab-btn.active {
-        background: var(--ice);
-        color: #111;
-        border-color: var(--ice);
+        background: var(--ice-dim);
+        color: var(--frost);
+        box-shadow: inset 0 0 0 1px var(--ice-mid);
+      }
+      .tab-btn.active svg {
+        transform: translateY(-1px);
+        filter: drop-shadow(0 0 8px rgba(178, 213, 229, 0.55));
+      }
+      .tab-btn:not(.active):hover {
+        color: var(--text);
+        background: rgba(255, 255, 255, 0.04);
       }
 
-      /* Main */
+      /* Rail branding — hidden on mobile */
+      .rail-head,
+      .rail-foot {
+        display: none;
+      }
+
+      /* ── Main column ──────────────────────────────────────────── */
       main {
-        flex: 1;
-        padding: 16px 16px 100px;
-        max-width: 600px;
+        padding: 18px 16px
+          calc(var(--dock-h) + 40px + env(safe-area-inset-bottom));
+        max-width: 640px;
         margin: 0 auto;
         width: 100%;
       }
@@ -188,82 +365,135 @@
       }
       .tab-panel.active {
         display: block;
+        animation: panel-in 0.35s var(--ease-spring) both;
+      }
+      @keyframes panel-in {
+        from {
+          opacity: 0;
+          transform: translateY(8px);
+        }
       }
 
       /* Section label */
       .section-label {
         font-family: "Geist Mono", monospace;
         font-size: 10px;
-        letter-spacing: 0.3em;
+        letter-spacing: 0.32em;
         color: var(--ice);
         text-transform: uppercase;
-        margin-bottom: 12px;
-        margin-top: 24px;
+        margin: 26px 2px 12px;
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        opacity: 0.9;
+      }
+      .section-label::after {
+        content: "";
+        flex: 1;
+        height: 1px;
+        background: linear-gradient(90deg, var(--border), transparent);
       }
 
-      /* Summary strip */
+      /* ── Summary strip ────────────────────────────────────────── */
       .summary {
         display: grid;
         grid-template-columns: repeat(3, 1fr);
-        gap: 8px;
+        gap: 10px;
         margin-bottom: 6px;
       }
       .summary-card {
-        background: var(--surface);
+        position: relative;
+        background: linear-gradient(160deg, var(--surface-2), var(--surface));
         border: 1px solid var(--border);
         border-radius: var(--r);
-        padding: 12px 10px;
+        padding: 16px 10px 14px;
         text-align: center;
+        overflow: hidden;
+      }
+      .summary-card::before {
+        content: "";
+        position: absolute;
+        inset: 0 0 auto 0;
+        height: 1px;
+        background: linear-gradient(
+          90deg,
+          transparent,
+          rgba(178, 213, 229, 0.35),
+          transparent
+        );
       }
       .summary-card .val {
-        font-size: 18px;
-        font-weight: 700;
-        letter-spacing: -0.03em;
-        color: var(--ice);
+        font-size: 21px;
+        font-weight: 600;
+        letter-spacing: -0.02em;
+        color: var(--frost);
         line-height: 1;
+        font-family: "Geist Mono", monospace;
+        font-variant-numeric: tabular-nums;
+        text-shadow: 0 0 24px rgba(178, 213, 229, 0.35);
       }
       .summary-card .lbl {
         font-size: 9px;
         color: var(--muted);
-        margin-top: 4px;
+        margin-top: 7px;
         font-family: "Geist Mono", monospace;
-        letter-spacing: 0.1em;
+        letter-spacing: 0.14em;
+        text-transform: uppercase;
       }
 
-      /* Month selector */
+      /* ── Month selector ───────────────────────────────────────── */
       .month-selector {
         display: flex;
         align-items: center;
         gap: 10px;
         margin-bottom: 16px;
+        position: relative;
+      }
+      .month-selector::after {
+        content: "";
+        position: absolute;
+        right: 16px;
+        width: 8px;
+        height: 8px;
+        border-right: 1.6px solid var(--muted);
+        border-bottom: 1.6px solid var(--muted);
+        transform: rotate(45deg) translateY(-2px);
+        pointer-events: none;
       }
       .month-selector select {
         flex: 1;
         background: var(--surface);
         border: 1px solid var(--border);
         border-radius: var(--r-sm);
-        padding: 11px 14px;
+        padding: 13px 16px;
         color: var(--text);
         font-size: 15px;
+        font-weight: 500;
         font-family: "Geist", sans-serif;
         outline: none;
         -webkit-appearance: none;
+        appearance: none;
+        cursor: pointer;
+        transition: border-color 0.2s;
+      }
+      .month-selector select:focus {
+        border-color: var(--ice-mid);
       }
 
-      /* Monthly summary card */
+      /* ── Monthly summary ledger ───────────────────────────────── */
       .monthly-summary {
-        background: var(--surface);
+        background: linear-gradient(170deg, var(--surface-2), var(--surface));
         border: 1px solid var(--border);
         border-radius: var(--r);
-        padding: 16px;
+        padding: 8px 18px;
         margin-bottom: 16px;
       }
       .monthly-row {
         display: flex;
         justify-content: space-between;
         align-items: center;
-        padding: 8px 0;
-        border-bottom: 1px solid var(--border);
+        padding: 11px 0;
+        border-bottom: 1px dashed var(--border-soft);
         font-size: 14px;
       }
       .monthly-row:last-child {
@@ -272,13 +502,19 @@
       .monthly-row.total {
         font-weight: 700;
         font-size: 15px;
+        border-top: 1px solid var(--border);
+        margin-top: 2px;
       }
       .monthly-row .label {
         color: var(--muted);
       }
+      .monthly-row.total .label {
+        color: var(--text);
+      }
       .monthly-row .amount {
         font-family: "Geist Mono", monospace;
         font-weight: 600;
+        font-variant-numeric: tabular-nums;
       }
       .monthly-row .amount.green {
         color: var(--green);
@@ -292,20 +528,27 @@
       .monthly-row .amount.purple {
         color: var(--purple);
       }
+      .monthly-row.total .amount.green {
+        text-shadow: 0 0 18px rgba(129, 199, 132, 0.45);
+      }
 
       /* Partner split */
       .partner-split {
-        background: var(--panel);
+        background: var(--surface);
+        border: 1px solid var(--border-soft);
         border-radius: var(--r-sm);
-        padding: 12px 14px;
+        padding: 12px 16px;
         margin-top: 10px;
       }
       .partner-row {
         display: flex;
         justify-content: space-between;
         align-items: center;
-        padding: 6px 0;
-        font-size: 13px;
+        padding: 7px 0;
+        font-size: 13.5px;
+      }
+      .partner-row + .partner-row {
+        border-top: 1px dashed var(--border-soft);
       }
       .partner-row .name {
         font-weight: 500;
@@ -313,101 +556,220 @@
       .partner-row .cut {
         font-family: "Geist Mono", monospace;
         color: var(--purple);
+        font-variant-numeric: tabular-nums;
       }
 
-      /* Add button */
+      /* Mini cards (monthly lists) */
+      .mini-card {
+        background: var(--surface);
+        border: 1px solid var(--border-soft);
+        border-radius: var(--r-sm);
+        padding: 13px 15px;
+        margin-bottom: 8px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 12px;
+      }
+      .mini-body {
+        min-width: 0;
+      }
+      .mini-title {
+        font-size: 14px;
+        font-weight: 600;
+        letter-spacing: -0.01em;
+      }
+      .mini-sub {
+        font-size: 11px;
+        color: var(--muted);
+        font-family: "Geist Mono", monospace;
+        margin-top: 3px;
+      }
+      .mini-right {
+        text-align: right;
+        flex-shrink: 0;
+      }
+      .mini-strong {
+        font-size: 13.5px;
+        font-weight: 600;
+        font-family: "Geist Mono", monospace;
+        font-variant-numeric: tabular-nums;
+      }
+      .mini-strong.purple {
+        color: var(--purple);
+      }
+      .mini-strong.amber {
+        color: var(--amber);
+      }
+      .mini-dim {
+        font-size: 11px;
+        color: var(--muted);
+        margin-top: 3px;
+        font-family: "Geist Mono", monospace;
+      }
+
+      /* ── Primary / secondary add buttons ──────────────────────── */
       .add-btn {
         width: 100%;
         padding: 15px;
-        background: var(--ice);
-        color: #111;
+        background: linear-gradient(180deg, var(--frost), var(--ice));
+        color: #0c0e10;
         border: none;
         border-radius: var(--r);
         font-size: 15px;
         font-weight: 600;
-        font-family: "Geist", sans-serif;
         cursor: pointer;
         display: flex;
         align-items: center;
         justify-content: center;
         gap: 8px;
-        box-shadow: 0 0 28px rgba(178, 213, 229, 0.2);
+        box-shadow:
+          var(--glow),
+          inset 0 1px 0 rgba(255, 255, 255, 0.5);
         transition:
-          opacity 0.2s,
+          box-shadow 0.25s,
           transform 0.15s;
         margin-bottom: 8px;
+        -webkit-tap-highlight-color: transparent;
+      }
+      .add-btn:hover {
+        box-shadow:
+          0 0 44px rgba(178, 213, 229, 0.32),
+          inset 0 1px 0 rgba(255, 255, 255, 0.5);
       }
       .add-btn:active {
         transform: scale(0.98);
-        opacity: 0.85;
+      }
+      .ghost-add-btn {
+        width: 100%;
+        padding: 13px;
+        background: transparent;
+        color: var(--ice);
+        border: 1px dashed var(--ice-mid);
+        border-radius: var(--r);
+        font-size: 14px;
+        font-weight: 600;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+        margin-bottom: 8px;
+        transition:
+          background 0.2s,
+          border-color 0.2s;
+        -webkit-tap-highlight-color: transparent;
+      }
+      .ghost-add-btn:hover {
+        background: var(--ice-dim);
+        border-style: solid;
       }
 
-      /* Status badge */
+      /* ── Status badges ────────────────────────────────────────── */
       .status-badge {
         display: inline-flex;
         align-items: center;
-        padding: 3px 8px;
+        gap: 5px;
+        padding: 3px 9px;
         border-radius: 20px;
-        font-size: 10px;
+        font-size: 9.5px;
         font-weight: 600;
         font-family: "Geist Mono", monospace;
-        letter-spacing: 0.05em;
+        letter-spacing: 0.08em;
         text-transform: uppercase;
       }
+      .status-badge::before {
+        content: "";
+        width: 5px;
+        height: 5px;
+        border-radius: 50%;
+        background: currentColor;
+      }
       .status-badge.active {
-        background: rgba(129, 199, 132, 0.15);
+        background: rgba(129, 199, 132, 0.12);
         color: var(--green);
         border: 1px solid rgba(129, 199, 132, 0.3);
       }
+      .status-badge.active::before {
+        box-shadow: 0 0 8px var(--green);
+        animation: pulse 2.4s ease-in-out infinite;
+      }
+      @keyframes pulse {
+        50% {
+          opacity: 0.4;
+        }
+      }
       .status-badge.completed {
-        background: rgba(178, 213, 229, 0.12);
+        background: rgba(178, 213, 229, 0.1);
         color: var(--ice);
         border: 1px solid rgba(178, 213, 229, 0.25);
       }
       .status-badge.on-hold {
-        background: rgba(255, 183, 77, 0.12);
+        background: rgba(255, 183, 77, 0.1);
         color: var(--amber);
         border: 1px solid rgba(255, 183, 77, 0.25);
       }
 
-      /* Song cards */
+      /* ── Song cards ───────────────────────────────────────────── */
       .song-card {
-        background: var(--surface);
-        border: 1px solid var(--border);
+        background: linear-gradient(165deg, var(--surface-2), var(--surface));
+        border: 1px solid var(--border-soft);
         border-radius: var(--r);
         margin-bottom: 12px;
         overflow: hidden;
-        transition: border-color 0.2s;
+        transition:
+          border-color 0.25s,
+          box-shadow 0.25s,
+          transform 0.2s;
+      }
+      .song-card:hover {
+        border-color: var(--border);
+        transform: translateY(-1px);
       }
       .song-card.expanded {
         border-color: var(--ice-mid);
+        box-shadow:
+          0 12px 44px rgba(0, 0, 0, 0.4),
+          0 0 0 1px rgba(178, 213, 229, 0.06);
       }
       .song-header {
-        padding: 14px 16px;
+        padding: 15px 16px 12px;
         display: flex;
         align-items: center;
-        gap: 12px;
+        gap: 13px;
         cursor: pointer;
         user-select: none;
         -webkit-tap-highlight-color: transparent;
       }
       .song-icon {
-        width: 40px;
-        height: 40px;
-        border-radius: 10px;
-        background: var(--ice-dim);
+        width: 42px;
+        height: 42px;
+        border-radius: 12px;
+        background: radial-gradient(
+          circle at 30% 30%,
+          rgba(178, 213, 229, 0.2),
+          var(--ice-dim)
+        );
         border: 1px solid var(--ice-mid);
         display: flex;
         align-items: center;
         justify-content: center;
         flex-shrink: 0;
       }
+      .song-card.expanded .song-icon svg {
+        animation: spin-slow 5s linear infinite;
+      }
+      @keyframes spin-slow {
+        to {
+          transform: rotate(360deg);
+        }
+      }
       .song-info {
         flex: 1;
         min-width: 0;
       }
       .song-name {
-        font-size: 15px;
+        font-size: 15.5px;
         font-weight: 600;
         letter-spacing: -0.02em;
         white-space: nowrap;
@@ -417,19 +779,30 @@
       .song-meta {
         font-size: 11px;
         color: var(--muted);
-        margin-top: 2px;
+        margin-top: 4px;
         display: flex;
         align-items: center;
-        gap: 6px;
+        gap: 7px;
+        flex-wrap: wrap;
+      }
+      .meta-dim {
+        color: var(--muted);
+        font-size: 11px;
+      }
+      .meta-vids {
+        color: var(--ice);
+        font-size: 11px;
+        font-family: "Geist Mono", monospace;
       }
       .song-budget-pill {
         flex-shrink: 0;
         text-align: right;
       }
       .pill-remaining {
-        font-size: 13px;
+        font-size: 14px;
         font-weight: 600;
         font-family: "Geist Mono", monospace;
+        font-variant-numeric: tabular-nums;
       }
       .pill-remaining.green {
         color: var(--green);
@@ -441,72 +814,99 @@
         color: var(--danger);
       }
       .pill-label {
-        font-size: 10px;
-        color: var(--muted);
-        margin-top: 1px;
+        font-size: 9px;
+        color: var(--faint);
+        margin-top: 2px;
+        font-family: "Geist Mono", monospace;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
       }
       .song-chevron {
-        color: var(--muted);
-        transition: transform 0.25s;
+        color: var(--faint);
+        transition: transform 0.3s var(--ease-spring);
         flex-shrink: 0;
       }
       .song-card.expanded .song-chevron {
         transform: rotate(180deg);
+        color: var(--ice);
       }
 
-      /* Budget bar */
+      /* ── Signature: segmented level-meter budget bars ─────────── */
       .budget-bar-wrap {
-        padding: 0 16px 12px;
+        padding: 0 16px 14px;
       }
       .budget-bar-track {
-        height: 4px;
-        background: var(--panel);
-        border-radius: 4px;
+        position: relative;
+        height: 8px;
+        background: rgba(255, 255, 255, 0.045);
+        border-radius: 3px;
         overflow: hidden;
+      }
+      .budget-bar-track::after {
+        /* segment gaps over track + fill — audio meter */
+        content: "";
+        position: absolute;
+        inset: 0;
+        background: repeating-linear-gradient(
+          90deg,
+          transparent 0 6px,
+          var(--surface) 6px 9px
+        );
+        pointer-events: none;
       }
       .budget-bar-fill {
         height: 100%;
-        border-radius: 4px;
-        background: linear-gradient(90deg, var(--ice), var(--frost));
-        transition: width 0.5s cubic-bezier(0.22, 1, 0.36, 1);
+        border-radius: 3px;
+        background: linear-gradient(
+          90deg,
+          #7fb3c9,
+          var(--ice) 55%,
+          var(--frost)
+        );
+        box-shadow: 0 0 14px rgba(178, 213, 229, 0.5);
+        transition: width 0.6s var(--ease-spring);
       }
       .budget-bar-fill.amber {
-        background: linear-gradient(90deg, var(--amber), #ffd54f);
+        background: linear-gradient(90deg, #e6a23c, var(--amber), #ffd54f);
+        box-shadow: 0 0 14px rgba(255, 183, 77, 0.45);
       }
       .budget-bar-fill.red {
-        background: linear-gradient(90deg, var(--danger), #ef9a9a);
+        background: linear-gradient(90deg, #c94f4f, var(--danger), #ef9a9a);
+        box-shadow: 0 0 14px rgba(229, 115, 115, 0.45);
       }
       .budget-nums {
         display: flex;
         justify-content: space-between;
         font-family: "Geist Mono", monospace;
-        font-size: 11px;
+        font-size: 10.5px;
         color: var(--muted);
-        margin-top: 6px;
+        margin-top: 8px;
+        font-variant-numeric: tabular-nums;
       }
 
-      /* Song body */
+      /* ── Song body ────────────────────────────────────────────── */
       .song-body {
-        border-top: 1px solid var(--border);
+        border-top: 1px solid var(--border-soft);
+        background: rgba(0, 0, 0, 0.14);
       }
       .song-body-inner {
         padding: 14px;
       }
-
-      /* Profit split inside song */
       .song-profit-box {
         background: var(--panel);
+        border: 1px solid var(--border-soft);
         border-radius: var(--r-sm);
         padding: 12px 14px;
         margin-bottom: 12px;
       }
       .song-profit-title {
-        font-size: 11px;
+        font-size: 10px;
         font-family: "Geist Mono", monospace;
         color: var(--muted);
-        letter-spacing: 0.2em;
+        letter-spacing: 0.18em;
         text-transform: uppercase;
         margin-bottom: 8px;
+        line-height: 1.5;
       }
       .song-profit-row {
         display: flex;
@@ -521,15 +921,20 @@
       .song-profit-row .pamount {
         font-family: "Geist Mono", monospace;
         color: var(--purple);
+        font-variant-numeric: tabular-nums;
       }
 
-      /* Payout list */
+      /* Payout items */
       .payout-item {
         background: var(--panel);
-        border: 1px solid var(--border);
+        border: 1px solid var(--border-soft);
         border-radius: var(--r-sm);
         padding: 12px 14px;
         margin-bottom: 8px;
+        transition: border-color 0.2s;
+      }
+      .payout-item:hover {
+        border-color: var(--border);
       }
       .payout-top {
         display: flex;
@@ -555,55 +960,121 @@
       }
       .payout-amount {
         font-size: 15px;
-        font-weight: 700;
+        font-weight: 600;
         font-family: "Geist Mono", monospace;
-        color: var(--ice);
+        color: var(--frost);
         flex-shrink: 0;
+        font-variant-numeric: tabular-nums;
+      }
+      .paid-chip {
+        padding: 4px 11px;
+        border-radius: 20px;
+        font-size: 10.5px;
+        font-weight: 600;
+        font-family: "Geist Mono", monospace;
+        cursor: pointer;
+        -webkit-tap-highlight-color: transparent;
+        transition:
+          transform 0.15s,
+          opacity 0.2s;
+      }
+      .paid-chip:active {
+        transform: scale(0.94);
+      }
+      .paid-chip.paid {
+        background: rgba(129, 199, 132, 0.13);
+        color: var(--green);
+        border: 1px solid rgba(129, 199, 132, 0.32);
+      }
+      .paid-chip.pending {
+        background: rgba(255, 183, 77, 0.13);
+        color: var(--amber);
+        border: 1px solid rgba(255, 183, 77, 0.32);
       }
       .payout-videos {
-        margin-top: 8px;
+        margin-top: 9px;
         display: flex;
         gap: 8px;
         align-items: center;
       }
       .video-track {
         flex: 1;
-        height: 3px;
-        background: var(--border);
+        height: 4px;
+        background: rgba(255, 255, 255, 0.05);
         border-radius: 3px;
         overflow: hidden;
+        position: relative;
+      }
+      .video-track::after {
+        content: "";
+        position: absolute;
+        inset: 0;
+        background: repeating-linear-gradient(
+          90deg,
+          transparent 0 4px,
+          var(--panel) 4px 6px
+        );
+        pointer-events: none;
       }
       .video-fill {
         height: 100%;
         background: var(--ice);
         border-radius: 3px;
         transition: width 0.4s;
+        box-shadow: 0 0 8px rgba(178, 213, 229, 0.4);
       }
       .video-label {
         font-size: 11px;
         font-family: "Geist Mono", monospace;
         color: var(--muted);
         flex-shrink: 0;
+        font-variant-numeric: tabular-nums;
+      }
+      .link-btn {
+        background: none;
+        border: none;
+        cursor: pointer;
+        color: var(--muted);
+        padding: 2px 4px;
+        font-size: 11px;
+        font-family: "Geist Mono", monospace;
+        -webkit-tap-highlight-color: transparent;
+        transition: color 0.2s;
+      }
+      .link-btn:hover {
+        color: var(--ice);
       }
       .del-btn {
         background: none;
         border: none;
         cursor: pointer;
-        color: var(--muted);
+        color: var(--faint);
         padding: 4px;
         flex-shrink: 0;
         transition: color 0.2s;
         -webkit-tap-highlight-color: transparent;
       }
+      .del-btn:hover,
       .del-btn:active {
         color: var(--danger);
       }
       .empty-payouts {
         text-align: center;
-        color: var(--muted);
-        font-size: 13px;
-        padding: 20px 0;
+        color: var(--faint);
+        font-size: 12.5px;
+        padding: 22px 0;
         font-family: "Geist Mono", monospace;
+      }
+
+      /* Completed section toggle */
+      .completed-toggle {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        cursor: pointer;
+        padding: 8px 2px;
+        margin-top: 16px;
+        -webkit-tap-highlight-color: transparent;
       }
 
       /* Song actions */
@@ -618,7 +1089,6 @@
         border-radius: var(--r-sm);
         font-size: 13px;
         font-weight: 600;
-        font-family: "Geist", sans-serif;
         cursor: pointer;
         border: none;
         display: flex;
@@ -627,38 +1097,49 @@
         gap: 6px;
         transition:
           opacity 0.2s,
-          transform 0.15s;
+          transform 0.15s,
+          box-shadow 0.2s;
         -webkit-tap-highlight-color: transparent;
       }
       .action-btn:active {
         transform: scale(0.97);
-        opacity: 0.8;
       }
       .action-btn.primary {
-        background: var(--ice);
-        color: #111;
+        background: linear-gradient(180deg, var(--frost), var(--ice));
+        color: #0c0e10;
+        box-shadow: 0 0 20px rgba(178, 213, 229, 0.18);
       }
       .action-btn.secondary {
         background: var(--panel);
         color: var(--ice);
         border: 1px solid var(--ice-mid);
       }
+      .action-btn.secondary:hover {
+        background: var(--ice-dim);
+      }
       .action-btn.ghost {
         background: var(--panel);
         color: var(--danger);
         border: 1px solid rgba(229, 115, 115, 0.2);
       }
+      .action-btn.ghost:hover {
+        background: rgba(229, 115, 115, 0.08);
+      }
 
-      /* Expense items */
+      /* ── Expense items ────────────────────────────────────────── */
       .expense-item {
         background: var(--surface);
-        border: 1px solid var(--border);
+        border: 1px solid var(--border-soft);
         border-radius: var(--r-sm);
-        padding: 12px 14px;
+        padding: 13px 15px;
         margin-bottom: 8px;
         display: flex;
         align-items: center;
         gap: 12px;
+        transition: border-color 0.2s;
+      }
+      .expense-item:hover {
+        border-color: var(--border);
       }
       .expense-info {
         flex: 1;
@@ -671,26 +1152,169 @@
       .expense-meta {
         font-size: 11px;
         color: var(--muted);
-        margin-top: 2px;
+        margin-top: 3px;
         font-family: "Geist Mono", monospace;
       }
       .expense-amount {
         font-size: 15px;
-        font-weight: 700;
+        font-weight: 600;
         font-family: "Geist Mono", monospace;
         color: var(--amber);
         flex-shrink: 0;
+        font-variant-numeric: tabular-nums;
       }
 
-      /* Overlay / sheet */
+      /* ── Creator cards ────────────────────────────────────────── */
+      .creator-card {
+        background: var(--surface);
+        border: 1px solid var(--border-soft);
+        border-radius: var(--r);
+        padding: 14px 16px;
+        margin-bottom: 10px;
+        display: flex;
+        align-items: center;
+        gap: 13px;
+        transition:
+          border-color 0.2s,
+          transform 0.2s;
+      }
+      .creator-card:hover {
+        border-color: var(--border);
+        transform: translateY(-1px);
+      }
+      .creator-avatar {
+        width: 42px;
+        height: 42px;
+        border-radius: 12px;
+        background: radial-gradient(
+          circle at 30% 30%,
+          rgba(178, 213, 229, 0.18),
+          var(--ice-dim)
+        );
+        border: 1px solid var(--ice-mid);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-shrink: 0;
+      }
+      .creator-body {
+        flex: 1;
+        min-width: 0;
+      }
+      .creator-handle {
+        font-size: 15px;
+        font-weight: 600;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        letter-spacing: -0.01em;
+      }
+      .creator-meta {
+        font-size: 11px;
+        color: var(--muted);
+        font-family: "Geist Mono", monospace;
+        margin-top: 3px;
+      }
+      .creator-notes {
+        font-size: 12px;
+        color: var(--muted);
+        margin-top: 5px;
+        line-height: 1.45;
+      }
+      .creator-actions {
+        display: flex;
+        gap: 8px;
+        flex-shrink: 0;
+        align-items: center;
+      }
+      .chip-btn {
+        background: none;
+        border: 1px solid var(--border);
+        border-radius: 8px;
+        padding: 6px 11px;
+        color: var(--ice);
+        font-size: 12px;
+        cursor: pointer;
+        font-family: "Geist Mono", monospace;
+        transition:
+          background 0.2s,
+          border-color 0.2s;
+        -webkit-tap-highlight-color: transparent;
+      }
+      .chip-btn:hover {
+        background: var(--ice-dim);
+        border-color: var(--ice-mid);
+      }
+
+      /* Creator picker rows (payout sheet) */
+      .picker-row {
+        padding: 11px 14px;
+        cursor: pointer;
+        border-bottom: 1px solid var(--border-soft);
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        -webkit-tap-highlight-color: transparent;
+        transition: background 0.15s;
+      }
+      .picker-row:hover {
+        background: var(--ice-dim);
+      }
+      .picker-row:last-child {
+        border-bottom: none;
+      }
+      .picker-name {
+        font-size: 14px;
+        font-weight: 500;
+      }
+      .picker-meta {
+        font-size: 11px;
+        color: var(--muted);
+        font-family: "Geist Mono", monospace;
+        margin-top: 2px;
+      }
+      .picker-toggle {
+        margin-top: 6px;
+        background: none;
+        border: 1px solid var(--border);
+        border-radius: var(--r-sm);
+        padding: 9px 12px;
+        color: var(--muted);
+        font-size: 12px;
+        font-family: "Geist Mono", monospace;
+        cursor: pointer;
+        width: 100%;
+        text-align: left;
+        transition:
+          color 0.2s,
+          border-color 0.2s;
+        -webkit-tap-highlight-color: transparent;
+      }
+      .picker-toggle:hover {
+        color: var(--ice);
+        border-color: var(--ice-mid);
+      }
+      .picker-list {
+        margin-top: 6px;
+        display: none;
+        max-height: 180px;
+        overflow-y: auto;
+        background: var(--panel);
+        border: 1px solid var(--border);
+        border-radius: var(--r-sm);
+      }
+
+      /* ── Overlay / sheet ──────────────────────────────────────── */
       .overlay {
         position: fixed;
         inset: 0;
         z-index: 200;
-        background: rgba(0, 0, 0, 0.7);
-        backdrop-filter: blur(4px);
+        background: rgba(5, 6, 8, 0.72);
+        backdrop-filter: blur(6px);
+        -webkit-backdrop-filter: blur(6px);
         display: flex;
         align-items: flex-end;
+        justify-content: center;
         opacity: 0;
         pointer-events: none;
         transition: opacity 0.25s;
@@ -701,50 +1325,52 @@
       }
       .sheet {
         width: 100%;
-        background: var(--surface);
-        border-top: 1px solid var(--border);
-        border-radius: 24px 24px 0 0;
-        padding: 12px 20px 40px;
+        background: linear-gradient(180deg, var(--surface-2), var(--surface));
+        border: 1px solid var(--border);
+        border-bottom: none;
+        border-radius: 26px 26px 0 0;
+        padding: 12px 20px calc(36px + env(safe-area-inset-bottom));
         transform: translateY(100%);
-        transition: transform 0.3s cubic-bezier(0.22, 1, 0.36, 1);
+        transition: transform 0.35s var(--ease-spring);
         max-height: 92vh;
         overflow-y: auto;
+        box-shadow: 0 -20px 60px rgba(0, 0, 0, 0.5);
       }
       .overlay.open .sheet {
         transform: translateY(0);
       }
       .sheet-handle {
-        width: 36px;
+        width: 38px;
         height: 4px;
         border-radius: 4px;
         background: var(--border);
         margin: 0 auto 20px;
       }
       .sheet-title {
-        font-size: 18px;
+        font-size: 19px;
         font-weight: 600;
         letter-spacing: -0.03em;
         margin-bottom: 20px;
       }
 
-      /* Fields */
+      /* ── Fields ───────────────────────────────────────────────── */
       .field {
         margin-bottom: 14px;
       }
       .field label {
         display: block;
-        font-size: 12px;
+        font-size: 10.5px;
         color: var(--muted);
-        margin-bottom: 6px;
+        margin-bottom: 7px;
         font-family: "Geist Mono", monospace;
-        letter-spacing: 0.05em;
+        letter-spacing: 0.1em;
         text-transform: uppercase;
       }
       .field input,
       .field textarea,
       .field select {
         width: 100%;
-        background: var(--panel);
+        background: var(--bg);
         border: 1px solid var(--border);
         border-radius: var(--r-sm);
         padding: 13px 14px;
@@ -752,13 +1378,17 @@
         font-size: 16px;
         font-family: "Geist", sans-serif;
         outline: none;
-        transition: border-color 0.2s;
+        transition:
+          border-color 0.2s,
+          box-shadow 0.2s;
         -webkit-appearance: none;
+        appearance: none;
       }
       .field input:focus,
       .field textarea:focus,
       .field select:focus {
         border-color: var(--ice-mid);
+        box-shadow: 0 0 0 4px rgba(178, 213, 229, 0.07);
       }
       .field textarea {
         resize: none;
@@ -766,9 +1396,13 @@
       }
       .field input[type="number"] {
         -moz-appearance: textfield;
+        font-family: "Geist Mono", monospace;
       }
       .field input[type="number"]::-webkit-inner-spin-button {
         display: none;
+      }
+      .field input[type="date"] {
+        font-family: "Geist Mono", monospace;
       }
       .field-row {
         display: grid;
@@ -777,60 +1411,68 @@
       }
       .field-hint {
         font-size: 11px;
-        color: var(--muted);
-        margin-top: 4px;
+        color: var(--faint);
+        margin-top: 5px;
         font-family: "Geist Mono", monospace;
       }
 
       .submit-btn {
         width: 100%;
         padding: 15px;
-        background: var(--ice);
-        color: #111;
+        background: linear-gradient(180deg, var(--frost), var(--ice));
+        color: #0c0e10;
         border: none;
         border-radius: var(--r);
         font-size: 16px;
         font-weight: 600;
-        font-family: "Geist", sans-serif;
         cursor: pointer;
         margin-top: 6px;
         display: flex;
         align-items: center;
         justify-content: center;
         gap: 8px;
-        box-shadow: 0 0 28px rgba(178, 213, 229, 0.2);
+        box-shadow:
+          var(--glow),
+          inset 0 1px 0 rgba(255, 255, 255, 0.5);
         transition:
-          opacity 0.2s,
-          transform 0.15s;
+          box-shadow 0.25s,
+          transform 0.15s,
+          opacity 0.2s;
         -webkit-tap-highlight-color: transparent;
+      }
+      .submit-btn:hover {
+        box-shadow:
+          0 0 44px rgba(178, 213, 229, 0.32),
+          inset 0 1px 0 rgba(255, 255, 255, 0.5);
       }
       .submit-btn:active {
         transform: scale(0.98);
-        opacity: 0.85;
       }
       .submit-btn:disabled {
         opacity: 0.5;
         pointer-events: none;
       }
 
-      /* Toast */
+      /* ── Toast ────────────────────────────────────────────────── */
       .toast {
         position: fixed;
-        bottom: 24px;
+        bottom: calc(var(--dock-h) + 28px + env(safe-area-inset-bottom));
         left: 50%;
         transform: translateX(-50%) translateY(80px);
-        background: var(--panel);
+        background: rgba(28, 33, 37, 0.92);
+        backdrop-filter: blur(12px);
         border: 1px solid var(--border);
         border-radius: 40px;
-        padding: 10px 20px;
+        padding: 11px 22px;
         font-size: 13px;
         font-weight: 500;
         white-space: nowrap;
         z-index: 300;
         transition:
-          transform 0.3s cubic-bezier(0.22, 1, 0.36, 1),
+          transform 0.35s var(--ease-spring),
           opacity 0.3s;
         opacity: 0;
+        box-shadow: 0 12px 36px rgba(0, 0, 0, 0.45);
       }
       .toast.show {
         transform: translateX(-50%) translateY(0);
@@ -845,7 +1487,7 @@
         color: var(--danger);
       }
 
-      /* Spinner */
+      /* ── Spinner / loading ────────────────────────────────────── */
       .spinner {
         width: 18px;
         height: 18px;
@@ -868,13 +1510,13 @@
         padding: 40px 20px;
       }
 
-      /* Confirm */
+      /* ── Confirm dialog ───────────────────────────────────────── */
       .confirm-overlay {
         position: fixed;
         inset: 0;
         z-index: 300;
-        background: rgba(0, 0, 0, 0.8);
-        backdrop-filter: blur(4px);
+        background: rgba(5, 6, 8, 0.8);
+        backdrop-filter: blur(6px);
         display: flex;
         align-items: center;
         justify-content: center;
@@ -888,14 +1530,15 @@
         pointer-events: all;
       }
       .confirm-box {
-        background: var(--surface);
+        background: var(--surface-2);
         border: 1px solid var(--border);
-        border-radius: var(--r);
-        padding: 24px;
+        border-radius: 20px;
+        padding: 26px 24px;
         width: 100%;
-        max-width: 320px;
+        max-width: 330px;
         transform: scale(0.92);
-        transition: transform 0.25s cubic-bezier(0.22, 1, 0.36, 1);
+        transition: transform 0.25s var(--ease-spring);
+        box-shadow: 0 24px 70px rgba(0, 0, 0, 0.55);
       }
       .confirm-overlay.open .confirm-box {
         transform: scale(1);
@@ -904,12 +1547,13 @@
         font-size: 17px;
         font-weight: 600;
         margin-bottom: 8px;
+        letter-spacing: -0.02em;
       }
       .confirm-box p {
         font-size: 14px;
         color: var(--muted);
         margin-bottom: 20px;
-        line-height: 1.5;
+        line-height: 1.55;
       }
       .confirm-btns {
         display: flex;
@@ -923,90 +1567,186 @@
         font-weight: 600;
         cursor: pointer;
         border: none;
-        font-family: "Geist", sans-serif;
-        transition: opacity 0.2s;
+        transition:
+          opacity 0.2s,
+          transform 0.15s;
+      }
+      .confirm-btns button:active {
+        transform: scale(0.97);
       }
       .confirm-btns .cancel-btn {
         background: var(--panel);
         color: var(--text);
+        border: 1px solid var(--border-soft);
       }
       .confirm-btns .danger-btn {
         background: var(--danger);
-        color: white;
+        color: #16090a;
+        box-shadow: 0 0 24px rgba(229, 115, 115, 0.25);
       }
 
-      /* Empty state */
+      /* ── Empty state ──────────────────────────────────────────── */
       .empty-state {
         text-align: center;
-        padding: 48px 20px;
+        padding: 52px 20px;
         color: var(--muted);
       }
       .empty-state svg {
-        opacity: 0.3;
+        opacity: 0.35;
         margin-bottom: 16px;
       }
       .empty-state p {
         font-size: 14px;
         line-height: 1.6;
       }
+
+      /* ── Desktop: left rail layout ────────────────────────────── */
+      @media (min-width: 900px) {
+        .topbar {
+          display: none;
+        }
+        .tabs {
+          left: 0;
+          top: 0;
+          bottom: 0;
+          transform: none;
+          width: var(--rail-w);
+          height: auto;
+          flex-direction: column;
+          justify-content: flex-start;
+          gap: 4px;
+          padding: 24px 16px;
+          border-radius: 0;
+          border: none;
+          border-right: 1px solid var(--border-soft);
+          background: rgba(15, 17, 19, 0.75);
+          box-shadow: none;
+        }
+        .rail-head {
+          display: flex;
+          align-items: center;
+          gap: 10px;
+          font-size: 18px;
+          font-weight: 600;
+          letter-spacing: -0.03em;
+          padding: 6px 10px 26px;
+        }
+        .rail-head svg {
+          filter: drop-shadow(0 0 14px rgba(178, 213, 229, 0.35));
+        }
+        .rail-foot {
+          display: flex;
+          margin-top: auto;
+          padding: 12px 10px 4px;
+        }
+        .tab-btn {
+          flex: 0 0 auto;
+          flex-direction: row;
+          justify-content: flex-start;
+          gap: 11px;
+          padding: 12px 14px;
+          font-size: 13.5px;
+          border-radius: 12px;
+          width: 100%;
+        }
+        main {
+          margin-left: var(--rail-w);
+          max-width: none;
+          padding: 40px 48px 80px;
+        }
+        main > .tab-panel {
+          max-width: 680px;
+          margin: 0 auto;
+        }
+        .summary-card .val {
+          font-size: 26px;
+        }
+        /* sheets become centered modals */
+        .overlay {
+          align-items: center;
+          padding: 32px;
+        }
+        .sheet {
+          max-width: 480px;
+          border-radius: 24px;
+          border-bottom: 1px solid var(--border);
+          padding: 16px 26px 30px;
+          transform: translateY(24px) scale(0.97);
+          opacity: 0;
+          transition:
+            transform 0.3s var(--ease-spring),
+            opacity 0.25s;
+        }
+        .overlay.open .sheet {
+          transform: translateY(0) scale(1);
+          opacity: 1;
+        }
+        .sheet-handle {
+          display: none;
+        }
+        .toast {
+          bottom: 36px;
+          left: calc(50% + var(--rail-w) / 2);
+        }
+      }
+
+      @media (prefers-reduced-motion: reduce) {
+        *,
+        *::before,
+        *::after {
+          animation-duration: 0.01ms !important;
+          animation-iteration-count: 1 !important;
+          transition-duration: 0.01ms !important;
+        }
+      }
     </style>
   </head>
   <body>
+    <div class="aurora" aria-hidden="true"></div>
+
     <!-- Lock -->
     <div id="lock">
-      <div class="logo">
-        <svg width="28" height="28" viewBox="0 0 30 30" fill="none">
-          <rect
-            x="1"
-            y="1"
-            width="28"
-            height="28"
-            rx="8"
-            stroke="#B2D5E5"
-            stroke-width="1.5"
-          />
-          <path
-            d="M9 20V10L21 10"
-            stroke="#B2D5E5"
-            stroke-width="1.5"
-            stroke-linecap="round"
-            stroke-linejoin="round"
-          />
-          <circle cx="21" cy="14" r="2.5" fill="#B2D5E5" />
-        </svg>
-        The Kult
+      <div class="lock-card">
+        <div class="logo">
+          <svg width="44" height="44" viewBox="0 0 30 30" fill="none">
+            <rect
+              x="1"
+              y="1"
+              width="28"
+              height="28"
+              rx="8"
+              stroke="#B2D5E5"
+              stroke-width="1.5"
+            />
+            <path
+              d="M9 20V10L21 10"
+              stroke="#B2D5E5"
+              stroke-width="1.5"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            />
+            <circle cx="21" cy="14" r="2.5" fill="#B2D5E5" />
+          </svg>
+          The Kult
+        </div>
+        <h2>Campaign Dashboard</h2>
+        <div class="lock-meter" aria-hidden="true"></div>
+        <input
+          type="password"
+          id="passwordInput"
+          placeholder="Enter password"
+          autocomplete="current-password"
+        />
+        <button onclick="checkPassword()" class="submit-btn lock-btn">
+          Unlock
+        </button>
+        <p class="err" id="lockErr"></p>
       </div>
-      <h2>Campaign Dashboard</h2>
-      <input
-        type="password"
-        id="passwordInput"
-        placeholder="Enter password"
-        autocomplete="current-password"
-      />
-      <button
-        onclick="checkPassword()"
-        style="
-          width: 100%;
-          max-width: 320px;
-          padding: 15px;
-          background: #b2d5e5;
-          color: #111;
-          border: none;
-          border-radius: 16px;
-          font-size: 16px;
-          font-weight: 600;
-          font-family: &quot;Geist&quot;, sans-serif;
-          cursor: pointer;
-          box-shadow: 0 0 28px rgba(178, 213, 229, 0.2);
-        "
-      >
-        Unlock
-      </button>
-      <p class="err" id="lockErr"></p>
     </div>
 
     <!-- App -->
     <div id="app">
+      <!-- Topbar (mobile) -->
       <div class="topbar">
         <div class="topbar-logo">
           <svg width="24" height="24" viewBox="0 0 30 30" fill="none">
@@ -1033,19 +1773,115 @@
         <span class="topbar-tag">Admin</span>
       </div>
 
-      <!-- Tabs -->
-      <div class="tabs">
+      <!-- Nav: dock on mobile, rail on desktop -->
+      <nav class="tabs">
+        <div class="rail-head" aria-hidden="true">
+          <svg width="28" height="28" viewBox="0 0 30 30" fill="none">
+            <rect
+              x="1"
+              y="1"
+              width="28"
+              height="28"
+              rx="8"
+              stroke="#B2D5E5"
+              stroke-width="1.5"
+            />
+            <path
+              d="M9 20V10L21 10"
+              stroke="#B2D5E5"
+              stroke-width="1.5"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            />
+            <circle cx="21" cy="14" r="2.5" fill="#B2D5E5" />
+          </svg>
+          The Kult
+        </div>
         <button class="tab-btn active" onclick="switchTab('songs')">
+          <svg viewBox="0 0 20 20" fill="none">
+            <circle
+              cx="10"
+              cy="10"
+              r="7.2"
+              stroke="currentColor"
+              stroke-width="1.5"
+            />
+            <circle cx="10" cy="10" r="2.4" fill="currentColor" />
+          </svg>
           Songs
         </button>
-        <button class="tab-btn" onclick="switchTab('monthly')">Monthly</button>
+        <button class="tab-btn" onclick="switchTab('monthly')">
+          <svg viewBox="0 0 20 20" fill="none">
+            <rect
+              x="3"
+              y="4"
+              width="14"
+              height="13"
+              rx="3"
+              stroke="currentColor"
+              stroke-width="1.5"
+            />
+            <path
+              d="M3 8h14M7 2.5V5M13 2.5V5"
+              stroke="currentColor"
+              stroke-width="1.5"
+              stroke-linecap="round"
+            />
+          </svg>
+          Monthly
+        </button>
         <button class="tab-btn" onclick="switchTab('expenses')">
+          <svg viewBox="0 0 20 20" fill="none">
+            <path
+              d="M5 2.5h10v15l-2.5-1.6L10 17.5l-2.5-1.6L5 17.5v-15z"
+              stroke="currentColor"
+              stroke-width="1.5"
+              stroke-linejoin="round"
+            />
+            <path
+              d="M8 7h4M8 10.5h4"
+              stroke="currentColor"
+              stroke-width="1.5"
+              stroke-linecap="round"
+            />
+          </svg>
           Expenses
         </button>
         <button class="tab-btn" onclick="switchTab('creators')">
+          <svg viewBox="0 0 20 20" fill="none">
+            <circle
+              cx="7.5"
+              cy="7"
+              r="3"
+              stroke="currentColor"
+              stroke-width="1.5"
+            />
+            <path
+              d="M2.5 17c0-2.8 2.2-4.6 5-4.6s5 1.8 5 4.6"
+              stroke="currentColor"
+              stroke-width="1.5"
+              stroke-linecap="round"
+            />
+            <circle
+              cx="14.5"
+              cy="8"
+              r="2.3"
+              stroke="currentColor"
+              stroke-width="1.5"
+            />
+            <path
+              d="M14 12.6c2.1 0.3 3.5 1.9 3.5 4"
+              stroke="currentColor"
+              stroke-width="1.5"
+              stroke-linecap="round"
+            />
+          </svg>
           Creators
         </button>
-      </div>
+        <div class="rail-foot">
+          <span class="topbar-tag">Admin</span>
+        </div>
+      </nav>
 
       <main>
         <!-- SONGS TAB -->
@@ -1071,7 +1907,7 @@
             <svg width="18" height="18" viewBox="0 0 18 18" fill="none">
               <path
                 d="M9 3v12M3 9h12"
-                stroke="#111"
+                stroke="#0C0E10"
                 stroke-width="2"
                 stroke-linecap="round"
               />
@@ -1099,7 +1935,7 @@
             <svg width="18" height="18" viewBox="0 0 18 18" fill="none">
               <path
                 d="M9 3v12M3 9h12"
-                stroke="#111"
+                stroke="#0C0E10"
                 stroke-width="2"
                 stroke-linecap="round"
               />
@@ -1116,34 +1952,14 @@
             <svg width="18" height="18" viewBox="0 0 18 18" fill="none">
               <path
                 d="M9 3v12M3 9h12"
-                stroke="#111"
+                stroke="#0C0E10"
                 stroke-width="2"
                 stroke-linecap="round"
               />
             </svg>
             Add Creator
           </button>
-          <button
-            id="importCreatorsBtn"
-            style="
-              width: 100%;
-              padding: 13px;
-              background: var(--surface);
-              color: var(--ice);
-              border: 1px solid var(--ice-mid);
-              border-radius: var(--r);
-              font-size: 14px;
-              font-weight: 600;
-              font-family: &quot;Geist&quot;, sans-serif;
-              cursor: pointer;
-              display: flex;
-              align-items: center;
-              justify-content: center;
-              gap: 8px;
-              margin-bottom: 8px;
-              -webkit-tap-highlight-color: transparent;
-            "
-          >
+          <button id="importCreatorsBtn" class="ghost-add-btn">
             <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
               <path
                 d="M8 2v8M5 7l3 3 3-3M3 12h10"
@@ -1252,34 +2068,8 @@
             id="payoutCreator"
             placeholder="e.g. @creator_handle"
           />
-          <div
-            id="creatorPickerList"
-            style="
-              margin-top: 6px;
-              display: none;
-              max-height: 160px;
-              overflow-y: auto;
-              background: var(--panel);
-              border: 1px solid var(--border);
-              border-radius: var(--r-sm);
-            "
-          ></div>
-          <button
-            id="showCreatorPicker"
-            style="
-              margin-top: 6px;
-              background: none;
-              border: 1px solid var(--border);
-              border-radius: var(--r-sm);
-              padding: 8px 12px;
-              color: var(--muted);
-              font-size: 12px;
-              font-family: &quot;Geist Mono&quot;, monospace;
-              cursor: pointer;
-              width: 100%;
-              text-align: left;
-            "
-          >
+          <div id="creatorPickerList" class="picker-list"></div>
+          <button id="showCreatorPicker" class="picker-toggle">
             📋 Pick from saved creators
           </button>
         </div>
@@ -1882,8 +2672,7 @@
         // Completed — collapsible
         if (completed.length) {
           const header = document.createElement("div");
-          header.style.cssText =
-            "display:flex;align-items:center;justify-content:space-between;cursor:pointer;padding:8px 0;margin-top:16px;-webkit-tap-highlight-color:transparent;";
+          header.className = "completed-toggle";
           header.innerHTML = `
       <p class="section-label" style="margin:0">Completed — ${completed.length}</p>
       <svg id="completedChevron" style="color:var(--muted);transition:transform 0.25s;transform:rotate(${completedExpanded ? "180" : "0"}deg)" width="16" height="16" viewBox="0 0 16 16" fill="none">
@@ -2027,11 +2816,11 @@
         <div class="song-name">${esc(song.name)}</div>
         <div class="song-meta">
           <span class="status-badge ${status}">${status === "on-hold" ? "On Hold" : status.charAt(0).toUpperCase() + status.slice(1)}</span>
-          ${monthLabel ? `<span style="color:var(--muted);font-size:11px">${monthLabel}</span>` : ""}
+          ${monthLabel ? `<span class="meta-dim">${monthLabel}</span>` : ""}
         </div>
         <div class="song-meta" style="margin-top:3px">
-          <span style="color:var(--muted);font-size:11px">${ps.length} payout${ps.length !== 1 ? "s" : ""}</span>
-          ${totalExpected > 0 ? `<span style="color:var(--ice);font-size:11px;font-family:'Geist Mono',monospace">${totalDelivered}/${totalExpected} vids</span>` : ""}
+          <span class="meta-dim">${ps.length} payout${ps.length !== 1 ? "s" : ""}</span>
+          ${totalExpected > 0 ? `<span class="meta-vids">${totalDelivered}/${totalExpected} vids</span>` : ""}
         </div>
       </div>
       <div class="song-budget-pill">
@@ -2071,7 +2860,7 @@
               <div class="payout-meta">${p.date || "No date"}${p.notes ? " · " + esc(p.notes) : ""}</div>
             </div>
             <div style="display:flex;align-items:center;gap:8px;flex-shrink:0">
-              <button class="toggle-paid-btn" data-payout="${p.id}" data-song="${song.id}" data-paid="${isPaid}" style="padding:4px 10px;border-radius:20px;font-size:11px;font-weight:600;font-family:'Geist Mono',monospace;cursor:pointer;border:none;-webkit-tap-highlight-color:transparent;background:${isPaid ? "rgba(129,199,132,0.15)" : "rgba(255,183,77,0.15)"};color:${isPaid ? "var(--green)" : "var(--amber)"};border:1px solid ${isPaid ? "rgba(129,199,132,0.3)" : "rgba(255,183,77,0.3)"};">${isPaid ? "Paid" : "Pending"}</button>
+              <button class="toggle-paid-btn paid-chip ${isPaid ? "paid" : "pending"}" data-payout="${p.id}" data-song="${song.id}" data-paid="${isPaid}">${isPaid ? "Paid" : "Pending"}</button>
               <div class="payout-amount">${fmt(p.amount)}</div>
               <button class="del-btn" data-del-payout="${p.id}" data-song="${song.id}"><svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M3 4h10M6 4V3h4v1M6 7v5M10 7v5M4 4l.8 9h6.4L12 4" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
             </div>
@@ -2081,10 +2870,10 @@
               ? `<div class="payout-videos">
             <div class="video-track"><div class="video-fill" style="width:${(vidPct * 100).toFixed(0)}%"></div></div>
             <span class="video-label">${delivered}/${expected} videos</span>
-            <button class="edit-delivered-btn" data-payout="${p.id}" data-song="${song.id}" data-delivered="${delivered}" data-expected="${expected}" style="background:none;border:none;cursor:pointer;color:var(--muted);padding:2px 4px;font-size:11px;font-family:'Geist Mono',monospace;-webkit-tap-highlight-color:transparent;">edit</button>
+            <button class="edit-delivered-btn link-btn" data-payout="${p.id}" data-song="${song.id}" data-delivered="${delivered}" data-expected="${expected}">edit</button>
           </div>`
               : `<div class="payout-videos">
-            <button class="edit-delivered-btn" data-payout="${p.id}" data-song="${song.id}" data-delivered="${delivered}" data-expected="${expected}" style="background:none;border:none;cursor:pointer;color:var(--muted);padding:2px 0;font-size:11px;font-family:'Geist Mono',monospace;-webkit-tap-highlight-color:transparent;">+ add video count</button>
+            <button class="edit-delivered-btn link-btn" data-payout="${p.id}" data-song="${song.id}" data-delivered="${delivered}" data-expected="${expected}">+ add video count</button>
           </div>`
           }
         </div>`;
@@ -2166,14 +2955,14 @@
     ${monthSongs
       .map(
         (song) => `
-      <div style="background:var(--surface);border:1px solid var(--border);border-radius:var(--r-sm);padding:12px 14px;margin-bottom:8px;display:flex;justify-content:space-between;align-items:center;">
-        <div>
-          <div style="font-size:14px;font-weight:600">${esc(song.name)}</div>
-          <div style="font-size:11px;color:var(--muted);font-family:'Geist Mono',monospace;margin-top:2px">${esc(song.artist)} · ${fmt(spendableBudget(song))} spendable</div>
+      <div class="mini-card">
+        <div class="mini-body">
+          <div class="mini-title">${esc(song.name)}</div>
+          <div class="mini-sub">${esc(song.artist)} · ${fmt(spendableBudget(song))} spendable</div>
         </div>
-        <div style="text-align:right">
-          <div style="font-size:13px;font-weight:600;font-family:'Geist Mono',monospace;color:var(--purple)">${fmt(profitAmount(song))} profit</div>
-          <div style="font-size:11px;color:var(--muted)">${fmt(spent(song.id))} paid out</div>
+        <div class="mini-right">
+          <div class="mini-strong purple">${fmt(profitAmount(song))} profit</div>
+          <div class="mini-dim">${fmt(spent(song.id))} paid out</div>
         </div>
       </div>`,
       )
@@ -2188,12 +2977,12 @@
     ${monthExp
       .map(
         (e) => `
-      <div style="background:var(--surface);border:1px solid var(--border);border-radius:var(--r-sm);padding:12px 14px;margin-bottom:8px;display:flex;justify-content:space-between;align-items:center;">
-        <div>
-          <div style="font-size:14px;font-weight:600">${esc(e.name)}</div>
-          <div style="font-size:11px;color:var(--muted);font-family:'Geist Mono',monospace;margin-top:2px">${esc(e.category || "Other")}</div>
+      <div class="mini-card">
+        <div class="mini-body">
+          <div class="mini-title">${esc(e.name)}</div>
+          <div class="mini-sub">${esc(e.category || "Other")}</div>
         </div>
-        <div style="font-size:15px;font-weight:700;font-family:'Geist Mono',monospace;color:var(--amber)">${fmt(e.amount)}</div>
+        <div class="mini-strong amber">${fmt(e.amount)}</div>
       </div>`,
       )
       .join("")}`
@@ -2634,10 +3423,10 @@
           pickerList.innerHTML = creators
             .map(
               (c) => `
-    <div data-creator-handle="${esc(c.handle)}" data-creator-rate="${c.rate || ""}" style="padding:10px 14px;cursor:pointer;border-bottom:1px solid var(--border);display:flex;justify-content:space-between;align-items:center;-webkit-tap-highlight-color:transparent;">
+    <div class="picker-row" data-creator-handle="${esc(c.handle)}" data-creator-rate="${c.rate || ""}">
       <div>
-        <div style="font-size:14px;font-weight:500">${esc(c.handle)}</div>
-        <div style="font-size:11px;color:var(--muted);font-family:'Geist Mono',monospace">${esc(c.niche || "")}${c.rate ? " · $" + c.rate : ""}</div>
+        <div class="picker-name">${esc(c.handle)}</div>
+        <div class="picker-meta">${esc(c.niche || "")}${c.rate ? " · $" + c.rate : ""}</div>
       </div>
       <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M3 7h8M7 3l4 4-4 4" stroke="#B2D5E5" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
     </div>`,
@@ -2668,18 +3457,18 @@
         list.innerHTML = creators
           .map(
             (c) => `
-    <div style="background:var(--surface);border:1px solid var(--border);border-radius:var(--r);padding:14px 16px;margin-bottom:10px;display:flex;align-items:center;gap:12px;">
-      <div style="width:40px;height:40px;border-radius:10px;background:var(--ice-dim);border:1px solid var(--ice-mid);display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+    <div class="creator-card">
+      <div class="creator-avatar">
         <svg width="18" height="18" viewBox="0 0 18 18" fill="none"><circle cx="9" cy="6" r="3.5" stroke="#B2D5E5" stroke-width="1.3"/><path d="M2 16c0-3 3-5 7-5s7 2 7 5" stroke="#B2D5E5" stroke-width="1.3" stroke-linecap="round"/></svg>
       </div>
-      <div style="flex:1;min-width:0;">
-        <div style="font-size:15px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${esc(c.handle)}</div>
-        <div style="font-size:11px;color:var(--muted);font-family:'Geist Mono',monospace;margin-top:2px">${esc(c.niche || "—")}${c.rate ? " · $" + c.rate + " typical" : ""}</div>
-        ${c.notes ? `<div style="font-size:12px;color:var(--muted);margin-top:4px">${esc(c.notes)}</div>` : ""}
+      <div class="creator-body">
+        <div class="creator-handle">${esc(c.handle)}</div>
+        <div class="creator-meta">${esc(c.niche || "—")}${c.rate ? " · $" + c.rate + " typical" : ""}</div>
+        ${c.notes ? `<div class="creator-notes">${esc(c.notes)}</div>` : ""}
       </div>
-      <div style="display:flex;gap:8px;flex-shrink:0;">
-        <button class="edit-creator-btn" data-id="${c.id}" style="background:none;border:1px solid var(--border);border-radius:8px;padding:6px 10px;color:var(--ice);font-size:12px;cursor:pointer;font-family:'Geist Mono',monospace;">edit</button>
-        <button class="del-creator-btn" data-id="${c.id}" style="background:none;border:none;cursor:pointer;color:var(--muted);padding:4px;">
+      <div class="creator-actions">
+        <button class="edit-creator-btn chip-btn" data-id="${c.id}">edit</button>
+        <button class="del-creator-btn del-btn" data-id="${c.id}">
           <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M3 4h10M6 4V3h4v1M6 7v5M10 7v5M4 4l.8 9h6.4L12 4" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/></svg>
         </button>
       </div>
