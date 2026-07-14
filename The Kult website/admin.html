@@ -1123,6 +1123,38 @@
             </svg>
             Add Creator
           </button>
+          <button
+            id="importCreatorsBtn"
+            style="
+              width: 100%;
+              padding: 13px;
+              background: var(--surface);
+              color: var(--ice);
+              border: 1px solid var(--ice-mid);
+              border-radius: var(--r);
+              font-size: 14px;
+              font-weight: 600;
+              font-family: &quot;Geist&quot;, sans-serif;
+              cursor: pointer;
+              display: flex;
+              align-items: center;
+              justify-content: center;
+              gap: 8px;
+              margin-bottom: 8px;
+              -webkit-tap-highlight-color: transparent;
+            "
+          >
+            <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+              <path
+                d="M8 2v8M5 7l3 3 3-3M3 12h10"
+                stroke="#B2D5E5"
+                stroke-width="1.5"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              />
+            </svg>
+            Import from Existing Payouts
+          </button>
           <div id="creatorList"><div class="loading-state">Loading…</div></div>
         </div>
       </main>
@@ -2478,6 +2510,42 @@
             const p = (payouts[songId] || []).find((x) => x.id === tempId);
             if (p) p.id = res.id;
             saveCache();
+
+            // Auto-add creator to database if not already there
+            const exists = creators.find(
+              (c) => c.handle.toLowerCase() === creator.toLowerCase(),
+            );
+            if (!exists) {
+              const rate =
+                videos && parseInt(videos) > 0
+                  ? (parseFloat(amount) / parseInt(videos)).toFixed(2)
+                  : amount;
+              const tempCreatorId = "temp_c_" + Date.now();
+              creators.push({
+                id: tempCreatorId,
+                handle: creator,
+                niche: "",
+                rate,
+                notes: "",
+              });
+              renderCreators();
+              saveCache();
+              try {
+                const cres = await api({
+                  action: "addCreator",
+                  handle: creator,
+                  niche: "",
+                  rate,
+                  notes: "",
+                });
+                const c = creators.find((x) => x.id === tempCreatorId);
+                if (c) c.id = cres.id;
+                saveCache();
+              } catch (e) {
+                creators = creators.filter((x) => x.id !== tempCreatorId);
+                saveCache();
+              }
+            }
           } catch (e) {
             payouts[songId] = (payouts[songId] || []).filter(
               (x) => x.id !== tempId,
@@ -2588,6 +2656,88 @@
         });
       }
 
+      // ── Import Creators from Payouts ──────────────────────────────────
+      document
+        .getElementById("importCreatorsBtn")
+        .addEventListener("click", async () => {
+          // Collect all payouts across all songs
+          const allPayouts = Object.values(payouts).flat();
+          if (!allPayouts.length) {
+            showToast("No payouts to import from", "error");
+            return;
+          }
+
+          // Group by creator handle (case-insensitive)
+          const map = {};
+          allPayouts.forEach((p) => {
+            const key = p.creator.toLowerCase().trim();
+            if (!key) return;
+            if (!map[key])
+              map[key] = {
+                handle: p.creator.trim(),
+                totalAmount: 0,
+                totalVideos: 0,
+              };
+            map[key].totalAmount += parseFloat(p.amount) || 0;
+            map[key].totalVideos += parseInt(p.videos) || 0;
+          });
+
+          // Filter out creators already in the database
+          const toImport = Object.values(map).filter(
+            (c) =>
+              !creators.find(
+                (x) => x.handle.toLowerCase() === c.handle.toLowerCase(),
+              ),
+          );
+
+          if (!toImport.length) {
+            showToast("All creators already in database ✓");
+            return;
+          }
+
+          const ok = await confirmDlg(
+            "Import Creators",
+            `Found ${toImport.length} new creator${toImport.length !== 1 ? "s" : ""} from your payouts. Import them all?`,
+          );
+          if (!ok) return;
+
+          // Add each one optimistically then save
+          let added = 0;
+          for (const c of toImport) {
+            const rate =
+              c.totalVideos > 0
+                ? (c.totalAmount / c.totalVideos).toFixed(2)
+                : c.totalAmount.toFixed(2);
+            const tempId = "temp_c_" + Date.now() + "_" + added;
+            creators.push({
+              id: tempId,
+              handle: c.handle,
+              niche: "",
+              rate,
+              notes: "",
+            });
+            renderCreators();
+            saveCache();
+            try {
+              const res = await api({
+                action: "addCreator",
+                handle: c.handle,
+                niche: "",
+                rate,
+                notes: "",
+              });
+              const cr = creators.find((x) => x.id === tempId);
+              if (cr) cr.id = res.id;
+              saveCache();
+              added++;
+            } catch (e) {
+              creators = creators.filter((x) => x.id !== tempId);
+              saveCache();
+            }
+          }
+
+          showToast(`${added} creator${added !== 1 ? "s" : ""} imported ✓`);
+        });
       // ── Add / Edit Creator ────────────────────────────────────────────
       const creatorOverlay = document.getElementById("creatorOverlay");
 
