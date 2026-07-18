@@ -3307,13 +3307,20 @@
             showToast("Creator and amount are required", "error");
             return;
           }
+          const songId = currentSongId;
+          const existingPayout = (payouts[songId] || []).find(
+            (p) => p.creator.toLowerCase() === creator.toLowerCase()
+          );
+          if (existingPayout) {
+            showToast("This creator is already on this song", "error");
+            return;
+          }
           const videos = document.getElementById("payoutVideos").value.trim();
           const delivered = document
             .getElementById("payoutDelivered")
             .value.trim();
           const date = document.getElementById("payoutDate").value;
           const notes = document.getElementById("payoutNotes").value.trim();
-          const songId = currentSongId;
           const tempId = "temp_" + Date.now();
           if (!payouts[songId]) payouts[songId] = [];
           payouts[songId].push({
@@ -3617,10 +3624,17 @@
             showToast("Handle is required", "error");
             return;
           }
+          const editId = document.getElementById("creatorEditId").value;
+          const duplicate = creators.find(
+            (c) => c.handle.toLowerCase() === handle.toLowerCase() && c.id !== editId
+          );
+          if (duplicate) {
+            showToast("A creator with this handle already exists", "error");
+            return;
+          }
           const niche = document.getElementById("creatorNiche").value;
           const rate = document.getElementById("creatorRate").value.trim();
           const notes = document.getElementById("creatorNotes").value.trim();
-          const editId = document.getElementById("creatorEditId").value;
 
           if (editId) {
             // Edit existing
