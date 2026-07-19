@@ -1702,6 +1702,11 @@
         main {
           margin-left: var(--rail-w);
           max-width: none;
+          /* The mobile rule sets width:100%. Left in place it would stack with
+             margin-left and push main a full rail-width past the viewport,
+             causing horizontal overflow and centring the content column off to
+             the right. auto lets the margin come out of the width instead. */
+          width: auto;
           padding: 40px 48px 80px;
         }
         main > .tab-panel {
