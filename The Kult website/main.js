@@ -310,8 +310,6 @@ if (caseGrid && caseTemplate) {
     node.querySelector('.campaign-duration').textContent = c.duration;
     node.querySelector('.stream-before').textContent     = c.spotifyBefore + ' →';
     node.querySelector('.stream-after').textContent      = c.spotifyAfter;
-    node.querySelector('.tiktok-before').textContent     = c.tiktokBefore + ' →';
-    node.querySelector('.tiktok-after').textContent      = c.tiktokAfter;
     node.querySelector('.growth-badge').textContent      = `${c.growth} growth`;
 
     const caseImg         = node.querySelector('.case-study-image');
@@ -380,7 +378,6 @@ if (artistGrid && artistTemplate) {
     node.querySelector('.genre-tag').textContent        = a.genre;
     node.querySelector('.artist-name').textContent      = a.name;
     node.querySelector('.duration-tag').textContent     = `Campaign · ${a.duration}`;
-    node.querySelector('.tiktok-views').textContent     = `+${a.tiktok}`;
     node.querySelector('.spotify-streams').textContent  = `+${a.spotify}`;
 
     const img         = node.querySelector('.artist-image');

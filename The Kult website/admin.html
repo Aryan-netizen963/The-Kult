@@ -6,6 +6,8 @@
       name="viewport"
       content="width=device-width, initial-scale=1.0, viewport-fit=cover"
     />
+    <meta name="robots" content="noindex, nofollow" />
+    <meta name="referrer" content="no-referrer" />
     <title>Kult — Campaign Dashboard</title>
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -395,6 +397,44 @@
       }
 
       /* ── Summary strip ────────────────────────────────────────── */
+      .topbar-right {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+      }
+      .logout-btn {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: 30px;
+        height: 30px;
+        padding: 0;
+        border-radius: 9px;
+        background: transparent;
+        border: 1px solid var(--border);
+        color: var(--muted);
+        cursor: pointer;
+        flex-shrink: 0;
+        transition:
+          color 0.18s,
+          border-color 0.18s;
+      }
+      .logout-btn:hover {
+        color: var(--ice);
+        border-color: var(--ice-mid);
+      }
+      #staleBanner {
+        background: rgba(255, 183, 77, 0.1);
+        border: 1px solid rgba(255, 183, 77, 0.3);
+        color: var(--amber);
+        border-radius: var(--r);
+        padding: 9px 12px;
+        margin-bottom: 12px;
+        font-family: "Geist Mono", monospace;
+        font-size: 10.5px;
+        letter-spacing: 0.06em;
+        text-align: center;
+      }
       .summary {
         display: grid;
         grid-template-columns: repeat(3, 1fr);
@@ -439,6 +479,13 @@
         font-family: "Geist Mono", monospace;
         letter-spacing: 0.14em;
         text-transform: uppercase;
+      }
+      .summary-card .sub {
+        font-size: 9px;
+        color: var(--amber);
+        margin-top: 3px;
+        font-family: "Geist Mono", monospace;
+        letter-spacing: 0.08em;
       }
 
       /* ── Month selector ───────────────────────────────────────── */
@@ -1636,6 +1683,9 @@
         }
         .rail-foot {
           display: flex;
+          align-items: center;
+          justify-content: space-between;
+          gap: 10px;
           margin-top: auto;
           padding: 12px 10px 4px;
         }
@@ -1770,7 +1820,20 @@
           </svg>
           Campaigns
         </div>
-        <span class="topbar-tag">Admin</span>
+        <div class="topbar-right">
+          <span class="topbar-tag">Admin</span>
+          <button class="logout-btn" id="logoutBtn" title="Lock dashboard">
+            <svg width="15" height="15" viewBox="0 0 16 16" fill="none">
+              <path
+                d="M6 14H3.5A1.5 1.5 0 0 1 2 12.5v-9A1.5 1.5 0 0 1 3.5 2H6M10.5 11 14 8l-3.5-3M14 8H6"
+                stroke="currentColor"
+                stroke-width="1.4"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              />
+            </svg>
+          </button>
+        </div>
       </div>
 
       <!-- Nav: dock on mobile, rail on desktop -->
@@ -1880,10 +1943,25 @@
         </button>
         <div class="rail-foot">
           <span class="topbar-tag">Admin</span>
+          <button class="logout-btn" id="logoutBtnRail" title="Lock dashboard">
+            <svg width="15" height="15" viewBox="0 0 16 16" fill="none">
+              <path
+                d="M6 14H3.5A1.5 1.5 0 0 1 2 12.5v-9A1.5 1.5 0 0 1 3.5 2H6M10.5 11 14 8l-3.5-3M14 8H6"
+                stroke="currentColor"
+                stroke-width="1.4"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              />
+            </svg>
+          </button>
         </div>
       </nav>
 
       <main>
+        <div id="staleBanner" style="display: none">
+          Offline — showing saved data. Reconnect to refresh.
+        </div>
+
         <!-- SONGS TAB -->
         <div class="tab-panel active" id="tab-songs">
           <p class="section-label" style="margin-top: 8px">Overview</p>
@@ -1895,6 +1973,7 @@
             <div class="summary-card">
               <div class="val" id="totalSpent">—</div>
               <div class="lbl">Paid Out</div>
+              <div class="sub" id="totalCommitted" style="display: none"></div>
             </div>
             <div class="summary-card">
               <div class="val" id="totalRemaining">—</div>
@@ -2044,6 +2123,8 @@
               type="number"
               id="songYear"
               placeholder="2026"
+              min="2024"
+              max="2100"
               inputmode="numeric"
             />
           </div>
@@ -2169,6 +2250,8 @@
               type="number"
               id="expenseYear"
               placeholder="2026"
+              min="2024"
+              max="2100"
               inputmode="numeric"
             />
           </div>
@@ -2326,6 +2409,8 @@
               type="number"
               id="editSongYear"
               placeholder="2026"
+              min="2024"
+              max="2100"
               inputmode="numeric"
             />
           </div>
@@ -2412,13 +2497,23 @@
         lockErr.textContent = "Checking…";
         lockErr.style.color = "rgba(255,255,255,0.45)";
         try {
-          const url =
-            API + "?" + new URLSearchParams({ action: "getAll", key: attempt });
-          const res = await fetch(url);
-          const data = await res.json();
-          if (data.error === "Unauthorized") {
+          const saved = SECRET_KEY;
+          SECRET_KEY = attempt;
+          let data;
+          try {
+            data = await apiRequest({ action: "getAll" });
+          } finally {
+            SECRET_KEY = saved;
+          }
+          // Any error means we are not authenticated and holding usable data —
+          // only "Unauthorized" is the user's fault, but none of them should
+          // unlock the dashboard onto an empty or half-broken state.
+          if (data.error) {
             lockErr.style.color = "";
-            lockErr.textContent = "Incorrect password";
+            lockErr.textContent =
+              data.error === "Unauthorized"
+                ? "Incorrect password"
+                : "Server error — try again";
             pwInput.value = "";
             return;
           }
@@ -2439,6 +2534,31 @@
         initMonthSelector();
         loadAll();
       }
+
+      // ── Logout ────────────────────────────────────────────────────────
+      // Clears the cached data as well as the key. The cache holds every
+      // budget, payout and profit figure in plaintext and outlives the
+      // session, so dropping only the key would leave the numbers readable.
+      async function logout() {
+        const ok = await confirmDlg(
+          "Lock Dashboard",
+          "This clears the saved key and all cached data from this device.",
+          "Lock",
+        );
+        if (!ok) return;
+        sessionStorage.removeItem("kult_key");
+        localStorage.removeItem(CACHE_KEY);
+        SECRET_KEY = "";
+        songs = [];
+        payouts = {};
+        expenses = [];
+        creators = [];
+        location.reload();
+      }
+      document.getElementById("logoutBtn").addEventListener("click", logout);
+      document
+        .getElementById("logoutBtnRail")
+        .addEventListener("click", logout);
 
       // ── Tabs ──────────────────────────────────────────────────────────
       function switchTab(tab) {
@@ -2461,7 +2581,9 @@
         const sel = document.getElementById("monthSelect");
         const now = new Date();
         for (let y = now.getFullYear(); y >= 2024; y--) {
-          for (let m = 11; m >= 0; m--) {
+          // Don't offer months that haven't happened yet.
+          const startMonth = y === now.getFullYear() ? now.getMonth() : 11;
+          for (let m = startMonth; m >= 0; m--) {
             const opt = document.createElement("option");
             opt.value = `${m + 1}-${y}`;
             opt.textContent = `${MONTHS[m]} ${y}`;
@@ -2474,11 +2596,22 @@
       }
 
       // ── API ───────────────────────────────────────────────────────────
+      // POST with a form-encoded body rather than a query string, so the key
+      // never lands in browser history, Referer headers or Apps Script's
+      // request logs. Apps Script populates e.parameter from a form-encoded
+      // POST body identically to a query string, so the backend is unchanged.
+      // Content-Type stays application/x-www-form-urlencoded (set implicitly
+      // by URLSearchParams) to keep this a simple request with no preflight.
+      async function apiRequest(params) {
+        const res = await fetch(API, {
+          method: "POST",
+          body: new URLSearchParams({ ...params, key: SECRET_KEY }),
+        });
+        return res.json();
+      }
+
       async function api(params) {
-        const url =
-          API + "?" + new URLSearchParams({ ...params, key: SECRET_KEY });
-        const res = await fetch(url);
-        const data = await res.json();
+        const data = await apiRequest(params);
         if (data.error) throw new Error(data.error);
         return data;
       }
@@ -2517,9 +2650,10 @@
       // ── Format helpers ────────────────────────────────────────────────
       function fmt(n) {
         const num = parseFloat(n) || 0;
+        // Sign goes outside the symbol — "-$20", not "$-20".
         return (
-          "$" +
-          num.toLocaleString("en-US", {
+          (num < 0 ? "-$" : "$") +
+          Math.abs(num).toLocaleString("en-US", {
             minimumFractionDigits: 0,
             maximumFractionDigits: 0,
           })
@@ -2527,8 +2661,13 @@
       }
       function fmtK(n) {
         const num = parseFloat(n) || 0;
-        if (num >= 1000)
-          return "$" + (num / 1000).toFixed(1).replace(".0", "") + "k";
+        const abs = Math.abs(num);
+        if (abs >= 1000)
+          return (
+            (num < 0 ? "-$" : "$") +
+            (abs / 1000).toFixed(1).replace(".0", "") +
+            "k"
+          );
         return fmt(num);
       }
       function esc(str) {
@@ -2536,24 +2675,78 @@
           .replace(/&/g, "&amp;")
           .replace(/</g, "&lt;")
           .replace(/>/g, "&gt;")
-          .replace(/"/g, "&quot;");
+          .replace(/"/g, "&quot;")
+          .replace(/'/g, "&#39;");
+      }
+
+      // ── Payout status helpers ─────────────────────────────────────────
+      // The sheet returns `paid` as a real boolean, the string "true", or ""
+      // (never filled in) — all three have to be understood here.
+      function isPaid(p) {
+        return p.paid === true || String(p.paid).toLowerCase() === "true";
+      }
+      // Returns {m, y} for a payout's date, or null if missing/unparseable.
+      //
+      // Two formats are possible. The updated Apps Script emits a plain
+      // "yyyy-MM-dd" already expressed in the spreadsheet's timezone — taken
+      // literally, no conversion. The older deployment emits a full UTC
+      // timestamp ("2026-07-04T21:00:00.000Z" is really July 5 in a UTC+3
+      // sheet); parsing that as a Date and reading it back in local time
+      // recovers the intended day, since the dashboard is used in the same
+      // timezone as the sheet. Without this, a payout dated the 1st of a
+      // month would be attributed to the previous month.
+      function payoutMonth(p) {
+        const raw = String(p.date || "").trim();
+        if (!raw) return null;
+        const dateOnly = raw.match(/^(\d{4})-(\d{2})-(\d{2})$/);
+        if (dateOnly) {
+          return { m: parseInt(dateOnly[2], 10), y: parseInt(dateOnly[1], 10) };
+        }
+        const parsed = new Date(raw);
+        if (isNaN(parsed.getTime())) return null;
+        return { m: parsed.getMonth() + 1, y: parsed.getFullYear() };
+      }
+      function payoutsInMonth(m, y, filter) {
+        return Object.values(payouts)
+          .flat()
+          .filter((p) => {
+            const d = payoutMonth(p);
+            return d && d.m === m && d.y === y && (!filter || filter(p));
+          })
+          .reduce((s, p) => s + (parseFloat(p.amount) || 0), 0);
       }
 
       // ── Budget helpers ────────────────────────────────────────────────
       function spendableBudget(song) {
         const total = parseFloat(song.budget) || 0;
-        const pct = parseFloat(song.spendable) || 50;
+        // Note the explicit NaN check: `|| 50` would silently turn a
+        // deliberate 0% allocation into 50%.
+        const raw = parseFloat(song.spendable);
+        const pct = isNaN(raw) ? 50 : raw;
         return total * (pct / 100);
       }
       function profitAmount(song) {
         const total = parseFloat(song.budget) || 0;
         return total - spent(song.id);
       }
+      // Every payout logged against the song — paid or not. Budget is consumed
+      // the moment a payout is committed, so this drives the bars and Spendable
+      // Left; paidOut/committed below split the same total for reporting.
       function spent(songId) {
         return (payouts[songId] || []).reduce(
           (s, p) => s + (parseFloat(p.amount) || 0),
           0,
         );
+      }
+      function paidOut(songId) {
+        return (payouts[songId] || [])
+          .filter(isPaid)
+          .reduce((s, p) => s + (parseFloat(p.amount) || 0), 0);
+      }
+      function committed(songId) {
+        return (payouts[songId] || [])
+          .filter((p) => !isPaid(p))
+          .reduce((s, p) => s + (parseFloat(p.amount) || 0), 0);
       }
       function remaining(song) {
         return spendableBudget(song) - spent(song.id);
@@ -2583,11 +2776,23 @@
           const data = await api({ action: "getAll" });
           localStorage.setItem(CACHE_KEY, JSON.stringify(data));
           applyData(data);
+          setStale(false);
         } catch (e) {
-          if (!cached)
+          if (!cached) {
             document.getElementById("songList").innerHTML =
               '<div class="loading-state" style="color:#E57373">Failed to load. Check connection.</div>';
+          } else {
+            // Showing cached figures. Say so — silently rendering last-known
+            // numbers as if they were live is how stale money gets acted on.
+            setStale(true);
+          }
         }
+      }
+
+      function setStale(isStale) {
+        document.getElementById("staleBanner").style.display = isStale
+          ? "block"
+          : "none";
       }
 
       function applyData(data) {
@@ -2623,15 +2828,37 @@
 
       // ── Summary ───────────────────────────────────────────────────────
       function renderSummary() {
-        const totalSpent = songs.reduce((s, song) => s + spent(song.id), 0);
-        const totalSpendable = songs.reduce(
-          (s, song) => s + spendableBudget(song),
+        // Paid Out stays all-time, but now counts only payouts actually marked
+        // Paid. Anything logged-but-unpaid shows separately underneath.
+        const totalPaid = songs.reduce((s, song) => s + paidOut(song.id), 0);
+        const totalCommitted = songs.reduce(
+          (s, song) => s + committed(song.id),
           0,
         );
-        const totalLeft = totalSpendable - totalSpent;
+        // Spendable Left covers active campaigns only — a completed song's
+        // leftover budget isn't money you can still spend. It subtracts
+        // committed payouts as well as paid ones, so it can't overstate.
+        const activeSongs = songs.filter(
+          (song) => (song.status || "active") === "active",
+        );
+        const totalLeft = activeSongs.reduce(
+          (s, song) => s + (spendableBudget(song) - spent(song.id)),
+          0,
+        );
+
         document.getElementById("totalSongs").textContent = songs.length;
-        document.getElementById("totalSpent").textContent = fmtK(totalSpent);
+        document.getElementById("totalSpent").textContent = fmtK(totalPaid);
         document.getElementById("totalRemaining").textContent = fmtK(totalLeft);
+
+        // Only rendered when there is genuinely unpaid money, so a settled
+        // ledger looks exactly as it did before.
+        const sub = document.getElementById("totalCommitted");
+        if (totalCommitted > 0) {
+          sub.textContent = fmtK(totalCommitted) + " pending";
+          sub.style.display = "";
+        } else {
+          sub.style.display = "none";
+        }
       }
 
       // ── Song list ─────────────────────────────────────────────────────
@@ -2786,6 +3013,7 @@
 
       function buildSongCard(song) {
         const sp = spent(song.id);
+        const songCommitted = committed(song.id);
         const sbudget = spendableBudget(song);
         const profit = profitAmount(song);
         const rem = sbudget - sp;
@@ -2841,6 +3069,7 @@
         ? `<div class="song-body"><div class="song-body-inner">
       <div class="song-profit-box">
         <div class="song-profit-title">Profit Split — ${fmt(profit)} (Budget ${fmt(parseFloat(song.budget) || 0)} − Spent ${fmt(sp)})</div>
+        ${songCommitted > 0 ? `<div class="song-profit-row"><span class="pname">of which unpaid</span><span class="pamount" style="color:var(--amber)">${fmt(songCommitted)}</span></div>` : ""}
         ${PARTNERS.map((p) => `<div class="song-profit-row"><span class="pname">${p.name} (${p.pct * 100}%)</span><span class="pamount">${fmt(profit * p.pct)}</span></div>`).join("")}
       </div>
       <p class="section-label" style="margin-top:0">Payouts</p>
@@ -2852,15 +3081,15 @@
                 const delivered = parseInt(p.delivered) || 0;
                 const vidPct =
                   expected > 0 ? Math.min(delivered / expected, 1) : 0;
-                const isPaid = p.paid === "true" || p.paid === true;
+                const paid = isPaid(p);
                 return `<div class="payout-item">
           <div class="payout-top">
             <div class="payout-info">
               <div class="payout-creator">${esc(p.creator)}</div>
-              <div class="payout-meta">${p.date || "No date"}${p.notes ? " · " + esc(p.notes) : ""}</div>
+              <div class="payout-meta">${esc(p.date || "No date")}${p.notes ? " · " + esc(p.notes) : ""}</div>
             </div>
             <div style="display:flex;align-items:center;gap:8px;flex-shrink:0">
-              <button class="toggle-paid-btn paid-chip ${isPaid ? "paid" : "pending"}" data-payout="${p.id}" data-song="${song.id}" data-paid="${isPaid}">${isPaid ? "Paid" : "Pending"}</button>
+              <button class="toggle-paid-btn paid-chip ${paid ? "paid" : "pending"}" data-payout="${p.id}" data-song="${song.id}" data-paid="${paid}">${paid ? "Paid" : "Pending"}</button>
               <div class="payout-amount">${fmt(p.amount)}</div>
               <button class="del-btn" data-del-payout="${p.id}" data-song="${song.id}"><svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M3 4h10M6 4V3h4v1M6 7v5M10 7v5M4 4l.8 9h6.4L12 4" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
             </div>
@@ -2917,7 +3146,17 @@
           (s, song) => s + spendableBudget(song),
           0,
         );
-        const totalPaid = monthSongs.reduce((s, song) => s + spent(song.id), 0);
+        // Campaign basis: what this month's songs have consumed of their
+        // own budgets, regardless of when the cash actually moved.
+        const monthLogged = monthSongs.reduce(
+          (s, song) => s + spent(song.id),
+          0,
+        );
+        // Cash basis: money that actually moved in this month, by payout date,
+        // across every song — a July song paid in September lands in September.
+        const cashPaid = payoutsInMonth(m, y, isPaid);
+        const cashPending = payoutsInMonth(m, y, (p) => !isPaid(p));
+
         const totalOverhead = monthExp.reduce(
           (s, e) => s + (parseFloat(e.amount) || 0),
           0,
@@ -2926,7 +3165,9 @@
 
         const el = document.getElementById("monthlySummary");
 
-        if (!monthSongs.length && !monthExp.length) {
+        // Cash can move in a month that has no songs or expenses assigned to
+        // it, so those count as data too.
+        if (!monthSongs.length && !monthExp.length && !cashPaid && !cashPending) {
           el.innerHTML =
             '<div class="loading-state">No data for this month</div>';
           return;
@@ -2936,8 +3177,9 @@
     <div class="monthly-summary">
       <div class="monthly-row"><span class="label">Total Revenue</span><span class="amount">${fmt(totalRevenue)}</span></div>
       <div class="monthly-row"><span class="label">Spendable Allocated</span><span class="amount">${fmt(totalSpendable)}</span></div>
-      <div class="monthly-row"><span class="label">Paid to Creators</span><span class="amount red">${fmt(totalPaid)}</span></div>
-      <div class="monthly-row"><span class="label">Creator Budget Remaining</span><span class="amount green">${fmt(totalSpendable - totalPaid)}</span></div>
+      <div class="monthly-row"><span class="label">Paid to Creators — cash out</span><span class="amount red">${fmt(cashPaid)}</span></div>
+      ${cashPending ? `<div class="monthly-row"><span class="label">Committed, not yet paid</span><span class="amount amber">${fmt(cashPending)}</span></div>` : ""}
+      <div class="monthly-row"><span class="label">Creator Budget Remaining</span><span class="amount green">${fmt(totalSpendable - monthLogged)}</span></div>
       <div class="monthly-row"><span class="label">Gross Profit</span><span class="amount amber">${fmt(totalProfit)}</span></div>
       <div class="monthly-row"><span class="label">Overhead Expenses</span><span class="amount red">${fmt(totalOverhead)}</span></div>
       <div class="monthly-row total"><span class="label">Net Profit</span><span class="amount ${netProfit >= 0 ? "green" : "red"}">${fmt(netProfit)}</span></div>
@@ -3309,7 +3551,8 @@
           }
           const songId = currentSongId;
           const existingPayout = (payouts[songId] || []).find(
-            (p) => p.creator.toLowerCase() === creator.toLowerCase()
+            (p) =>
+              String(p.creator || "").toLowerCase() === creator.toLowerCase()
           );
           if (existingPayout) {
             showToast("This creator is already on this song", "error");
@@ -3356,7 +3599,8 @@
 
             // Auto-add creator to database if not already there
             const exists = creators.find(
-              (c) => c.handle.toLowerCase() === creator.toLowerCase(),
+              (c) =>
+                String(c.handle || "").toLowerCase() === creator.toLowerCase(),
             );
             if (!exists) {
               const rate =
@@ -3430,10 +3674,10 @@
           pickerList.innerHTML = creators
             .map(
               (c) => `
-    <div class="picker-row" data-creator-handle="${esc(c.handle)}" data-creator-rate="${c.rate || ""}">
+    <div class="picker-row" data-creator-handle="${esc(c.handle)}" data-creator-rate="${esc(c.rate || "")}">
       <div>
         <div class="picker-name">${esc(c.handle)}</div>
-        <div class="picker-meta">${esc(c.niche || "")}${c.rate ? " · $" + c.rate : ""}</div>
+        <div class="picker-meta">${esc(c.niche || "")}${c.rate ? " · $" + esc(c.rate) : ""}</div>
       </div>
       <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M3 7h8M7 3l4 4-4 4" stroke="#B2D5E5" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
     </div>`,
@@ -3470,7 +3714,7 @@
       </div>
       <div class="creator-body">
         <div class="creator-handle">${esc(c.handle)}</div>
-        <div class="creator-meta">${esc(c.niche || "—")}${c.rate ? " · $" + c.rate + " typical" : ""}</div>
+        <div class="creator-meta">${esc(c.niche || "—")}${c.rate ? " · $" + esc(c.rate) + " typical" : ""}</div>
         ${c.notes ? `<div class="creator-notes">${esc(c.notes)}</div>` : ""}
       </div>
       <div class="creator-actions">
@@ -3513,11 +3757,12 @@
           // Group by creator handle (case-insensitive)
           const map = {};
           allPayouts.forEach((p) => {
-            const key = p.creator.toLowerCase().trim();
+            const handle = String(p.creator || "").trim();
+            const key = handle.toLowerCase();
             if (!key) return;
             if (!map[key])
               map[key] = {
-                handle: p.creator.trim(),
+                handle,
                 totalAmount: 0,
                 totalVideos: 0,
               };
@@ -3529,7 +3774,9 @@
           const toImport = Object.values(map).filter(
             (c) =>
               !creators.find(
-                (x) => x.handle.toLowerCase() === c.handle.toLowerCase(),
+                (x) =>
+                  String(x.handle || "").toLowerCase() ===
+                  c.handle.toLowerCase(),
               ),
           );
 
@@ -3626,7 +3873,9 @@
           }
           const editId = document.getElementById("creatorEditId").value;
           const duplicate = creators.find(
-            (c) => c.handle.toLowerCase() === handle.toLowerCase() && c.id !== editId
+            (c) =>
+              String(c.handle || "").toLowerCase() === handle.toLowerCase() &&
+              c.id !== editId,
           );
           if (duplicate) {
             showToast("A creator with this handle already exists", "error");
