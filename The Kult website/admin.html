@@ -3587,65 +3587,81 @@
           saveCache();
           payoutOverlay.classList.remove("open");
           showToast("Payout logged ✓");
-          try {
-            const res = await api({
-              action: "addPayout",
-              songId,
-              creator,
-              amount,
-              videos,
-              delivered,
-              date,
-              notes,
+          // A brand-new creator used to cost two Apps Script writes fired
+          // one after the other — addPayout, and only then addCreator — around
+          // six seconds of lag. They touch different sheets (Payouts, Creators)
+          // and the "is this creator new?" check is local state, so there is no
+          // reason to chain them. Decide the creator up front, then run both
+          // writes concurrently: the slow path drops to roughly one round-trip.
+          const creatorExists = creators.some(
+            (c) =>
+              String(c.handle || "").toLowerCase() === creator.toLowerCase(),
+          );
+          let tempCreatorId = null;
+          let creatorRate = "";
+          if (!creatorExists) {
+            creatorRate =
+              videos && parseInt(videos) > 0
+                ? (parseFloat(amount) / parseInt(videos)).toFixed(2)
+                : amount;
+            tempCreatorId = "temp_c_" + Date.now();
+            creators.push({
+              id: tempCreatorId,
+              handle: creator,
+              niche: "",
+              rate: creatorRate,
+              notes: "",
             });
-            const p = (payouts[songId] || []).find((x) => x.id === tempId);
-            if (p) p.id = res.id;
+            renderCreators();
             saveCache();
+          }
 
-            // Auto-add creator to database if not already there
-            const exists = creators.find(
-              (c) =>
-                String(c.handle || "").toLowerCase() === creator.toLowerCase(),
-            );
-            if (!exists) {
-              const rate =
-                videos && parseInt(videos) > 0
-                  ? (parseFloat(amount) / parseInt(videos)).toFixed(2)
-                  : amount;
-              const tempCreatorId = "temp_c_" + Date.now();
-              creators.push({
-                id: tempCreatorId,
-                handle: creator,
-                niche: "",
-                rate,
-                notes: "",
-              });
-              renderCreators();
+          const savePayout = api({
+            action: "addPayout",
+            songId,
+            creator,
+            amount,
+            videos,
+            delivered,
+            date,
+            notes,
+          })
+            .then((res) => {
+              const p = (payouts[songId] || []).find((x) => x.id === tempId);
+              if (p) p.id = res.id;
               saveCache();
-              try {
-                const cres = await api({
+            })
+            .catch(() => {
+              payouts[songId] = (payouts[songId] || []).filter(
+                (x) => x.id !== tempId,
+              );
+              renderAll();
+              saveCache();
+              showToast("Error saving payout", "error");
+            });
+
+          const saveCreator =
+            tempCreatorId === null
+              ? Promise.resolve()
+              : api({
                   action: "addCreator",
                   handle: creator,
                   niche: "",
-                  rate,
+                  rate: creatorRate,
                   notes: "",
-                });
-                const c = creators.find((x) => x.id === tempCreatorId);
-                if (c) c.id = cres.id;
-                saveCache();
-              } catch (e) {
-                creators = creators.filter((x) => x.id !== tempCreatorId);
-                saveCache();
-              }
-            }
-          } catch (e) {
-            payouts[songId] = (payouts[songId] || []).filter(
-              (x) => x.id !== tempId,
-            );
-            renderAll();
-            saveCache();
-            showToast("Error saving payout", "error");
-          }
+                })
+                  .then((cres) => {
+                    const c = creators.find((x) => x.id === tempCreatorId);
+                    if (c) c.id = cres.id;
+                    saveCache();
+                  })
+                  .catch(() => {
+                    creators = creators.filter((x) => x.id !== tempCreatorId);
+                    renderCreators();
+                    saveCache();
+                  });
+
+          await Promise.allSettled([savePayout, saveCreator]);
         });
 
       async function deletePayout(id, songId) {

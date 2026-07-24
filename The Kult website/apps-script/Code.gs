@@ -46,8 +46,26 @@ function handleRequest(e) {
   }
 
   const action = params.action;
-  let result;
 
+  // Reads need no lock. Every write does a read-modify-write or appendRow on a
+  // sheet; if two run at once they can clobber each other's rows or append out
+  // of order (the dashboard fires writes concurrently when several payouts are
+  // logged in quick succession). Serialize writes through a script lock so at
+  // most one mutates the spreadsheet at a time.
+  const READ_ACTIONS = { getAll: 1, getSongs: 1, getPayouts: 1 };
+  const isWrite = !READ_ACTIONS[action];
+
+  let lock = null;
+  if (isWrite) {
+    lock = LockService.getScriptLock();
+    try {
+      lock.waitLock(20000);
+    } catch (e) {
+      return jsonOut({ error: 'Busy — another change is saving. Try again.' });
+    }
+  }
+
+  let result;
   try {
     if      (action === 'getAll')             result = getAll();
     else if (action === 'getSongs')           result = getSongs();
@@ -67,6 +85,8 @@ function handleRequest(e) {
     else result = { error: 'Unknown action' };
   } catch (err) {
     result = { error: err.toString() };
+  } finally {
+    if (lock) lock.releaseLock();
   }
 
   return jsonOut(result);
